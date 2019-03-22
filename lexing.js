@@ -32,7 +32,7 @@ const Function = createToken({
     pattern: /[A-Za-z]+[A-Za-z_0-9.]+(?=[(])/
 });
 
-const Error = createToken({
+const FormulaError = createToken({
     name: 'Error',
     pattern: /#NULL!|#DIV\/0!|#VALUE!|#NAME\?|#NUM!|#N\/A/
 });
@@ -223,7 +223,7 @@ const allTokens = [
     SingleQuotedString,
     RefSheetQuoted,
     Function,
-    Error,
+    FormulaError,
     RefError,
     Cell,
     RangeColumn,
