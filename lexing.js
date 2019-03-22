@@ -21,19 +21,28 @@ const SingleQuotedString = createToken({
     pattern: /'(''|[^'])*'/
 });
 
-const RefSheetQuoted = createToken({
-    name: 'RefSheetQuoted',
+const SheetQuoted = createToken({
+    name: 'SheetQuoted',
     pattern: /'((?![\\\/\[\]*?:]).)+?'(?=!)/
 });
 
 const Function = createToken({
     name: 'Function',
-    name: 'Function',
-    pattern: /[A-Za-z]+[A-Za-z_0-9.]+(?=[(])/
+    pattern: /[A-Za-z]+[A-Za-z_0-9.]*(?=[(])/
+});
+
+const ExcelRefFunction = createToken({
+    name: 'ExcelRefFunction',
+    pattern: /INDEX|OFFSET|INDIRECT/i
+});
+
+const ExcelConditionalRefFunction = createToken({
+    name: 'ExcelConditionalRefFunction',
+    pattern: /IF|CHOOSE/i
 });
 
 const FormulaError = createToken({
-    name: 'Error',
+    name: 'FormulaError',
     pattern: /#NULL!|#DIV\/0!|#VALUE!|#NAME\?|#NUM!|#N\/A/
 });
 
@@ -62,8 +71,13 @@ const Sheet = createToken({
     pattern: /[A-Za-z_.\d]+(?=[!])/
 });
 
-const Variable = createToken({
-    name: 'Variable',
+const ReservedName = createToken({
+    name: 'ReservedName',
+    pattern: /_xlnm\.[a-zA-Z_]+/
+});
+
+const Name = createToken({
+    name: 'Name',
     pattern: /[a-zA-Z_][a-zA-Z0-9_.?]+/
 });
 
@@ -131,7 +145,7 @@ const ExclamationMark = createToken({
 });
 
 const OpenCurlyParen  = createToken({
-    name: 'OpenCurlyParen ',
+    name: 'OpenCurlyParen',
     pattern: /{/
 });
 
@@ -212,7 +226,7 @@ const GteOp = createToken({
 });
 
 const LteOp = createToken({
-    name: 'PercentOp',
+    name: 'LteOp',
     pattern: /<=/
 });
 
@@ -221,7 +235,9 @@ const allTokens = [
     WhiteSpace,
     String,
     SingleQuotedString,
-    RefSheetQuoted,
+    SheetQuoted,
+    ExcelRefFunction,
+    ExcelConditionalRefFunction,
     Function,
     FormulaError,
     RefError,
@@ -229,7 +245,8 @@ const allTokens = [
     RangeColumn,
     RangeRow,
     Sheet,
-    Variable,
+    ReservedName,
+    Name,
     Number,
     Boolean,
     Array,
