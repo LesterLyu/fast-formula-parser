@@ -1,0 +1,14 @@
+{
+  "name": "fast-formula-parser",
+  "version": "1.0.0",
+  "description": "fast excel formula parser",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "Lester",
+  "license": "MIT",
+  "dependencies": {
+    "chevrotain": "^4.3.1"
+  }
+}
