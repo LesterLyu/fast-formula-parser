@@ -16,6 +16,11 @@ const String = createToken({
     pattern: /"(""|[^"])*"/
 });
 
+const SingleQuotedString = createToken({
+    name: 'SingleQuotedString',
+    pattern: /'(''|[^'])*'/
+});
+
 const RefSheetQuoted = createToken({
     name: 'RefSheetQuoted',
     pattern: /'((?![\\\/\[\]*?:]).)+?'(?=!)/
@@ -23,31 +28,37 @@ const RefSheetQuoted = createToken({
 
 const Function = createToken({
     name: 'Function',
+    name: 'Function',
     pattern: /[A-Za-z]+[A-Za-z_0-9.]+(?=[(])/
 });
 
 const Error = createToken({
     name: 'Error',
-    pattern: /#[A-Z0-9\/]+[!?]?/
+    pattern: /#NULL!|#DIV\/0!|#VALUE!|#NAME\?|#NUM!|#N\/A/
+});
+
+const RefError = createToken({
+    name: 'RefError',
+    pattern: /#REF!/
 });
 
 const Cell = createToken({
     name: 'Cell',
-    pattern: /[$]?[A-Z]{1,4}[$]?[1-9][0-9]*/
+    pattern: /[$]?[A-Za-z]{1,4}[$]?[1-9][0-9]*/
 });
 
 const RangeColumn = createToken({
     name: 'RangeColumn',
-    pattern: /[$]?[A-Z]{1,4}:[$]?[A-Z]{1,4}/
+    pattern: /[$]?[A-Za-z]{1,4}:[$]?[A-Za-z]{1,4}/
 });
 
 const RangeRow = createToken({
-    name: 'RangeColumn',
-    pattern: /[$]?[A-Z]{1,4}:[$]?[A-Z]{1,4}/
+    name: 'RangeRow',
+    pattern: /[$]?[1-9][0-9]*:[$]?[1-9][0-9]*/
 });
 
-const RefSheet = createToken({
-    name: 'RefSheet',
+const Sheet = createToken({
+    name: 'Sheet',
     pattern: /[A-Za-z_.\d]+(?=[!])/
 });
 
@@ -61,78 +72,195 @@ const Number = createToken({
     pattern: /[0-9]+[.]?[0-9]*/
 });
 
+const Boolean = createToken({
+    name: 'Boolean',
+    pattern: /TRUE|FALSE/
+});
+
 const Array = createToken({
     name: 'Array',
     pattern: /{([\w,;\s]*)?}/
 });
 
-const Concat = createToken({
-    name: 'Concat',
+/**
+ * Symbols and operators
+ */
+const At = createToken({
+    name: 'At',
+    pattern: /@/
+});
+
+const Comma = createToken({
+    name: 'Comma',
+    pattern: /,/
+});
+
+const Colon = createToken({
+    name: 'Colon',
+    pattern: /:/
+});
+
+const Semicolon = createToken({
+    name: 'Semicolon',
+    pattern: /;/
+});
+
+const OpenParen = createToken({
+    name: 'OpenParen',
+    pattern: /\(/
+});
+
+const CloseParen = createToken({
+    name: 'CloseParen',
+    pattern: /\)/
+});
+
+const OpenSquareParen = createToken({
+    name: 'OpenSquareParen',
+    pattern: /\[/
+});
+
+const CloseSquareParen = createToken({
+    name: 'CloseSquareParen',
+    pattern: /]/
+});
+
+const ExclamationMark = createToken({
+    name: 'exclamationMark',
+    pattern: /!/
+});
+
+const OpenCurlyParen  = createToken({
+    name: 'OpenCurlyParen ',
+    pattern: /{/
+});
+
+const CloseCurlyParen = createToken({
+    name: 'CloseCurlyParen',
+    pattern: /}/
+});
+
+const QuoteS = createToken({
+    name: 'QuoteS',
+    pattern: /'/
+});
+
+
+const MulOp = createToken({
+    name: 'MulOp',
+    pattern: /\*/
+});
+
+const PlusOp = createToken({
+    name: 'PlusOp',
+    pattern: /\+/
+});
+
+const DivOp = createToken({
+    name: 'DivOp',
+    pattern: /\//
+});
+
+const MinOp = createToken({
+    name: 'MinOp',
+    pattern: /-/
+});
+
+const ConcateOp = createToken({
+    name: 'ConcateOp',
     pattern: /&/
 });
 
-const Concat = createToken({
-    name: 'Concat',
-    pattern: /&/
+const ExOp = createToken({
+    name: 'ExOp',
+    pattern: /\^/
 });
 
-const Concat = createToken({
-    name: 'Concat',
-    pattern: /&/
+const IntersectOp = createToken({
+    name: 'IntersectOp',
+    pattern: / /
 });
 
-const Concat = createToken({
-    name: 'Concat',
-    pattern: /&/
+const PercentOp = createToken({
+    name: 'PercentOp',
+    pattern: /%/
 });
 
-const Concat = createToken({
-    name: 'Concat',
-    pattern: /&/
+const GtOp = createToken({
+    name: 'GtOp',
+    pattern: />/
 });
 
-// createToken is used to create a TokenType
-// The Lexer's output will contain an array of token Objects created by metadata
-const Identifier = createToken({ name: "Identifier", pattern: /[a-zA-Z]\w*/ });
-
-// We specify the "longer_alt" property to resolve keywords vs identifiers ambiguity.
-// See: https://github.com/SAP/chevrotain/blob/master/examples/lexer/keywords_vs_identifiers/keywords_vs_identifiers.js
-const Select = createToken({
-    name: "Select",
-    pattern: /SELECT/,
-    longer_alt: Identifier
+const EqOp = createToken({
+    name: 'EqOp',
+    pattern: /=/
 });
 
-const From = createToken({
-    name: "From",
-    pattern: /FROM/,
-    longer_alt: Identifier
-});
-const Where = createToken({
-    name: "Where",
-    pattern: /WHERE/,
-    longer_alt: Identifier
+const LtOp = createToken({
+    name: 'LtOp',
+    pattern: /</
 });
 
-const Comma = createToken({ name: "Comma", pattern: /,/ })
-const Integer = createToken({ name: "Integer", pattern: /0|[1-9]\d*/ })
-const GreaterThan = createToken({ name: "GreaterThan", pattern: />/ })
-const LessThan = createToken({ name: "LessThan", pattern: /</ })
+const NeqOp = createToken({
+    name: 'NeqOp',
+    pattern: /<>/
+});
 
+const GteOp = createToken({
+    name: 'GteOp',
+    pattern: />=/
+});
+
+const LteOp = createToken({
+    name: 'PercentOp',
+    pattern: /<=/
+});
 
 // The order of tokens is important
 const allTokens = [
     WhiteSpace,
-    // "keywords" appear before the Identifier
-    Select,
-    From,
-    Where,
+    String,
+    SingleQuotedString,
+    RefSheetQuoted,
+    Function,
+    Error,
+    RefError,
+    Cell,
+    RangeColumn,
+    RangeRow,
+    Sheet,
+    Variable,
+    Number,
+    Boolean,
+    Array,
+
+    At,
     Comma,
-    // The Identifier must appear after the keywords because all keywords are valid identifiers.
-    Identifier,
-    Integer,
-    GreaterThan,
-    LessThan
+    Colon,
+    Semicolon,
+    OpenParen,
+    CloseParen,
+    OpenSquareParen,
+    CloseSquareParen,
+    ExclamationMark,
+    OpenCurlyParen,
+    CloseCurlyParen,
+    QuoteS,
+    MulOp,
+    PlusOp,
+    DivOp,
+    MinOp,
+    ConcateOp,
+    ExOp,
+    MulOp,
+    // IntersectOp,
+    PercentOp,
+    NeqOp,
+    GteOp,
+    LteOp,
+    GtOp,
+    EqOp,
+    LtOp,
 ];
 
 const SelectLexer = new Lexer(allTokens);
@@ -148,6 +276,7 @@ module.exports = {
         const lexingResult = SelectLexer.tokenize(inputText)
 
         if (lexingResult.errors.length > 0) {
+            // console.error(lexingResult.errors)
             throw Error("Sad Sad Panda, lexing errors detected")
         }
 
