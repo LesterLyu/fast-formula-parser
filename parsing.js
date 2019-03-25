@@ -61,6 +61,29 @@ class Parser extends chevrotain.Parser {
         const $ = this;
 
         // Adopted from https://github.com/spreadsheetlab/XLParser/blob/master/src/XLParser/ExcelFormulaGrammar.cs
+
+        $.RULE('formulaCheckPostfix', () => $.OR([
+            {
+                ALT: () => {
+                    const result = $.SUBRULE($.formulaCheckInfix);
+                    return applyPostfix(result, $.SUBRULE($.postfixOp))
+                }
+            },
+            {ALT: () => $.SUBRULE2($.formulaCheckInfix)}
+        ]));
+
+        $.RULE('formulaCheckInfix', () => $.OR([
+            {
+                ALT: () => {
+                    const formula1 = $.SUBRULE($.formula);
+                    const infix = $.SUBRULE($.infixOp);
+                    const formula2 = $.SUBRULE2($.formula);
+                    return applyInfix(formula1, infix, formula2);
+                }
+            },
+            {ALT: () => $.SUBRULE2($.formula)}
+        ]));
+
         $.RULE('formula', () => $.OR([
             {ALT: () => $.SUBRULE($.reference)},
             {ALT: () => $.SUBRULE($.constant)},
@@ -116,19 +139,19 @@ class Parser extends chevrotain.Parser {
                     const formula = $.SUBRULE($.formula);
                     return applyPrefix(prefix, formula);
                 }
-            }, {
-                ALT: () => {
-                    const formula = $.SUBRULE2($.formula);
-                    const postfix = $.SUBRULE($.postfixOp);
-                    return applyPostfix(formula, postfix);
-                }
-            }, {
-                ALT: () => {
-                    const formula1 = $.SUBRULE3($.formula);
-                    const infix = $.SUBRULE($.infixOp);
-                    const formula2 = $.SUBRULE4($.formula);
-                    return applyInfix(formula1, infix, formula2);
-                }
+                // }, {
+                //     ALT: () => {
+                //         const formula = $.SUBRULE2($.formula);
+                //         const postfix = $.SUBRULE($.postfixOp);
+                //         return applyPostfix(formula, postfix);
+                //     }
+            // }, {
+            //     ALT: () => {
+            //         const formula1 = $.SUBRULE3($.formula);
+            //         const infix = $.SUBRULE($.infixOp);
+            //         const formula2 = $.SUBRULE4($.formula);
+            //         return applyInfix(formula1, infix, formula2);
+            //     }
             }
         ]));
 
@@ -235,10 +258,14 @@ class Parser extends chevrotain.Parser {
         ]));
 
         $.RULE('union', () => {
-            const result1 = $.SUBRULE($.union);
-            $.CONSUME(Comma);
-            const result2 = $.SUBRULE($.reference);
-            return applyUnion(result1, result2);
+            const args = [];
+            $.MANY_SEP({
+                SEP: Comma,
+                DEF: () => {
+                    args.push($.SUBRULE($.reference));
+                }
+            });
+            return applyUnion(...args);
         });
 
         $.RULE('referenceItem', () => $.OR([
@@ -297,7 +324,7 @@ module.exports = {
         parserInstance.input = lexResult.tokens;
 
         // No semantic actions so this won't return anything yet.
-        parserInstance.formula();
+        parserInstance.formulaCheckPostfix();
 
         if (parserInstance.errors.length > 0) {
             throw Error(

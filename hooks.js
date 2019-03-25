@@ -114,11 +114,11 @@ class FormulaParser {
     }
 
     static applyIntersect() {
-
+        return [];
     }
 
-    static applyUnion() {
-
+    static applyUnion(...args) {
+        return [];
     }
 
 }
