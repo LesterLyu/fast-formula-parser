@@ -59,7 +59,13 @@ const {
 
 class Parser extends chevrotain.Parser {
     constructor(config) {
-        super(tokenVocabulary, {outputCst: false, maxLookahead: 4});
+        super(tokenVocabulary, {
+            outputCst: false,
+            maxLookahead: 4,
+            ignoredIssues: {
+                referenceWithIntersect: { OR9: true }
+            }
+        });
         const $ = this;
 
         // Adopted from https://github.com/spreadsheetlab/XLParser/blob/master/src/XLParser/ExcelFormulaGrammar.cs
@@ -206,26 +212,42 @@ class Parser extends chevrotain.Parser {
         $.RULE('postfixOp', () => $.CONSUME(PercentOp).image);
 
 
-        $.RULE('referenceWithIntersect', () => {
-            let ref1, refs = [ref1];
-            ref1 = $.SUBRULE($.referenceWithRange);
-            $.MANY({
+        $.RULE('referenceWithIntersect', () => $.OR9([
+            {
                 GATE: () => {
-                    // see https://github.com/SAP/chevrotain/blob/master/examples/grammars/css/css.js#L436-L441
-                    const prevToken = $.LA(0);
-                    const nextToken = $.LA(1);
-                    //  This is the only place where the grammar is whitespace sensitive.
-                    return nextToken.startOffset > prevToken.endOffset;
+                    // remove nested () until only one left
+                    return $.LA(2).image === '(';
                 },
-                DEF: () => {
-                    refs.push($.SUBRULE3($.referenceWithRange));
+                ALT: () => {
+                    $.CONSUME(OpenParen);
+                    const res = $.SUBRULE2($.referenceWithIntersect);
+                    $.CONSUME(CloseParen);
+                    return res;
                 }
-            });
-            if (refs.length > 1) {
-                return applyIntersect(refs);
+            },
+            {
+                ALT: () => {
+                    let ref1, refs = [ref1];
+                    ref1 = $.SUBRULE($.referenceWithRange);
+                    $.MANY({
+                        GATE: () => {
+                            // see https://github.com/SAP/chevrotain/blob/master/examples/grammars/css/css.js#L436-L441
+                            const prevToken = $.LA(0);
+                            const nextToken = $.LA(1);
+                            //  This is the only place where the grammar is whitespace sensitive.
+                            return nextToken.startOffset > prevToken.endOffset;
+                        },
+                        DEF: () => {
+                            refs.push($.SUBRULE3($.referenceWithRange));
+                        }
+                    });
+                    if (refs.length > 1) {
+                        return applyIntersect(refs);
+                    }
+                    return ref1;
+                }
             }
-            return ref1;
-        });
+        ]));
 
         $.RULE('referenceWithRange', () => $.OR([
             {
@@ -249,14 +271,7 @@ class Parser extends chevrotain.Parser {
                 }
             },
             {ALT: () => $.SUBRULE($.referenceFunctionCall)},
-            {
-                ALT: () => {
-                    $.CONSUME(OpenParen);
-                    const res = $.SUBRULE($.referenceFunctionCall);
-                    $.CONSUME(CloseParen);
-                    return res;
-                }
-            },
+
             {
                 // sheet name prefix
                 ALT: () => {
@@ -296,7 +311,7 @@ class Parser extends chevrotain.Parser {
         ]));
 
         $.RULE('union', () => {
-            console.log('try union')
+            // console.log('try union')
             const args = [];
             // allows empty arguments
             $.OPTION(() => {
