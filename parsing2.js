@@ -61,58 +61,124 @@ class Parser extends chevrotain.Parser {
     constructor(config) {
         super(tokenVocabulary, {
             outputCst: false,
-            maxLookahead: 4,
+            maxLookahead: 3,
             ignoredIssues: {
-                referenceWithIntersect: { OR9: true }
+                referenceWithIntersect: {OR9: true},
+                formula: {OR9: true}
             }
         });
         const $ = this;
 
         // Adopted from https://github.com/spreadsheetlab/XLParser/blob/master/src/XLParser/ExcelFormulaGrammar.cs
 
-        // $.RULE('formulaCheckPostfix', () => $.OR([
-        //     {
-        //         ALT: () => {
-        //             const result = $.SUBRULE($.formulaCheckInfix);
-        //             return applyPostfix(result, $.SUBRULE($.postfixOp))
-        //         }
-        //     },
-        //     {ALT: () => $.SUBRULE2($.formulaCheckInfix)}
-        // ]));
-        //
-        // $.RULE('formulaCheckInfix', () => $.OR([
-        //     {
-        //         ALT: () => {
-        //             const formula1 = $.SUBRULE($.formula);
-        //             const infix = $.SUBRULE($.infixOp);
-        //             const formula2 = $.SUBRULE2($.formula);
-        //             return applyInfix(formula1, infix, formula2);
-        //         }
-        //     },
-        //     {ALT: () => $.SUBRULE2($.formula)}
-        // ]));
+        $.RULE('formulaWithCompareOp', () => {
+            let value = $.SUBRULE($.formulaWithConcatOp);
+            $.MANY(() => {
+                const infix = $.SUBRULE($.compareOp);
+                const formula2 = $.SUBRULE2($.formulaWithConcatOp);
+                value = applyInfix(value, infix, formula2);
+            });
+            return value;
+        });
 
-        // $.RULE('formulaParen', () => $.OR([
-        //     {
-        //         ALT: () => {
-        //             $.CONSUME(OpenParen);
-        //             const value = $.SUBRULE($.formula);
-        //             $.CONSUME(CloseParen);
-        //             return value;
-        //         }
-        //     },
-        //     {
-        //         ALT: () => $.SUBRULE2($.formula)
-        //     }
-        // ]));
+        $.RULE('compareOp', () => $.OR([
+            {ALT: () => $.CONSUME(GtOp).image},
+            {ALT: () => $.CONSUME(EqOp).image},
+            {ALT: () => $.CONSUME(LtOp).image},
+            {ALT: () => $.CONSUME(NeqOp).image},
+            {ALT: () => $.CONSUME(GteOp).image},
+            {ALT: () => $.CONSUME(LteOp).image},
+        ]));
 
-        $.RULE('formula', () => $.OR([
+
+        $.RULE('formulaWithConcatOp', () => {
+            let value = $.SUBRULE($.formulaWithBinaryOp);
+            $.MANY(() => {
+                const infix = $.CONSUME(ConcateOp).image;
+                const formula2 = $.SUBRULE2($.formulaWithBinaryOp);
+                value = applyInfix(value, infix, formula2);
+            });
+            return value;
+        });
+
+
+        $.RULE('formulaWithBinaryOp', () => {
+            let value = $.SUBRULE($.formulaWithMulDivOp);
+            $.MANY(() => {
+                const infix = $.SUBRULE($.plusMinusOp);
+                const formula2 = $.SUBRULE2($.formulaWithMulDivOp);
+                value = applyInfix(value, infix, formula2);
+            });
+            return value;
+        });
+
+        $.RULE('plusMinusOp', () => $.OR([
+            {ALT: () => $.CONSUME(PlusOp).image},
+            {ALT: () => $.CONSUME(MinOp).image}
+        ]));
+
+        $.RULE('formulaWithMulDivOp', () => {
+            let value = $.SUBRULE($.formulaWithExOp);
+            $.MANY(() => {
+                const infix = $.SUBRULE($.mulDivOp);
+                const formula2 = $.SUBRULE2($.formulaWithExOp);
+                value = applyInfix(value, infix, formula2);
+            });
+            return value;
+        });
+
+        $.RULE('mulDivOp', () => $.OR([
+            {ALT: () => $.CONSUME(MulOp).image},
+            {ALT: () => $.CONSUME(DivOp).image}
+        ]));
+
+        $.RULE('formulaWithExOp', () => {
+            let value = $.SUBRULE($.formulaWithPercentOp);
+            $.MANY(() => {
+                const infix = $.CONSUME(ExOp).image;
+                const formula2 = $.SUBRULE2($.formulaWithPercentOp);
+                value = applyInfix(value, infix, formula2);
+            });
+            return value;
+        });
+
+        $.RULE('formulaWithPercentOp', () => {
+            let value = $.SUBRULE($.formulaWithUnaryOp);
+            $.OPTION(() => {
+                const postfix = $.CONSUME(PercentOp).image;
+                value = applyPostfix(value, postfix);
+            });
+            return value;
+        });
+
+        $.RULE('formulaWithUnaryOp', () => {
+            const prefix = $.OPTION(() => $.SUBRULE($.plusMinusOp));
+            const formula = $.SUBRULE($.formula);
+            if (prefix) return applyPrefix(prefix, formula);
+            return formula;
+        });
+
+        $.RULE('formula', () => $.OR9([
             {ALT: () => $.SUBRULE($.referenceWithIntersect)},
             {ALT: () => $.SUBRULE($.constant)},
-            // {ALT: () => $.SUBRULE($.functionCall)},
+            {ALT: () => $.SUBRULE($.functionCall)},
             // {ALT: () => $.SUBRULE($.constantArray)},
+            {ALT: () => $.SUBRULE($.paren)},
             {ALT: () => $.SUBRULE($.reservedName)},
         ]));
+
+        $.RULE('paren', () => $.OR([{
+            GATE: () => {
+                console.log('try paren..')
+                return $.LA(1).image === '(';
+            },
+            ALT: () => {
+                $.CONSUME(OpenParen);
+                const value = $.SUBRULE9($.formulaWithCompareOp);
+                $.CONSUME(CloseParen);
+                return value;
+            }
+        }]));
 
         $.RULE('reservedName', () => {
             const name = $.CONSUME(ReservedName).image;
@@ -142,16 +208,12 @@ class Parser extends chevrotain.Parser {
         $.RULE('functionCall', () => $.OR([
             {
                 ALT: () => {
-                    const functionName = $.CONSUME(Function).image;
+                    const functionName = $.CONSUME(Function).image.slice(0, -1);
+                    console.log('functionName', functionName);
                     const args = $.OPTION(() => $.SUBRULE($.arguments));
                     $.CONSUME(CloseParen);
-                    callFunction(functionName, args);
-                }
-            }, {
-                ALT: () => {
-                    const prefix = $.SUBRULE($.prefixOp);
-                    const formula = $.SUBRULE($.formula);
-                    return applyPrefix(prefix, formula);
+                    return callFunction(functionName, args);
+
                 }
                 // }, {
                 //     ALT: () => {
@@ -216,7 +278,7 @@ class Parser extends chevrotain.Parser {
             {
                 GATE: () => {
                     // remove nested () until only one left
-                    return $.LA(2).image === '(';
+                    return $.LA(1).image === '(';
                 },
                 ALT: () => {
                     $.CONSUME(OpenParen);
@@ -372,9 +434,8 @@ class Parser extends chevrotain.Parser {
 const parserInstance = new Parser();
 
 module.exports = {
-    init: config => {
 
-    },
+    allTokens: Object.values(tokenVocabulary),
 
     parserInstance: parserInstance,
 
@@ -387,7 +448,7 @@ module.exports = {
         parserInstance.input = lexResult.tokens;
 
         // No semantic actions so this won't return anything yet.
-        const res = parserInstance.formula();
+        const res = parserInstance.formulaWithCompareOp();
 
         if (parserInstance.errors.length > 0) {
             throw Error(
@@ -397,4 +458,4 @@ module.exports = {
         }
         return res;
     }
-}
+};

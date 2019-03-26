@@ -4,11 +4,17 @@
   "description": "fast excel formula parser",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "test",
+    "build": "webpack"
   },
-  "author": "Lester",
+  "author": "Lester(Dishu) Lyu",
   "license": "MIT",
   "dependencies": {
     "chevrotain": "^4.3.1"
+  },
+  "devDependencies": {
+    "terser-webpack-plugin": "^1.2.3",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0"
   }
 }

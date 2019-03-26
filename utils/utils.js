@@ -1,4 +1,3 @@
-const colCache = require('./col-cache');
 
 module.exports = {
     /**

@@ -8,7 +8,7 @@ class FormulaParser {
 
     static getCell(cell) {
         console.log('get cell', JSON.stringify(cell));
-        return 0
+        return {cell, value: 0};
     }
 
     static getColumnRange(range) {
@@ -19,8 +19,9 @@ class FormulaParser {
         console.log('get row range', range);
     }
 
-    static getRange(...params) {
-        console.log('get range', params);
+    static getRange(cell1, cell2) {
+        console.log('get range', cell1, cell2);
+        return {from: cell1, to: cell2, value: []}
     }
 
     static getVariable(name) {
@@ -66,6 +67,8 @@ class FormulaParser {
     }
 
     static applyPrefix(prefix, value) {
+        if (value.value !== undefined) value = value.value;
+        console.log('applyPrefix', prefix, value);
         // TO-DO if value is 1D or 2D array
         if (prefix === '+') {
             return value;
@@ -76,6 +79,8 @@ class FormulaParser {
     }
 
     static applyPostfix(value, postfix) {
+        if (value.value !== undefined) value = value.value;
+        console.log('applyPostfix', value, postfix);
         // TO-DO if value is 1D or 2D array
         if (postfix === '%') {
             return value / 100;
@@ -84,6 +89,9 @@ class FormulaParser {
     }
 
     static applyInfix(value1, infix, value2) {
+        if (value1.value !== undefined) value1 = value1.value;
+        if (value2.value !== undefined) value2 = value2.value;
+        console.log('applyInfix', value1, infix, value2)
         // TO-DO if value is 1D or 2D array
         switch (infix) {
             case '^':
