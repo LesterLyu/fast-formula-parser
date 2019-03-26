@@ -2,12 +2,14 @@ const lexer = require('./lexing');
 const chevrotain = require("chevrotain");
 const tokenVocabulary = lexer.tokenVocabulary;
 const hooks = require('./hooks');
-let {
+const {
     getCell, getColumnRange, getRowRange, getRange, getVariable, callFunction,
     toNumber, toString, toBoolean, toError,
     applyPrefix, applyPostfix, applyInfix, applyIntersect, applyUnion
 } = hooks.FormulaParser;
+const {parseCellAddress} = require('./utils/utils');
 const {
+    // IntersectOp,
     WhiteSpace,
     String,
     SingleQuotedString,
@@ -57,7 +59,7 @@ const {
 
 class Parser extends chevrotain.Parser {
     constructor(config) {
-        super(tokenVocabulary, config);
+        super(tokenVocabulary, {outputCst: false, maxLookahead: 4});
         const $ = this;
 
         // Adopted from https://github.com/spreadsheetlab/XLParser/blob/master/src/XLParser/ExcelFormulaGrammar.cs
@@ -84,21 +86,27 @@ class Parser extends chevrotain.Parser {
         //     {ALT: () => $.SUBRULE2($.formula)}
         // ]));
 
+        // $.RULE('formulaParen', () => $.OR([
+        //     {
+        //         ALT: () => {
+        //             $.CONSUME(OpenParen);
+        //             const value = $.SUBRULE($.formula);
+        //             $.CONSUME(CloseParen);
+        //             return value;
+        //         }
+        //     },
+        //     {
+        //         ALT: () => $.SUBRULE2($.formula)
+        //     }
+        // ]));
+
         $.RULE('formula', () => $.OR([
-            {ALT: () => $.SUBRULE($.reference)},
+            {ALT: () => $.SUBRULE($.referenceWithIntersect)},
             {ALT: () => $.SUBRULE($.constant)},
-            {ALT: () => $.SUBRULE($.functionCall)},
+            // {ALT: () => $.SUBRULE($.functionCall)},
             // {ALT: () => $.SUBRULE($.constantArray)},
-            {ALT: () => $.SUBRULE($.paren)},
             {ALT: () => $.SUBRULE($.reservedName)},
         ]));
-
-        $.RULE('paren', () => {
-            $.CONSUME(OpenParen);
-            const value = $.SUBRULE($.formula);
-            $.CONSUME(CloseParen);
-            return value;
-        });
 
         $.RULE('reservedName', () => {
             const name = $.CONSUME(ReservedName).image;
@@ -129,7 +137,7 @@ class Parser extends chevrotain.Parser {
             {
                 ALT: () => {
                     const functionName = $.CONSUME(Function).image;
-                    const args = $.SUBRULE($.arguments);
+                    const args = $.OPTION(() => $.SUBRULE($.arguments));
                     $.CONSUME(CloseParen);
                     callFunction(functionName, args);
                 }
@@ -145,34 +153,32 @@ class Parser extends chevrotain.Parser {
                 //         const postfix = $.SUBRULE($.postfixOp);
                 //         return applyPostfix(formula, postfix);
                 //     }
-            // }, {
-            //     ALT: () => {
-            //         const formula1 = $.SUBRULE3($.formula);
-            //         const infix = $.SUBRULE($.infixOp);
-            //         const formula2 = $.SUBRULE4($.formula);
-            //         return applyInfix(formula1, infix, formula2);
-            //     }
+                // }, {
+                //     ALT: () => {
+                //         const formula1 = $.SUBRULE3($.formula);
+                //         const infix = $.SUBRULE($.infixOp);
+                //         const formula2 = $.SUBRULE4($.formula);
+                //         return applyInfix(formula1, infix, formula2);
+                //     }
             }
         ]));
 
-        $.RULE('arguments', () => $.OR([
-            {
-                ALT: () => {
-                    const args = $.SUBRULE('argumentsEndWithoutComma');
-                    $.CONSUME(Comma);
-                    return args;
-                }
-            },
-            {ALT: () => $.SUBRULE('argumentsEndWithoutComma')},
-        ]));
-
-        $.RULE('argumentsEndWithoutComma', () => {
+        $.RULE('arguments', () => {
+            console.log('try arguments')
             const args = [];
-            $.MANY_SEP({
-                SEP: Comma,
-                DEF: () => {
-                    args.push($.SUBRULE($.formula));
-                }
+            // allows empty arguments
+            $.OPTION(() => {
+                args.push($.SUBRULE($.formula));
+                $.MANY(() => {
+                    $.CONSUME1(Comma);
+                    args.push($.SUBRULE2($.formula));
+                });
+            });
+            // allows ',' in the end
+            $.OPTION2(() => {
+                $.MANY2(() => {
+                    $.CONSUME2(Comma);
+                })
             });
             return args;
         });
@@ -199,45 +205,84 @@ class Parser extends chevrotain.Parser {
 
         $.RULE('postfixOp', () => $.CONSUME(PercentOp).image);
 
-        $.RULE('reference', () => $.OR([
-            {ALT: () => $.SUBRULE('referenceItem')},
-            {ALT: () => $.SUBRULE('referenceFunctionCall')},
 
+        $.RULE('referenceWithIntersect', () => {
+            let ref1, refs = [ref1];
+            ref1 = $.SUBRULE($.referenceWithRange);
+            $.MANY({
+                GATE: () => {
+                    // see https://github.com/SAP/chevrotain/blob/master/examples/grammars/css/css.js#L436-L441
+                    const prevToken = $.LA(0);
+                    const nextToken = $.LA(1);
+                    //  This is the only place where the grammar is whitespace sensitive.
+                    return nextToken.startOffset > prevToken.endOffset;
+                },
+                DEF: () => {
+                    refs.push($.SUBRULE3($.referenceWithRange));
+                }
+            });
+            if (refs.length > 1) {
+                return applyIntersect(refs);
+            }
+            return ref1;
+        });
+
+        $.RULE('referenceWithRange', () => $.OR([
             {
+                // e.g. 'A1:C3', 'A1 A2 A3'
                 ALT: () => {
-                    const prefix = $.SUBRULE($.prefixName);
-                    const referenceItem = $.SUBRULE($.referenceItem);
-                    applyPrefix(prefix, referenceItem);
+                    const ref1 = $.SUBRULE($.referenceWithoutInfix);
+                    $.OPTION(() => {
+                        $.CONSUME(Colon);
+                        const ref2 = $.SUBRULE2($.referenceWithoutInfix);
+                        return getRange(ref1, ref2);
+                    });
+                    return ref1;
                 }
             },
+        ]));
+
+        $.RULE('referenceWithoutInfix', () => $.OR([
+            {
+                ALT: () => {
+                    return getCell($.SUBRULE($.referenceItem))
+                }
+            },
+            {ALT: () => $.SUBRULE($.referenceFunctionCall)},
+            {
+                ALT: () => {
+                    $.CONSUME(OpenParen);
+                    const res = $.SUBRULE($.referenceFunctionCall);
+                    $.CONSUME(CloseParen);
+                    return res;
+                }
+            },
+            {
+                // sheet name prefix
+                ALT: () => {
+                    const sheetName = $.SUBRULE($.prefixName);
+                    const referenceItem = $.SUBRULE2($.referenceItem);
+                    referenceItem.sheet = sheetName;
+                    getCell(referenceItem);
+                }
+            },
+
             // {ALT: () => $.SUBRULE('dynamicDataExchange')},
         ]));
 
         $.RULE('referenceFunctionCall', () => $.OR([
             {
                 ALT: () => {
-                    const ref1 = $.SUBRULE($.reference);
-                    $.CONSUME(Colon);
-                    const ref2 = $.SUBRULE2($.reference);
-                    return getRange(ref1, ref2);
-                }
-            }, {
-                ALT: () => {
-                    const ref1 = $.SUBRULE3($.reference);
-                    $.CONSUME(WhiteSpace);
-                    const ref2 = $.SUBRULE4($.reference);
-                    return applyIntersect(ref1, ref2);
-                }
-            }, {
-                ALT: () => {
                     $.CONSUME(OpenParen);
                     const result = $.SUBRULE($.union);
                     $.CONSUME(CloseParen);
                     return result;
                 }
-            }, {
+            },
+            {
                 ALT: () => {
                     const refFunctionName = $.SUBRULE($.refFunctionName);
+                    console.log('refFunctionName', refFunctionName);
                     const args = $.SUBRULE($.arguments);
                     $.CONSUME2(CloseParen);
                     return callFunction(refFunctionName, args);
@@ -246,18 +291,28 @@ class Parser extends chevrotain.Parser {
         ]));
 
         $.RULE('refFunctionName', () => $.OR([
-            {ALT: () => $.CONSUME(ExcelRefFunction).image},
-            {ALT: () => $.CONSUME(ExcelConditionalRefFunction).image}
+            {ALT: () => $.CONSUME(ExcelRefFunction).image.slice(0, -1)},
+            {ALT: () => $.CONSUME(ExcelConditionalRefFunction).image.slice(0, -1)}
         ]));
 
         $.RULE('union', () => {
+            console.log('try union')
             const args = [];
-            $.MANY_SEP({
-                SEP: Comma,
-                DEF: () => {
-                    args.push($.SUBRULE($.reference));
-                }
+            // allows empty arguments
+            $.OPTION(() => {
+                args.push($.SUBRULE($.referenceWithIntersect));
+                $.MANY(() => {
+                    $.CONSUME(Comma);
+                    args.push($.SUBRULE2($.referenceWithIntersect));
+                });
             });
+            // allows ',' in the end
+            $.OPTION2(() => {
+                $.MANY2(() => {
+                    $.CONSUME2(Comma);
+                })
+            });
+
             return applyUnion(...args);
         });
 
@@ -280,7 +335,7 @@ class Parser extends chevrotain.Parser {
         });
 
         $.RULE('cell', () => {
-            return getCell($.CONSUME(Cell).image);
+            return parseCellAddress($.CONSUME(Cell).image);
         });
 
         $.RULE('namedRange', () => {
@@ -288,8 +343,8 @@ class Parser extends chevrotain.Parser {
         });
 
         $.RULE('prefixName', () => $.OR([
-            {ALT: () => $.CONSUME(Sheet).image},
-            {ALT: () => toString($.CONSUME(SheetQuoted).image)},
+            {ALT: () => $.CONSUME(Sheet).image.slice(0, -1)},
+            {ALT: () => toString($.CONSUME(SheetQuoted).image.slice(0, -1))},
         ]));
 
         $.RULE('refError', () => $.CONSUME(RefError).image);
@@ -317,7 +372,7 @@ module.exports = {
         parserInstance.input = lexResult.tokens;
 
         // No semantic actions so this won't return anything yet.
-        parserInstance.formula();
+        const res = parserInstance.formula();
 
         if (parserInstance.errors.length > 0) {
             throw Error(
@@ -325,5 +380,6 @@ module.exports = {
                 parserInstance.errors[0].message
             )
         }
+        return res;
     }
 }

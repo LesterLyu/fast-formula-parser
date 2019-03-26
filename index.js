@@ -1,4 +1,8 @@
 const lexing = require('./lexing');
-const parser = require('./parsing');
-console.log(lexing.lex('1+2'))
-console.log(parser.parse('1+2'))
+const parser = require('./parsing2');
+let input = '((A1:A2 A3:A4, A1, A3:A5))';
+// input = 'INDEX()';
+// input = '_xlnm.ewrew';
+// input = '';
+// console.log(lexing.lex(input));
+console.log(parser.parse(input));

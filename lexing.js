@@ -8,7 +8,13 @@ const tokenVocabulary = {};
 const WhiteSpace = createToken({
     name: 'WhiteSpace',
     pattern: /\s+/,
-    group: Lexer.SKIPPED
+    group: Lexer.SKIPPED,
+});
+
+const IntersectOp = createToken({
+    name: 'IntersectOp',
+    pattern: / +/,
+    longer_alt: WhiteSpace,
 });
 
 const String = createToken({
@@ -23,7 +29,7 @@ const SingleQuotedString = createToken({
 
 const SheetQuoted = createToken({
     name: 'SheetQuoted',
-    pattern: /'((?![\\\/\[\]*?:]).)+?'(?=!)/
+    pattern: /'((?![\\\/\[\]*?:]).)+?'!/
 });
 
 const Function = createToken({
@@ -33,12 +39,12 @@ const Function = createToken({
 
 const ExcelRefFunction = createToken({
     name: 'ExcelRefFunction',
-    pattern: /INDEX|OFFSET|INDIRECT/i
+    pattern: /(INDEX|OFFSET|INDIRECT)\(/i
 });
 
 const ExcelConditionalRefFunction = createToken({
     name: 'ExcelConditionalRefFunction',
-    pattern: /IF|CHOOSE/i
+    pattern: /(IF|CHOOSE)\(/i
 });
 
 const FormulaError = createToken({
@@ -68,7 +74,7 @@ const RangeRow = createToken({
 
 const Sheet = createToken({
     name: 'Sheet',
-    pattern: /[A-Za-z_.\d]+(?=[!])/
+    pattern: /[A-Za-z_.\d]+!/
 });
 
 const ReservedName = createToken({
@@ -190,11 +196,6 @@ const ExOp = createToken({
     pattern: /\^/
 });
 
-const IntersectOp = createToken({
-    name: 'IntersectOp',
-    pattern: / /
-});
-
 const PercentOp = createToken({
     name: 'PercentOp',
     pattern: /%/
@@ -232,6 +233,8 @@ const LteOp = createToken({
 
 // The order of tokens is important
 const allTokens = [
+
+    // IntersectOp,
     WhiteSpace,
     String,
     SingleQuotedString,
@@ -245,10 +248,10 @@ const allTokens = [
     RangeColumn,
     RangeRow,
     Sheet,
+    Boolean,
     ReservedName,
     Name,
     Number,
-    Boolean,
     Array,
 
     At,
@@ -270,7 +273,6 @@ const allTokens = [
     ConcateOp,
     ExOp,
     MulOp,
-    // IntersectOp,
     PercentOp,
     NeqOp,
     GteOp,

@@ -7,7 +7,8 @@ class FormulaParser {
     }
 
     static getCell(cell) {
-        console.log('get cell', cell);
+        console.log('get cell', JSON.stringify(cell));
+        return 0
     }
 
     static getColumnRange(range) {
@@ -28,7 +29,8 @@ class FormulaParser {
     }
 
     static callFunction(name, args) {
-        return functions[name](...args);
+        console.log('callFunction', name, args)
+        // return functions[name](...args);
     }
 
     /**
@@ -113,11 +115,13 @@ class FormulaParser {
         }
     }
 
-    static applyIntersect() {
+    static applyIntersect(...params) {
+        console.log('applyIntersect', params)
         return [];
     }
 
-    static applyUnion(...args) {
+    static applyUnion(...params) {
+        console.log('applyUnion', params)
         return [];
     }
 
