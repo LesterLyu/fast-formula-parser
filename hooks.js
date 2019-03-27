@@ -12,15 +12,15 @@ class FormulaParser {
     }
 
     static getColumnRange(range) {
-        console.log('get col range', range);
+        // console.log('get col range', range);
     }
 
     static getRowRange(range) {
-        console.log('get row range', range);
+        // console.log('get row range', range);
     }
 
     static getRange(cell1, cell2) {
-        console.log('get range', cell1, cell2);
+        // console.log('get range', cell1, cell2);
         return {from: cell1, to: cell2, value: []}
     }
 
@@ -32,6 +32,7 @@ class FormulaParser {
     static callFunction(name, args) {
         console.log('callFunction', name, args)
         // return functions[name](...args);
+        return {value: 0, ref: {}}
     }
 
     /**
@@ -68,7 +69,7 @@ class FormulaParser {
 
     static applyPrefix(prefix, value) {
         if (value.value !== undefined) value = value.value;
-        console.log('applyPrefix', prefix, value);
+        // console.log('applyPrefix', prefix, value);
         // TO-DO if value is 1D or 2D array
         if (prefix === '+') {
             return value;
@@ -80,7 +81,7 @@ class FormulaParser {
 
     static applyPostfix(value, postfix) {
         if (value.value !== undefined) value = value.value;
-        console.log('applyPostfix', value, postfix);
+        // console.log('applyPostfix', value, postfix);
         // TO-DO if value is 1D or 2D array
         if (postfix === '%') {
             return value / 100;

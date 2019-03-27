@@ -4,7 +4,7 @@
   "description": "fast excel formula parser",
   "main": "index.js",
   "scripts": {
-    "test": "test",
+    "test": "mocha",
     "build": "webpack"
   },
   "author": "Lester(Dishu) Lyu",
@@ -15,6 +15,7 @@
   "devDependencies": {
     "terser-webpack-plugin": "^1.2.3",
     "webpack": "^4.29.6",
-    "webpack-cli": "^3.3.0"
+    "webpack-cli": "^3.3.0",
+    "mocha": "^6.0.2"
   }
 }

@@ -74,7 +74,7 @@ const RangeRow = createToken({
 
 const Sheet = createToken({
     name: 'Sheet',
-    pattern: /[A-Za-z_.\d]+!/
+    pattern: /[A-Za-z_.\d\u007F-\uFFFF]+!/
 });
 
 const ReservedName = createToken({
@@ -84,7 +84,7 @@ const ReservedName = createToken({
 
 const Name = createToken({
     name: 'Name',
-    pattern: /[a-zA-Z_][a-zA-Z0-9_.?]+/
+    pattern: /[a-zA-Z_][a-zA-Z0-9_.?]*/
 });
 
 const Number = createToken({
@@ -295,7 +295,7 @@ module.exports = {
         const lexingResult = SelectLexer.tokenize(inputText)
 
         if (lexingResult.errors.length > 0) {
-            // console.error(lexingResult.errors)
+            console.error(lexingResult.errors)
             throw Error("Sad Sad Panda, lexing errors detected")
         }
 
