@@ -213,21 +213,7 @@ class Parser extends chevrotain.Parser {
                     const args = $.OPTION(() => $.SUBRULE($.arguments));
                     $.CONSUME(CloseParen);
                     return callFunction(functionName, args);
-
                 }
-                // }, {
-                //     ALT: () => {
-                //         const formula = $.SUBRULE2($.formula);
-                //         const postfix = $.SUBRULE($.postfixOp);
-                //         return applyPostfix(formula, postfix);
-                //     }
-                // }, {
-                //     ALT: () => {
-                //         const formula1 = $.SUBRULE3($.formula);
-                //         const infix = $.SUBRULE($.infixOp);
-                //         const formula2 = $.SUBRULE4($.formula);
-                //         return applyInfix(formula1, infix, formula2);
-                //     }
             }
         ]));
 
@@ -236,10 +222,10 @@ class Parser extends chevrotain.Parser {
             const args = [];
             // allows empty arguments
             $.OPTION(() => {
-                args.push($.SUBRULE($.formula));
+                args.push($.SUBRULE($.formulaWithCompareOp));
                 $.MANY(() => {
                     $.CONSUME1(Comma);
-                    args.push($.SUBRULE2($.formula));
+                    args.push($.SUBRULE2($.formulaWithCompareOp));
                 });
             });
             // allows ',' in the end
@@ -251,28 +237,7 @@ class Parser extends chevrotain.Parser {
             return args;
         });
 
-        $.RULE('prefixOp', () => $.OR([
-            {ALT: () => $.CONSUME(PlusOp).image},
-            {ALT: () => $.CONSUME(MinOp).image}
-        ]));
-
-        $.RULE('infixOp', () => $.OR([
-            {ALT: () => $.CONSUME(ExOp).image},
-            {ALT: () => $.CONSUME(MulOp).image},
-            {ALT: () => $.CONSUME(DivOp).image},
-            {ALT: () => $.CONSUME(PlusOp).image},
-            {ALT: () => $.CONSUME(MinOp).image},
-            {ALT: () => $.CONSUME(ConcateOp).image},
-            {ALT: () => $.CONSUME(GtOp).image},
-            {ALT: () => $.CONSUME(EqOp).image},
-            {ALT: () => $.CONSUME(LtOp).image},
-            {ALT: () => $.CONSUME(NeqOp).image},
-            {ALT: () => $.CONSUME(GteOp).image},
-            {ALT: () => $.CONSUME(LteOp).image},
-        ]));
-
         $.RULE('postfixOp', () => $.CONSUME(PercentOp).image);
-
 
         $.RULE('referenceWithIntersect', () => $.OR9([
             {
@@ -288,6 +253,7 @@ class Parser extends chevrotain.Parser {
                 }
             },
             {
+                // e.g.  'A1 A2 A3'
                 ALT: () => {
                     let ref1, refs = [ref1];
                     ref1 = $.SUBRULE($.referenceWithRange);
@@ -313,7 +279,7 @@ class Parser extends chevrotain.Parser {
 
         $.RULE('referenceWithRange', () => $.OR([
             {
-                // e.g. 'A1:C3', 'A1 A2 A3'
+                // e.g. 'A1:C3'
                 ALT: () => {
                     const ref1 = $.SUBRULE($.referenceWithoutInfix);
                     $.OPTION(() => {
@@ -324,6 +290,7 @@ class Parser extends chevrotain.Parser {
                     return ref1;
                 }
             },
+
         ]));
 
         $.RULE('referenceWithoutInfix', () => $.OR([
@@ -337,8 +304,10 @@ class Parser extends chevrotain.Parser {
             {
                 // sheet name prefix
                 ALT: () => {
+                    console.log('try sheetName');
                     const sheetName = $.SUBRULE($.prefixName);
-                    const referenceItem = $.SUBRULE2($.referenceItem);
+                    console.log('sheetName', sheetName);
+                    const referenceItem = $.SUBRULE2($.referenceWithRange);
                     referenceItem.sheet = sheetName;
                     getCell(referenceItem);
                 }
@@ -421,7 +390,7 @@ class Parser extends chevrotain.Parser {
 
         $.RULE('prefixName', () => $.OR([
             {ALT: () => $.CONSUME(Sheet).image.slice(0, -1)},
-            {ALT: () => toString($.CONSUME(SheetQuoted).image.slice(0, -1))},
+            {ALT: () => $.CONSUME(SheetQuoted).image.slice(0, -1)},
         ]));
 
         $.RULE('refError', () => $.CONSUME(RefError).image);
