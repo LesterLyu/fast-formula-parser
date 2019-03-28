@@ -1,5 +1,6 @@
 const assert = require('assert');
-const parser = require('../parsing2');
+const FormulaParser = require('../index');
+const parser = new FormulaParser();
 
 const lineReader = require('readline').createInterface({
     input: require('fs').createReadStream('./test/formulas.txt')
@@ -23,11 +24,11 @@ describe('All formulas', function () {
 
     });
 
-    it('success rate should > 99% ', function () {
+    it('success rate should > 99.99% ', function () {
         this.timeout(50000);
         console.log(formulas.length);
         formulas.forEach((formula, index) => {
-            console.log('testing #', index, formula);
+            // console.log('testing #', index, formula);
             try {
                 parser.parse(formula);
                 success++;
@@ -37,7 +38,7 @@ describe('All formulas', function () {
         });
         console.log(failures);
         console.log(`Success rate: ${success / formulas.length}%`);
-        assert.strictEqual(success / formulas.length > 0.99, true);
+        assert.strictEqual(success / formulas.length > 0.9999, true);
     });
 
 });

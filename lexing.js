@@ -59,12 +59,13 @@ const RefError = createToken({
 
 const Cell = createToken({
     name: 'Cell',
-    pattern: /[$]?[A-Za-z]{1,4}[$]?[1-9][0-9]*/
+    pattern: /[$]?[A-Za-z]{1,3}[$]?[1-9][0-9]*/
 });
 
+// max column: XFD
 const RangeColumn = createToken({
     name: 'RangeColumn',
-    pattern: /[$]?[A-Za-z]{1,4}:[$]?[A-Za-z]{1,4}/
+    pattern: /[$]?[A-Za-z]{1,3}:[$]?[A-Za-z]{1,4}/
 });
 
 const RangeRow = createToken({
@@ -89,7 +90,7 @@ const Name = createToken({
 
 const Number = createToken({
     name: 'Number',
-    pattern: /[0-9]+[.]?[0-9]*/
+    pattern: /[0-9]+[.]?[0-9]*([eE]\+[0-9]+)?/
 });
 
 const Boolean = createToken({
@@ -245,14 +246,14 @@ const allTokens = [
     FormulaError,
     RefError,
     Cell,
-    RangeColumn,
-    RangeRow,
     Sheet,
     Boolean,
-    ReservedName,
     Name,
+    RangeColumn,
+    RangeRow,
+    ReservedName,
     Number,
-    Array,
+    // Array,
 
     At,
     Comma,
@@ -262,7 +263,7 @@ const allTokens = [
     CloseParen,
     OpenSquareParen,
     CloseSquareParen,
-    ExclamationMark,
+    // ExclamationMark,
     OpenCurlyParen,
     CloseCurlyParen,
     QuoteS,

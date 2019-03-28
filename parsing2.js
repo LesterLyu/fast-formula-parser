@@ -1,13 +1,12 @@
 const lexer = require('./lexing');
 const chevrotain = require("chevrotain");
 const tokenVocabulary = lexer.tokenVocabulary;
-const hooks = require('./hooks');
+
 const {
-    getCell, getColumnRange, getRowRange, getRange, getVariable, callFunction,
-    toNumber, toString, toBoolean, toError,
-    applyPostfix, applyInfix, applyIntersect, applyUnion
-} = hooks.FormulaParser;
-const {parseCellAddress, applyPrefix} = require('./utils/utils');
+    parseCellAddress,
+    toArray, toNumber, toString, toBoolean, toError,
+    applyPrefix, applyPostfix, applyInfix, applyIntersect, applyUnion
+} = require('./utils/utils');
 const {
     // IntersectOp,
     WhiteSpace,
@@ -27,7 +26,7 @@ const {
     Name,
     Number,
     Boolean,
-    Array,
+    // Array,
 
     At,
     Comma,
@@ -37,7 +36,7 @@ const {
     CloseParen,
     OpenSquareParen,
     CloseSquareParen,
-    ExclamationMark,
+    // ExclamationMark,
     OpenCurlyParen,
     CloseCurlyParen,
     QuoteS,
@@ -58,16 +57,17 @@ const {
 } = tokenVocabulary;
 
 class Parser extends chevrotain.Parser {
-    constructor(config) {
+    constructor(context) {
         super(tokenVocabulary, {
             outputCst: false,
-            maxLookahead: 3,
+            maxLookahead: 1,
             ignoredIssues: {
                 // referenceWithIntersect: {OR9: true},
                 // formula: {OR9: true},
                 paren: {OR9: true}
             }
         });
+        const {getCell, getColumnRange, getRowRange, getRange, getVariable, callFunction} = context;
         const $ = this;
 
         // Adopted from https://github.com/spreadsheetlab/XLParser/blob/master/src/XLParser/ExcelFormulaGrammar.cs
@@ -208,14 +208,14 @@ class Parser extends chevrotain.Parser {
             // {ALT: () => $.SUBRULE($.referenceWithoutInfix)},
             {ALT: () => $.SUBRULE($.constant)},
             {ALT: () => $.SUBRULE($.functionCall)},
-            // {ALT: () => $.SUBRULE($.constantArray)},
+            {ALT: () => $.SUBRULE($.constantArray)},
         ]));
 
         $.RULE('paren', () => $.OR9([
             {
                 GATE: $.BACKTRACK($.referenceWithoutInfix),
                 ALT: () => {
-                    console.log('backtrack')
+                    // console.log('backtrack')
                     return $.SUBRULE($.referenceWithoutInfix)
                 }
             },
@@ -228,12 +228,71 @@ class Parser extends chevrotain.Parser {
             }]));
 
         $.RULE('formulaParen', () => {
-            console.log('formula paren');
+            // console.log('formula paren');
             $.CONSUME(OpenParen);
             const value = $.SUBRULE($.formulaWithCompareOp);
             $.CONSUME(CloseParen);
             return value;
         });
+
+        $.RULE('constantArray', () => {
+            // console.log('constantArray');
+            const arr = [[]];
+            let currentRow = 0;
+            $.CONSUME(OpenCurlyParen);
+
+            // array must contain at least one item
+            arr[currentRow].push($.SUBRULE($.constantForArray));
+            $.MANY(() => {
+                const sep = $.OR([
+                    {ALT: () => $.CONSUME(Comma).image},
+                    {ALT: () => $.CONSUME(Semicolon).image}
+                ]);
+                const constant = $.SUBRULE2($.constantForArray);
+                if (sep === ',') {
+                    arr[currentRow].push(constant)
+                } else {
+                    currentRow++;
+                    arr[currentRow] = [];
+                    arr[currentRow].push(constant)
+                }
+            });
+
+            $.CONSUME(CloseCurlyParen);
+
+            return toArray(arr);
+        });
+
+        /**
+         * Used in array
+         */
+        $.RULE('constantForArray', () => $.OR([
+            {
+                ALT: () => {
+                    const prefix = $.OPTION(() => $.SUBRULE($.plusMinusOp));
+                    const number = toNumber($.CONSUME(Number).image);
+                    if (prefix)
+                        return applyPrefix([prefix], number);
+                    return number;
+                }
+            }, {
+                ALT: () => {
+                    return toString($.CONSUME(String).image);
+                }
+            }, {
+                ALT: () => {
+                    return toBoolean($.CONSUME(Boolean).image);
+                }
+            }, {
+                ALT: () => {
+                    return toError($.CONSUME(FormulaError).image);
+                }
+            }, {
+                ALT: () => {
+                    return toError($.CONSUME(RefError).image);
+                }
+            },
+        ]));
 
         $.RULE('reservedName', () => {
             const name = $.CONSUME(ReservedName).image;
@@ -264,7 +323,7 @@ class Parser extends chevrotain.Parser {
             {
                 ALT: () => {
                     const functionName = $.CONSUME(Function).image.slice(0, -1);
-                    console.log('functionName', functionName);
+                    // console.log('functionName', functionName);
                     const args = $.OPTION(() => $.SUBRULE($.arguments));
                     $.CONSUME(CloseParen);
                     return callFunction(functionName, args);
@@ -273,7 +332,7 @@ class Parser extends chevrotain.Parser {
         ]));
 
         $.RULE('arguments', () => {
-            console.log('try arguments')
+            // console.log('try arguments')
 
             // allows ',' in the front
             $.MANY2(() => {
@@ -285,7 +344,7 @@ class Parser extends chevrotain.Parser {
                 args.push($.SUBRULE($.formulaWithCompareOp));
                 $.MANY(() => {
                     $.CONSUME1(Comma);
-                    $.OPTION3(() => args.push($.SUBRULE2($.formulaWithCompareOp)))                    ;
+                    $.OPTION3(() => args.push($.SUBRULE2($.formulaWithCompareOp)));
                 });
             });
             return args;
@@ -308,7 +367,7 @@ class Parser extends chevrotain.Parser {
                 ALT: () => {
                     // console.log('try sheetName');
                     const sheetName = $.SUBRULE($.prefixName);
-                    console.log('sheetName', sheetName);
+                    // console.log('sheetName', sheetName);
                     const referenceItem = $.SUBRULE2($.formulaWithRange);
                     referenceItem.sheet = sheetName;
                     return getCell(referenceItem);
@@ -321,7 +380,7 @@ class Parser extends chevrotain.Parser {
         $.RULE('referenceFunctionCall', () => $.OR([
             {
                 ALT: () => {
-                    console.log('union')
+                    // console.log('union')
                     $.CONSUME(OpenParen);
                     const result = $.SUBRULE($.union);
                     $.CONSUME(CloseParen);
@@ -331,7 +390,7 @@ class Parser extends chevrotain.Parser {
             {
                 ALT: () => {
                     const refFunctionName = $.SUBRULE($.refFunctionName);
-                    console.log('refFunctionName', refFunctionName);
+                    // console.log('refFunctionName', refFunctionName);
                     const args = $.SUBRULE($.arguments);
                     $.CONSUME2(CloseParen);
                     return callFunction(refFunctionName, args);
@@ -345,22 +404,14 @@ class Parser extends chevrotain.Parser {
         ]));
 
         $.RULE('union', () => {
-
-            console.log('try union')
+            // console.log('try union')
             const args = [];
-            // allows empty arguments
             $.OPTION(() => {
                 args.push($.SUBRULE($.formulaWithIntersect));
                 $.MANY(() => {
                     $.CONSUME(Comma);
                     args.push($.SUBRULE2($.formulaWithIntersect));
                 });
-            });
-            // allows ',' in the end
-            $.OPTION2(() => {
-                $.MANY2(() => {
-                    $.CONSUME2(Comma);
-                })
             });
 
             return applyUnion(...args);
@@ -403,32 +454,7 @@ class Parser extends chevrotain.Parser {
     }
 }
 
-
-const parserInstance = new Parser();
-
 module.exports = {
-
     allTokens: Object.values(tokenVocabulary),
-
-    parserInstance: parserInstance,
-
     Parser: Parser,
-
-    parse: function (inputText) {
-        const lexResult = lexer.lex(inputText);
-
-        // ".input" is a setter which will reset the parser's internal's state.
-        parserInstance.input = lexResult.tokens;
-
-        // No semantic actions so this won't return anything yet.
-        const res = parserInstance.formulaWithCompareOp();
-
-        if (parserInstance.errors.length > 0) {
-            throw Error(
-                "Sad sad panda, parsing errors detected!\n" +
-                parserInstance.errors[0].message
-            )
-        }
-        return res;
-    }
 };
