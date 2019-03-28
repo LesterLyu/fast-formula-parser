@@ -1,4 +1,6 @@
 const TextFormulas = require('./formulas/text');
+const MathFormulas = require('./formulas/math');
+const FormulaError = require('./formulas/error');
 const {Parser} = require('./parsing2');
 const lexer = require('./lexing');
 
@@ -17,13 +19,13 @@ class FormulaParser {
         }, config);
 
         this.variables = config.variables;
-        this.functions = Object.assign({}, TextFormulas, config.functions);
+        this.functions = Object.assign({}, TextFormulas, MathFormulas, config.functions);
         this.onRange = config.onRange;
         this.onCell = config.onCell;
 
         // uses ES5 syntax here... I don't want to compile the code...
         this.getCell = (cell) => {
-            console.log('get cell', JSON.stringify(cell));
+            // console.log('get cell', JSON.stringify(cell));
 
             return {ref: {type: 'cell', ...cell}, value: 0};
         };
@@ -47,6 +49,7 @@ class FormulaParser {
         };
 
         this.callFunction = (name, args) => {
+            name = name.toUpperCase();
             // console.log('callFunction', name, args)
             if (this.functions[name])
                 return  {value: this.functions[name](...args), ref: {}};
@@ -64,9 +67,15 @@ class FormulaParser {
     parse(inputText) {
         const lexResult = lexer.lex(inputText);
         this.parser.input = lexResult.tokens;
-        const res = this.parser.formulaWithCompareOp();
-        if (this.parser.errors.length > 0) {
-            throw Error(this.parser.errors.join(', '))
+        let res;
+        try {
+            res = this.parser.formulaWithCompareOp();
+        } catch (e) {
+            if (e instanceof FormulaError)
+                return {result: e.toString(), detail: ''};
+            if (this.parser.errors.length > 0) {
+                throw Error(this.parser.errors.join(', '))
+            }
         }
         return res;
     }

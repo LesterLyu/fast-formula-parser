@@ -19,7 +19,7 @@ let input = '-1 + 2 * (5 + 10) ^ 3 / 2% + (A1 - (A1:A2) +A2)';
 // input = 'XIRR({-10000;2750;4250;3250;2742},{"1998/1/1";"1998/1/3";"1998/10/30";"1999/2/15";"1999/1/4"},0.1)'
 // input = "A1/A22";
 // input = 'B5*IF(AX5="H",3,IF(AX5="M",2,IF(AX5="L",1," ")))';
-input = 'XFD1'
+input = 'abs(A1:A2) + 12'
 // console.log(JSON.stringify(lexing.lex(input), null, 1));
 console.log(parser.parse(input));
 //
