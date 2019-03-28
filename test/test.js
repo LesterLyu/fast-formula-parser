@@ -25,7 +25,7 @@ describe('All formulas', function () {
     });
 
     it('success rate should > 99.99% ', function () {
-        this.timeout(50000);
+        this.timeout(20000);
         console.log(formulas.length);
         formulas.forEach((formula, index) => {
             // console.log('testing #', index, formula);
@@ -37,7 +37,7 @@ describe('All formulas', function () {
             }
         });
         console.log(failures);
-        console.log(`Success rate: ${success / formulas.length}%`);
+        console.log(`Success rate: ${success / formulas.length * 100}%`);
         assert.strictEqual(success / formulas.length > 0.9999, true);
     });
 

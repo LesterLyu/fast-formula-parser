@@ -73,9 +73,10 @@ class FormulaParser {
         } catch (e) {
             if (e instanceof FormulaError)
                 return {result: e.toString(), detail: ''};
-            if (this.parser.errors.length > 0) {
-                throw Error(this.parser.errors.join(', '))
-            }
+            throw e;
+            // if (this.parser.errors.length > 0) {
+            //     throw Error(this.parser.errors.join(', '))
+            // }
         }
         return res;
     }

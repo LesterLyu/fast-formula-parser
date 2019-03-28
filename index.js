@@ -20,6 +20,8 @@ let input = '-1 + 2 * (5 + 10) ^ 3 / 2% + (A1 - (A1:A2) +A2)';
 // input = "A1/A22";
 // input = 'B5*IF(AX5="H",3,IF(AX5="M",2,IF(AX5="L",1," ")))';
 input = 'abs(A1:A2) + 12'
+// input = 'SUM((Exercises 4, 5 and 6!$H$2:$H$11-Exercise 7!B2:B11)/Exercise 7!B2:B11)'
+
 // console.log(JSON.stringify(lexing.lex(input), null, 1));
 console.log(parser.parse(input));
 //
