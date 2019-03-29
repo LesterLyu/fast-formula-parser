@@ -30,6 +30,48 @@ const utils = {
         }
     },
 
+    parseColRange: colRange => {
+        const res = colRange.match(/([$]?)([A-Za-z]{1,3}):([$]?)([A-Za-z]{1,4})/);
+        return {
+            address: res[0],
+            from: {
+                address: res[2],
+                col: utils.columnNameToNumber(res[2]),
+                isColAbsolute: res[1].length !== 0,
+                isRowAbsolute: null,
+                row: null
+            },
+            to: {
+                address: res[4],
+                col: utils.columnNameToNumber(res[4]),
+                isColAbsolute: res[3].length !== 0,
+                isRowAbsolute: null,
+                row: null
+            }
+        }
+    },
+
+    parseRowRange: rowRange => {
+        const res = rowRange.match(/([$]?)([1-9][0-9]*):([$]?)([1-9][0-9]*)/);
+        return {
+            address: res[0],
+            from: {
+                address: res[2],
+                col: null,
+                isColAbsolute: null,
+                isRowAbsolute: res[1].length !== 0,
+                row: utils.columnNameToNumber(res[2]),
+            },
+            to: {
+                address: res[4],
+                col: null,
+                isColAbsolute: null,
+                isRowAbsolute: res[3].length !== 0,
+                row: utils.columnNameToNumber(res[4]),
+            }
+        }
+    },
+
     /**
      * Apply + or - unary prefix.
      * @param {Array.<string>} prefixes

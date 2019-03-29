@@ -3,7 +3,7 @@ const chevrotain = require("chevrotain");
 const tokenVocabulary = lexer.tokenVocabulary;
 
 const {
-    parseCellAddress,
+    parseCellAddress, parseColRange, parseRowRange,
     toArray, toNumber, toString, toBoolean, toError,
     applyPrefix, applyPostfix, applyInfix, applyIntersect, applyUnion
 } = require('./utils/utils');
@@ -428,11 +428,11 @@ class Parser extends chevrotain.Parser {
         ]));
 
         $.RULE('vRange', () => {
-            return getColumnRange($.CONSUME(RangeColumn).image);
+            return getColumnRange(parseColRange($.CONSUME(RangeColumn).image));
         });
 
         $.RULE('hRange', () => {
-            return getRowRange($.CONSUME(RangeRow).image);
+            return getRowRange(parseRowRange($.CONSUME(RangeRow).image));
         });
 
         $.RULE('cell', () => {

@@ -5,6 +5,14 @@ class FormulaError {
         this._error = error;
     }
 
+    get message() {
+        return this._msg;
+    }
+
+    set message(msg) {
+        this._msg = msg;
+    }
+
     get error() {
         return this._error;
     }

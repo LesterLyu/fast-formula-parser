@@ -14,8 +14,8 @@ class FormulaParser {
         config = Object.assign({
             functions: {},
             variables: {},
-            onCell: null,
-            onRange: null,
+            onCell: () => 0,
+            onRange: () => [],
         }, config);
 
         this.variables = config.variables;
@@ -26,38 +26,44 @@ class FormulaParser {
         // uses ES5 syntax here... I don't want to compile the code...
         this.getCell = (cell) => {
             // console.log('get cell', JSON.stringify(cell));
-
-            return {ref: {type: 'cell', ...cell}, value: 0};
+            return {ref: cell, value: this.onCell(cell)};
         };
 
         this.getColumnRange = (range) => {
             // console.log('get col range', range);
+            return {ref: range, value: this.onRange(range)}
         };
 
         this.getRowRange = (range) => {
             // console.log('get row range', range);
+            return {ref: range, value: this.onRange(range)}
         };
 
         this.getRange = (cell1, cell2) => {
             // console.log('get range', cell1, cell2);
-            return {from: cell1, to: cell2, value: []}
+            const ref = {from: cell1, to: cell2};
+            return {ref, value: this.onRange(ref)}
         };
 
         this.getVariable = (name) => {
             // console.log('get variable', name);
-            return 0;
+            const val = this.variables[name];
+            if (val === undefined || val === null)
+                throw FormulaError.NAME;
+            return val;
         };
 
         this.callFunction = (name, args) => {
             name = name.toUpperCase();
             // console.log('callFunction', name, args)
+            // TODO: handle ref functions
             if (this.functions[name])
-                return  {value: this.functions[name](...args), ref: {}};
+                return {value: this.functions[name](...args), ref: {}};
             else {
                 console.log(`Function ${name} is not implemented`)
                 return {value: 0, ref: {}};
             }
-                // throw Error()
+            // throw Error()
             // return
         };
 
