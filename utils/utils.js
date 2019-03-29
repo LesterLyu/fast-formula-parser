@@ -26,7 +26,7 @@ const utils = {
             isRowAbsolute: res[1].length !== 0,
             col: utils.columnNameToNumber(res[2]),
             isColAbsolute: res[3].length !== 0,
-            row: res[4]
+            row: +res[4]
         }
     },
 
@@ -60,14 +60,14 @@ const utils = {
                 col: null,
                 isColAbsolute: null,
                 isRowAbsolute: res[1].length !== 0,
-                row: utils.columnNameToNumber(res[2]),
+                row: +res[2],
             },
             to: {
                 address: res[4],
                 col: null,
                 isColAbsolute: null,
                 isRowAbsolute: res[3].length !== 0,
-                row: utils.columnNameToNumber(res[4]),
+                row: +res[4]
             }
         }
     },

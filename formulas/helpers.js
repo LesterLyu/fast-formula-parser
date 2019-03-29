@@ -9,46 +9,93 @@ const Types = {
     CELL_REF: 5,
 };
 
-const type2Number = {
-    number: Types.NUMBER,
-    boolean: Types.BOOLEAN,
-    string: Types.STRING,
-    object: -1
-};
+const ReversedTypes = {};
+Object.keys(Types).forEach((key) => {
+    ReversedTypes[Types[key]] = key;
+});
 
-const FormulaHelpers = {
-    type2Number,
+class FormulaHelpers {
+    constructor() {
+        this.Types = Types;
+        this.type2Number = {
+            number: Types.NUMBER,
+            boolean: Types.BOOLEAN,
+            string: Types.STRING,
+            object: -1
+        };
+    }
 
-    checkResult: (result) => {
+    checkResult(result) {
         if (isNaN(result)) {
             throw FormulaError.VALUE;
         }
         return result;
-    },
+    }
 
     /**
      * Check if the param valid, return the parsed param.
      * @param {*} param
-     * @param {Array} types
-     * @param {boolean} [allowArray]
+     * @param {Array} types - The expected type
+     * @param [optional]
+     * @param [expectSingle] - If the param is only one value
+     * @param {boolean} [extractRef]
+     * @return {string|number|boolean|{}}
      */
-    accept: (param, types, allowArray=true) => {
-        const paramType = FormulaHelpers.type(param);
-        types.forEach(type => {
-            if (paramType === type) {
-                return param;
-            }
-        });
+    accept(param, types, optional=false, expectSingle=true, extractRef=true) {
+        if ((param === undefined || param === null) && !optional) {
+            const args = [];
+            types.forEach(type => args.push(ReversedTypes[type]));
+            throw FormulaError.ARG_MISSING(args);
+        } else if (param === undefined || param === null)
+            return undefined;
 
-        // extract first element of the array as the input
-        if (allowArray) {
-            return param[0][0];
+        // change expectSingle to false when needed
+        if (types.includes(Types.CELL_REF) || types.includes(Types.RANGE_REF) || types.includes(Types.ARRAY)) {
+            expectSingle = false;
         }
-        throw FormulaError.VALUE;
-    },
 
-    type: variable => {
-        let type = FormulaHelpers.type2Number(typeof variable);
+        // the only possible types for expectSingle=true are: string, boolean, number;
+        // If array or range ref encountered, extract the first element.
+        if (expectSingle) {
+            // extract first element from array, except reference a row of elements, e.g. A1:C1
+            // e.g. A1:A5
+            if (this.isRangeRef(param)) {
+                if (param.ref.from.col === param.ref.to.col)
+                    param = param.value[0][0];
+                else
+                    // e.g. A1:C3, A1:C1
+                    throw FormulaError.VALUE;
+            } else if (this.isCellRef(param)) {
+                param = param.value;
+            } else if (Array.isArray(param)) {
+                param = param[0][0];
+            }
+            const paramType = this.type(param);
+            types.forEach(type => {
+                if (type === Types.STRING) {
+                    param = `${param}`
+                }
+                else if (type === Types.BOOLEAN) {
+                    if (paramType === Types.STRING)
+                        throw FormulaError.VALUE;
+                    if (paramType === Types.NUMBER)
+                        param = Boolean(param);
+                }
+                else if (type === Types.NUMBER) {
+                    if (paramType === Types.STRING)
+                        throw FormulaError.VALUE;
+                    if (paramType === Types.BOOLEAN)
+                        param = Number(param);
+                }
+            });
+            return param;
+        } else {
+            throw FormulaError.NOT_IMPLEMENTED();
+        }
+    }
+
+    type(variable) {
+        let type = this.type2Number[typeof variable];
         if (type === -1) {
             if (Array.isArray(variable))
                 type = Types.ARRAY;
@@ -62,9 +109,18 @@ const FormulaHelpers = {
         }
         return type;
     }
-};
+
+    isRangeRef(param) {
+        return param.ref && param.ref.from;
+    }
+
+    isCellRef(param) {
+        return param.ref && !param.ref.from;
+    }
+}
 
 module.exports = {
-    FormulaHelpers,
+    FormulaHelpers: new FormulaHelpers(),
     Types,
+    ReversedTypes,
 };

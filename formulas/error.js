@@ -34,4 +34,15 @@ FormulaError.NUM = new FormulaError("#NUM!");
 FormulaError.REF = new FormulaError("#REF!");
 FormulaError.VALUE = new FormulaError("#VALUE!");
 
+FormulaError.NOT_IMPLEMENTED = (functionName) => {
+    return new Error(`Function ${functionName} is not implemented.`)
+};
+FormulaError.TOO_MANY_ARGS = (functionName) => {
+    return new Error(`Function ${functionName} has too many arguments.`)
+};
+
+FormulaError.ARG_MISSING = (args) => {
+    return new Error(`Argument type ${args.join(', ')} is missing.`)
+};
+
 module.exports = FormulaError;

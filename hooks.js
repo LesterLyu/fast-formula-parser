@@ -70,6 +70,25 @@ class FormulaParser {
         this.parser = new Parser(this);
     }
 
+    supportedFunctions() {
+        const supported = [];
+        const functions = Object.keys(this.functions);
+        functions.forEach(fun => {
+            let res;
+            try {
+                res = this.functions[fun](0,0,0,0,0,0,0,0,0,0,0);
+                if (res === undefined) return;
+                supported.push(fun);
+            } catch (e) {
+                if (e instanceof FormulaError)
+                    supported.push(fun);
+                // else
+                //     console.log(e)
+            }
+        });
+        return supported.sort();
+    }
+
     parse(inputText) {
         const lexResult = lexer.lex(inputText);
         this.parser.input = lexResult.tokens;
