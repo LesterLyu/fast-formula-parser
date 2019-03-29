@@ -33,6 +33,17 @@ class FormulaHelpers {
     }
 
     /**
+     *
+     * @param param
+     * @param types - Types can only be ARRAY or RANGE_REF
+     * @param flatten
+     */
+    acceptMany(param, types, flatten=true) {
+
+
+    }
+
+    /**
      * Check if the param valid, return the parsed param.
      * @param {*} param
      * @param {Array} types - The expected type

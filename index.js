@@ -20,7 +20,7 @@ let input = '-1 + 2 * (5 + 10) ^ 3 / 2% + (A1 - (A1:A2) +A2)';
 // input = 'XIRR({-10000;2750;4250;3250;2742},{"1998/1/1";"1998/1/3";"1998/10/30";"1999/2/15";"1999/1/4"},0.1)'
 // input = "A1/A22";
 // input = 'B5*IF(AX5="H",3,IF(AX5="M",2,IF(AX5="L",1," ")))';
-input = 'ARABIC("V") + 1'
+input = 'base(12,2)'
 // input = 'SUM((Exercises 4, 5 and 6!$H$2:$H$11-Exercise 7!B2:B11)/Exercise 7!B2:B11)'
 
 // console.log(JSON.stringify(lexing.lex(input), null, 1));

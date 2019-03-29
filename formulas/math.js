@@ -88,7 +88,7 @@ const MathFunctions = {
 
     ATAN: number => {
         number = H.accept(number, [Types.NUMBER]);
-        const res =Math.atan(number);
+        const res = Math.atan(number);
         return FormulaHelpers.checkResult(res);
     },
 
@@ -109,7 +109,7 @@ const MathFunctions = {
         return FormulaHelpers.checkResult(res);
     },
 
-    BASE: (number, radix, minLength=0) => {
+    BASE: (number, radix, minLength = 0) => {
         number = H.accept(number, [Types.NUMBER]);
         if (number < 0 || number > 2 ** 53)
             throw FormulaError.NUM;
@@ -125,8 +125,25 @@ const MathFunctions = {
         return new Array(Math.max(minLength + 1 - result.length, 0)).join('0') + result;
     },
 
-    CEILING: (number, significance, mode) => {
+    CEILING: (number, significance, mode = 0) => {
+        number = H.accept(number, [Types.NUMBER]);
+        if (number >= 9.99E+307 || number <= -2.229E-308)
+            throw FormulaError.NUM;
+        if (significance === undefined)
+            significance = number > 0 ? 1 : -1;
+        significance = H.accept(significance, [Types.NUMBER]);
+        mode = H.accept(mode, [Types.NUMBER]);
 
+        const precision = -Math.floor(Math.log(significance) / Math.log(10));
+        if (number >= 0) {
+            return exports.ROUND(Math.ceil(number / significance) * significance, precision);
+        } else {
+            if (mode === 0) {
+                return -exports.ROUND(Math.floor(Math.abs(number) / significance) * significance, precision);
+            } else {
+                return -exports.ROUND(Math.ceil(Math.abs(number) / significance) * significance, precision);
+            }
+        }
     },
 };
 
