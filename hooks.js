@@ -39,10 +39,12 @@ class FormulaParser {
             return {ref: range, value: this.onRange(range)}
         };
 
-        this.getRange = (cell1, cell2) => {
-            // console.log('get range', cell1, cell2);
-            const ref = {from: cell1, to: cell2};
-            return {ref, value: this.onRange(ref)}
+        this.getRange = (refs) => {
+            // TODO: Parse range into 1 to 1.
+            // console.log('get range', refs);
+            // const ref = {from: refs[0], to: refs[1]};
+            // return {ref, value: this.onRange(ref)}
+            return {value: []}
         };
 
         this.getVariable = (name) => {
@@ -101,12 +103,13 @@ class FormulaParser {
         try {
             res = this.parser.formulaWithCompareOp();
         } catch (e) {
+            // console.log(e);
             if (e instanceof FormulaError)
                 return {result: e.toString(), detail: ''};
             throw e;
-            // if (this.parser.errors.length > 0) {
-            //     throw Error(this.parser.errors.join(', '))
-            // }
+        }
+        if (this.parser.errors.length > 0) {
+            throw this.parser.errors[0]
         }
         return res;
     }

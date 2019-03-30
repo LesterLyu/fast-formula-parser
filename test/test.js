@@ -26,7 +26,7 @@ describe('All formulas', function () {
 
     });
 
-    it('success rate should > 99.99% ', function () {
+    it('formulas parse rate should be 100%', function () {
         this.timeout(20000);
         console.log(formulas.length);
         formulas.forEach((formula, index) => {
@@ -40,7 +40,7 @@ describe('All formulas', function () {
         });
         console.log(failures);
         console.log(`Success rate: ${success / formulas.length * 100}%`);
-        assert.strictEqual(success / formulas.length > 0.9999, true);
+        assert.strictEqual(success / formulas.length === 1, true);
     });
 });
 
@@ -58,7 +58,7 @@ describe('formulas2', () => {
 
     it ('skip', () => '');
 
-    it('custom formulas parse rate should > 99.99%',  function(done) {
+    it('custom formulas parse rate should be 100%',  function(done) {
         this.timeout(20000);
         formulas.forEach((formula, index)  => {
             // console.log('testing #', index, formula);
@@ -72,7 +72,7 @@ describe('formulas2', () => {
         });
         console.log(failures);
         console.log(`Success rate: ${success / formulas.length * 100}%`);
-        assert.strictEqual(success / formulas.length > 0.9999, true);
+        assert.strictEqual(success / formulas.length === 1, true);
         done();
     });
 });

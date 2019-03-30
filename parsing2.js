@@ -191,18 +191,17 @@ class Parser extends chevrotain.Parser {
         ]));
 
         $.RULE('formulaWithRange', () => {
-            // e.g. 'A1:C3'
+            // e.g. 'A1:C3' or 'A1:A3:C4', can be any number of references, at lease 2
             const ref1 = $.SUBRULE($.formula);
-            $.OPTION(() => {
+            const refs = [ref1];
+            $.MANY(() => {
                 $.CONSUME(Colon);
-                const ref2 = $.SUBRULE2($.formula);
-                return getRange(ref1, ref2);
+                refs.push($.SUBRULE2($.formula));
             });
-            return ref1;
+            return getRange(refs);
         });
 
         $.RULE('formula', () => $.OR9([
-
             {ALT: () => $.SUBRULE($.reservedName)},
             {ALT: () => $.SUBRULE($.referenceWithoutInfix)},
             {ALT: () => $.SUBRULE($.paren)},
@@ -215,7 +214,7 @@ class Parser extends chevrotain.Parser {
             {
                 GATE: $.BACKTRACK($.refUnion),
                 ALT: () => {
-                    // console.log('backtrack')
+                    // console.log('backtracked')
                     return $.SUBRULE($.refUnion)
                 }
             },
@@ -223,13 +222,26 @@ class Parser extends chevrotain.Parser {
                 ALT: () => {
                     return $.SUBRULE($.formulaParen)
                 }
-            }]));
+            }
+        ]));
 
         $.RULE('refUnion', () => {
             $.CONSUME(OpenParen);
             const result = $.SUBRULE($.union);
             $.CONSUME(CloseParen);
             return result;
+        });
+
+        $.RULE('union', () => {
+            // console.log('try union')
+            const args = [];
+            args.push($.SUBRULE($.formulaWithIntersect));
+            $.MANY(() => {
+                $.CONSUME(Comma);
+                args.push($.SUBRULE2($.formulaWithIntersect));
+            });
+
+            return applyUnion(...args);
         });
 
         $.RULE('formulaParen', () => {
@@ -395,20 +407,6 @@ class Parser extends chevrotain.Parser {
             {ALT: () => $.CONSUME(ExcelRefFunction).image.slice(0, -1)},
             {ALT: () => $.CONSUME(ExcelConditionalRefFunction).image.slice(0, -1)}
         ]));
-
-        $.RULE('union', () => {
-            // console.log('try union')
-            const args = [];
-            $.OPTION(() => {
-                args.push($.SUBRULE($.formulaWithIntersect));
-                $.MANY(() => {
-                    $.CONSUME(Comma);
-                    args.push($.SUBRULE2($.formulaWithIntersect));
-                });
-            });
-
-            return applyUnion(...args);
-        });
 
         $.RULE('referenceItem', () => $.OR([
             {ALT: () => $.SUBRULE($.cell)},
