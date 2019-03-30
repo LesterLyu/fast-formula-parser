@@ -60,7 +60,7 @@ class FormulaParser {
             if (this.functions[name])
                 return {value: this.functions[name](...args), ref: {}};
             else {
-                console.log(`Function ${name} is not implemented`)
+                // console.log(`Function ${name} is not implemented`)
                 return {value: 0, ref: {}};
             }
             // throw Error()
@@ -89,6 +89,11 @@ class FormulaParser {
         return supported.sort();
     }
 
+    /**
+     *
+     * @param inputText
+     * @returns {*}
+     */
     parse(inputText) {
         const lexResult = lexer.lex(inputText);
         this.parser.input = lexResult.tokens;

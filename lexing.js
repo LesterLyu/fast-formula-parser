@@ -283,7 +283,7 @@ const allTokens = [
     LtOp,
 ];
 
-const SelectLexer = new Lexer(allTokens);
+const SelectLexer = new Lexer(allTokens, { ensureOptimizations: true });
 
 allTokens.forEach(tokenType => {
     tokenVocabulary[tokenType.name] = tokenType

@@ -125,7 +125,7 @@ const MathFunctions = {
         return new Array(Math.max(minLength + 1 - result.length, 0)).join('0') + result;
     },
 
-    CEILING: (number, significance, mode = 0) => {
+    'CEILING.MATH': (number, significance, mode = 0) => {
         number = H.accept(number, [Types.NUMBER]);
         if (number >= 9.99E+307 || number <= -2.229E-308)
             throw FormulaError.NUM;
@@ -134,16 +134,7 @@ const MathFunctions = {
         significance = H.accept(significance, [Types.NUMBER]);
         mode = H.accept(mode, [Types.NUMBER]);
 
-        const precision = -Math.floor(Math.log(significance) / Math.log(10));
-        if (number >= 0) {
-            return exports.ROUND(Math.ceil(number / significance) * significance, precision);
-        } else {
-            if (mode === 0) {
-                return -exports.ROUND(Math.floor(Math.abs(number) / significance) * significance, precision);
-            } else {
-                return -exports.ROUND(Math.ceil(Math.abs(number) / significance) * significance, precision);
-            }
-        }
+
     },
 };
 

@@ -204,8 +204,8 @@ class Parser extends chevrotain.Parser {
         $.RULE('formula', () => $.OR9([
 
             {ALT: () => $.SUBRULE($.reservedName)},
+            {ALT: () => $.SUBRULE($.referenceWithoutInfix)},
             {ALT: () => $.SUBRULE($.paren)},
-            // {ALT: () => $.SUBRULE($.referenceWithoutInfix)},
             {ALT: () => $.SUBRULE($.constant)},
             {ALT: () => $.SUBRULE($.functionCall)},
             {ALT: () => $.SUBRULE($.constantArray)},
@@ -213,19 +213,24 @@ class Parser extends chevrotain.Parser {
 
         $.RULE('paren', () => $.OR9([
             {
-                GATE: $.BACKTRACK($.referenceWithoutInfix),
+                GATE: $.BACKTRACK($.refUnion),
                 ALT: () => {
                     // console.log('backtrack')
-                    return $.SUBRULE($.referenceWithoutInfix)
+                    return $.SUBRULE($.refUnion)
                 }
             },
             {
-                // GATE: $.BACKTRACK($.formulaParen),
-
                 ALT: () => {
                     return $.SUBRULE($.formulaParen)
                 }
             }]));
+
+        $.RULE('refUnion', () => {
+            $.CONSUME(OpenParen);
+            const result = $.SUBRULE($.union);
+            $.CONSUME(CloseParen);
+            return result;
+        });
 
         $.RULE('formulaParen', () => {
             // console.log('formula paren');
@@ -354,12 +359,8 @@ class Parser extends chevrotain.Parser {
 
 
         $.RULE('referenceWithoutInfix', () => $.OR([
-            {
-                ALT: () => {
-                    const val = getCell($.SUBRULE($.referenceItem));
-                    return val;
-                }
-            },
+
+            {ALT: () => getCell($.SUBRULE($.referenceItem))},
             {ALT: () => $.SUBRULE($.referenceFunctionCall)},
 
             {
@@ -378,15 +379,7 @@ class Parser extends chevrotain.Parser {
         ]));
 
         $.RULE('referenceFunctionCall', () => $.OR([
-            {
-                ALT: () => {
-                    // console.log('union')
-                    $.CONSUME(OpenParen);
-                    const result = $.SUBRULE($.union);
-                    $.CONSUME(CloseParen);
-                    return result;
-                }
-            },
+
             {
                 ALT: () => {
                     const refFunctionName = $.SUBRULE($.refFunctionName);
