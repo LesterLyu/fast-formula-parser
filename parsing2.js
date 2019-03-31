@@ -64,7 +64,7 @@ class Parser extends chevrotain.Parser {
             ignoredIssues: {
                 // referenceWithIntersect: {OR9: true},
                 // formula: {OR9: true},
-                paren: {OR9: true}
+                // paren: {OR9: true}
             }
         });
         const {getCell, getColumnRange, getRowRange, getRange, getVariable, callFunction} = context;
@@ -176,7 +176,7 @@ class Parser extends chevrotain.Parser {
                             const prevToken = $.LA(0);
                             const nextToken = $.LA(1);
                             //  This is the only place where the grammar is whitespace sensitive.
-                            return nextToken.startOffset > prevToken.endOffset;
+                            return nextToken.startOffset > prevToken.endOffset + 1;
                         },
                         DEF: () => {
                             refs.push($.SUBRULE3($.formulaWithRange));
@@ -198,7 +198,9 @@ class Parser extends chevrotain.Parser {
                 $.CONSUME(Colon);
                 refs.push($.SUBRULE2($.formula));
             });
-            return getRange(refs);
+            if (refs.length > 1)
+                return getRange(refs);
+            return ref1;
         });
 
         $.RULE('formula', () => $.OR9([
@@ -210,46 +212,23 @@ class Parser extends chevrotain.Parser {
             {ALT: () => $.SUBRULE($.constantArray)},
         ]));
 
-        $.RULE('paren', () => $.OR9([
-            {
-                GATE: $.BACKTRACK($.refUnion),
-                ALT: () => {
-                    // console.log('backtracked')
-                    return $.SUBRULE($.refUnion)
-                }
-            },
-            {
-                ALT: () => {
-                    return $.SUBRULE($.formulaParen)
-                }
-            }
-        ]));
-
-        $.RULE('refUnion', () => {
+        $.RULE('paren', () => {
+            // formula paren or union paren
             $.CONSUME(OpenParen);
-            const result = $.SUBRULE($.union);
-            $.CONSUME(CloseParen);
-            return result;
-        });
-
-        $.RULE('union', () => {
-            // console.log('try union')
-            const args = [];
-            args.push($.SUBRULE($.formulaWithIntersect));
+            let result;
+            const refs = [];
+            refs.push($.SUBRULE($.formulaWithCompareOp));
             $.MANY(() => {
                 $.CONSUME(Comma);
-                args.push($.SUBRULE2($.formulaWithIntersect));
+                refs.push($.SUBRULE2($.formulaWithCompareOp));
             });
+            if (refs.length > 1)
+                result = applyUnion(...refs);
+            else
+                result = refs[0];
 
-            return applyUnion(...args);
-        });
-
-        $.RULE('formulaParen', () => {
-            // console.log('formula paren');
-            $.CONSUME(OpenParen);
-            const value = $.SUBRULE($.formulaWithCompareOp);
             $.CONSUME(CloseParen);
-            return value;
+            return result;
         });
 
         $.RULE('constantArray', () => {

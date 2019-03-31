@@ -57,9 +57,20 @@ const RefError = createToken({
     pattern: /#REF!/
 });
 
+const Name = createToken({
+    name: 'Name',
+    pattern: /[a-zA-Z_][a-zA-Z0-9_.?]*/
+});
+
+const Sheet = createToken({
+    name: 'Sheet',
+    pattern: /[A-Za-z_.\d\u007F-\uFFFF]+!/
+});
+
 const Cell = createToken({
     name: 'Cell',
-    pattern: /[$]?[A-Za-z]{1,3}[$]?[1-9][0-9]*/
+    pattern: /[$]?[A-Za-z]{1,3}[$]?[1-9][0-9]*/,
+    longer_alt: Name
 });
 
 // max column: XFD
@@ -73,19 +84,9 @@ const RangeRow = createToken({
     pattern: /[$]?[1-9][0-9]*:[$]?[1-9][0-9]*/
 });
 
-const Sheet = createToken({
-    name: 'Sheet',
-    pattern: /[A-Za-z_.\d\u007F-\uFFFF]+!/
-});
-
 const ReservedName = createToken({
     name: 'ReservedName',
     pattern: /_xlnm\.[a-zA-Z_]+/
-});
-
-const Name = createToken({
-    name: 'Name',
-    pattern: /[a-zA-Z_][a-zA-Z0-9_.?]*/
 });
 
 const Number = createToken({
@@ -96,11 +97,6 @@ const Number = createToken({
 const Boolean = createToken({
     name: 'Boolean',
     pattern: /TRUE|FALSE/i
-});
-
-const Array = createToken({
-    name: 'Array',
-    pattern: /{([\w,;\s]*)?}/
 });
 
 /**
@@ -245,8 +241,8 @@ const allTokens = [
     Function,
     FormulaError,
     RefError,
-    Cell,
     Sheet,
+    Cell,
     Boolean,
     Name,
     RangeColumn,
@@ -296,8 +292,12 @@ module.exports = {
         const lexingResult = SelectLexer.tokenize(inputText)
 
         if (lexingResult.errors.length > 0) {
-            console.error(lexingResult.errors)
-            throw Error("Sad Sad Panda, lexing errors detected")
+            const error = lexingResult.errors[0];
+            const line = error.line, column = error.column;
+            let msg = '\n' + inputText.split('\n')[line - 1] + '\n';
+            msg += Array(column - 1).fill(' ').join('') + '^\n';
+            error.message = msg + `Error at position ${line}:${column}\n` + error.message;
+            throw Error(error.message)
         }
 
         return lexingResult
