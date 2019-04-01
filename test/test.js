@@ -18,6 +18,8 @@ describe('All formulas', function () {
                 .replace(/""/g, '"');
             if (line.indexOf('[') === -1)
                 formulas.push(line);
+            // else
+            //     console.log(`not supported: ${line}`)
             // console.log(line)
         });
         lineReader.on('close', () => {

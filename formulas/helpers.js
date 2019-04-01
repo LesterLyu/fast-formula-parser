@@ -52,27 +52,36 @@ class FormulaHelpers {
 
     }
 
-    acceptNumber(obj) {
+    /**
+     *
+     * @param obj
+     * @param allowArray - if it is an array: {1,2,3}, will extract the first element
+     * @returns {number}
+     */
+    acceptNumber(obj, allowArray=true) {
         let number;
 
         if (typeof obj === 'number')
             number = obj;
+        // TRUE -> 1, FALSE -> 0
         else if (typeof obj === 'boolean')
             number = Number(obj);
+        // "123" -> 123
         else if (typeof obj === 'string') {
             number = Number(obj);
             if (isNaN(number))
                 throw FormulaError.VALUE;
         }
         else if (Array.isArray(obj)) {
+            if (!allowArray)
+                throw FormulaError.VALUE;
             if (obj[0].length === 1)
                 number = this.acceptNumber(obj[0][0]);
         }
         else {
-            throw Error('Unknown error in FormulaHelpers.acceptNumber')
+            throw Error('Unknown type in FormulaHelpers.acceptNumber')
         }
         return number;
-
     }
 
 

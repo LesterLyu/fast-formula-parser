@@ -1,5 +1,7 @@
 const FormulaError = require('../formulas/error');
 const {FormulaHelpers, Types} = require('../formulas/helpers');
+const {Prefix, Postfix, Infix, Operators} = require('../formulas/operators');
+
 class Utils {
 
     constructor(context) {
@@ -94,71 +96,30 @@ class Utils {
      */
     applyPrefix(prefixes, value) {
         // console.log('applyPrefix', prefixes, value);
-        value = this.extractRefValue(value);
-        value = FormulaHelpers.acceptNumber(value);
-
-        prefixes.forEach(prefix => {
-            if (prefix === '+') {
-
-            } else if (prefix === '-') {
-                value = -value;
-            } else {
-                throw new Error(`Unrecognized prefix: ${prefix}`);
-            }
-        });
-        return value;
-        // TO-DO if value is 1D or 2D array
+        const {val, isArray} = this.extractRefValue(value);
+        return Prefix.unaryOp(prefixes, val, isArray);
     }
 
     applyPostfix(value, postfix) {
-        value = this.extractRefValue(value);
-        value = FormulaHelpers.acceptNumber(value);
         // console.log('applyPostfix', value, postfix);
-        // TO-DO if value is 1D or 2D array
-        if (postfix === '%') {
-            return value / 100;
-        }
-        throw new Error(`Unrecognized postfix: ${postfix}`);
+        const {val, isArray} = this.extractRefValue(value);
+        return Postfix.percentOp(val, postfix, isArray);
     }
 
     applyInfix(value1, infix, value2) {
-        value1 = this.extractRefValue(value1);
-        value2 = this.extractRefValue(value2);
-        // infix that supports string
-        if (infix === '&') {
-            return '' + value1 + value2;
-        } else if (infix === '=') {
-            return value1 === value2;
-        } // TODO: all comparison operators should also support string
+        const res1 = this.extractRefValue(value1);
+        const val1 = res1.val, isArray1 = res1.isArray;
+        const res2 = this.extractRefValue(value2);
+        const val2 = res1.val, isArray2 = res2.isArray;
+        if (Operators.compareOp.includes(infix))
+            return Infix.compareOp(val1, infix, val2, isArray1, isArray2);
+        else if (Operators.concatOp.includes(infix))
+            return Infix.concatOp(val1, infix, val2, isArray1, isArray2);
+        else if (Operators.mathOp.includes(infix))
+            return Infix.mathOp(val1, infix, val2, isArray1, isArray2);
+        else
+            throw new Error(`Unrecognized infix: ${infix}`);
 
-        value1 = FormulaHelpers.acceptNumber(value1);
-        value2 = FormulaHelpers.acceptNumber(value2);
-        // console.log('applyInfix', value1, infix, value2)
-        // TO-DO if value is 1D or 2D array
-        switch (infix) {
-            case '^':
-                return value1 ** value2;
-            case '*':
-                return value1 * value2;
-            case '/':
-                return value1 / value2;
-            case '+':
-                return value1 + value2;
-            case '-':
-                return value1 - value2;
-            case '>':
-                return value1 > value2;
-            case '<':
-                return value1 < value2;
-            case '<>':
-                return value1 !== value2;
-            case '<=':
-                return value1 <= value2;
-            case '>=':
-                return value1 >= value2;
-            default:
-                throw new Error(`Unrecognized infix: ${infix}`);
-        }
     }
 
     applyIntersect(...params) {
@@ -201,13 +162,15 @@ class Utils {
      * Throw away the refs, and retrieve the value.
      */
     extractRefValue(obj) {
-        let res = obj;
+        let res = obj, isArray = false;
+        if (Array.isArray(res))
+            isArray = true;
         if (obj.ref) {
             // can be number or array
-            res = this.context.retrieveRef(obj);
+            return {val: this.context.retrieveRef(obj), isArray};
 
         }
-        return res;
+        return {val: res, isArray};
     }
 
     /**
