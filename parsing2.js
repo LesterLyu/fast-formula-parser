@@ -2,11 +2,8 @@ const lexer = require('./lexing');
 const chevrotain = require("chevrotain");
 const tokenVocabulary = lexer.tokenVocabulary;
 
-const {
-    parseCellAddress, parseColRange, parseRowRange,
-    toArray, toNumber, toString, toBoolean, toError,
-    applyPrefix, applyPostfix, applyInfix, applyIntersect, applyUnion
-} = require('./utils/utils');
+const Utils = require('./utils/utils');
+
 const {
     // IntersectOp,
     WhiteSpace,
@@ -68,6 +65,7 @@ class Parser extends chevrotain.Parser {
             }
         });
         const {getCell, getColumnRange, getRowRange, getRange, getVariable, callFunction} = context;
+        this.utils = new Utils(context);
         const $ = this;
 
         // Adopted from https://github.com/spreadsheetlab/XLParser/blob/master/src/XLParser/ExcelFormulaGrammar.cs
@@ -77,9 +75,9 @@ class Parser extends chevrotain.Parser {
             $.MANY(() => {
                 const infix = $.SUBRULE($.compareOp);
                 const value2 = $.SUBRULE2($.formulaWithConcatOp);
-                value = applyInfix(value, infix, value2);
+                value = this.utils.applyInfix(value, infix, value2);
             });
-            return value;
+            return getCell(value);
         });
 
         $.RULE('compareOp', () => $.OR([
@@ -97,7 +95,7 @@ class Parser extends chevrotain.Parser {
             $.MANY(() => {
                 const infix = $.CONSUME(ConcateOp).image;
                 const formula2 = $.SUBRULE2($.formulaWithBinaryOp);
-                value = applyInfix(value, infix, formula2);
+                value = this.utils.applyInfix(value, infix, formula2);
             });
             return value;
         });
@@ -108,7 +106,7 @@ class Parser extends chevrotain.Parser {
             $.MANY(() => {
                 const infix = $.SUBRULE($.plusMinusOp);
                 const formula2 = $.SUBRULE2($.formulaWithMulDivOp);
-                value = applyInfix(value, infix, formula2);
+                value = this.utils.applyInfix(value, infix, formula2);
             });
             return value;
         });
@@ -123,7 +121,7 @@ class Parser extends chevrotain.Parser {
             $.MANY(() => {
                 const infix = $.SUBRULE($.mulDivOp);
                 const formula2 = $.SUBRULE2($.formulaWithExOp);
-                value = applyInfix(value, infix, formula2);
+                value = this.utils.applyInfix(value, infix, formula2);
             });
             return value;
         });
@@ -138,7 +136,7 @@ class Parser extends chevrotain.Parser {
             $.MANY(() => {
                 const infix = $.CONSUME(ExOp).image;
                 const formula2 = $.SUBRULE2($.formulaWithPercentOp);
-                value = applyInfix(value, infix, formula2);
+                value = this.utils.applyInfix(value, infix, formula2);
             });
             return value;
         });
@@ -147,7 +145,7 @@ class Parser extends chevrotain.Parser {
             let value = $.SUBRULE($.formulaWithUnaryOp);
             $.OPTION(() => {
                 const postfix = $.CONSUME(PercentOp).image;
-                value = applyPostfix(value, postfix);
+                value = this.utils.applyPostfix(value, postfix);
             });
             return value;
         });
@@ -159,9 +157,10 @@ class Parser extends chevrotain.Parser {
                 prefixes.push($.SUBRULE($.plusMinusOp));
             });
             const formula = $.SUBRULE($.formulaWithIntersect);
-            if (prefixes.length > 0) return applyPrefix(prefixes, formula);
+            if (prefixes.length > 0) return this.utils.applyPrefix(prefixes, formula);
             return formula;
         });
+
 
         $.RULE('formulaWithIntersect', () => $.OR9([
             {
@@ -183,7 +182,7 @@ class Parser extends chevrotain.Parser {
                         }
                     });
                     if (refs.length > 1) {
-                        return applyIntersect(refs);
+                        return this.utils.applyIntersect(refs);
                     }
                     return ref1;
                 }
@@ -199,7 +198,7 @@ class Parser extends chevrotain.Parser {
                 refs.push($.SUBRULE2($.formula));
             });
             if (refs.length > 1)
-                return getRange(refs);
+                return this.utils.applyRange(refs);
             return ref1;
         });
 
@@ -223,7 +222,7 @@ class Parser extends chevrotain.Parser {
                 refs.push($.SUBRULE2($.formulaWithCompareOp));
             });
             if (refs.length > 1)
-                result = applyUnion(...refs);
+                result = this.utils.applyUnion(...refs);
             else
                 result = refs[0];
 
@@ -256,7 +255,7 @@ class Parser extends chevrotain.Parser {
 
             $.CONSUME(CloseCurlyParen);
 
-            return toArray(arr);
+            return this.utils.toArray(arr);
         });
 
         /**
@@ -266,26 +265,26 @@ class Parser extends chevrotain.Parser {
             {
                 ALT: () => {
                     const prefix = $.OPTION(() => $.SUBRULE($.plusMinusOp));
-                    const number = toNumber($.CONSUME(Number).image);
+                    const number =  this.utils.toNumber($.CONSUME(Number).image);
                     if (prefix)
-                        return applyPrefix([prefix], number);
+                        return this.utils.applyPrefix([prefix], number);
                     return number;
                 }
             }, {
                 ALT: () => {
-                    return toString($.CONSUME(String).image);
+                    return this.utils.toString($.CONSUME(String).image);
                 }
             }, {
                 ALT: () => {
-                    return toBoolean($.CONSUME(Boolean).image);
+                    return this.utils.toBoolean($.CONSUME(Boolean).image);
                 }
             }, {
                 ALT: () => {
-                    return toError($.CONSUME(FormulaError).image);
+                    return this.utils.toError($.CONSUME(FormulaError).image);
                 }
             }, {
                 ALT: () => {
-                    return toError($.CONSUME(RefError).image);
+                    return this.utils.toError($.CONSUME(RefError).image);
                 }
             },
         ]));
@@ -298,19 +297,19 @@ class Parser extends chevrotain.Parser {
         $.RULE('constant', () => $.OR([
             {
                 ALT: () => {
-                    return toNumber($.CONSUME(Number).image);
+                    return this.utils.toNumber($.CONSUME(Number).image);
                 }
             }, {
                 ALT: () => {
-                    return toString($.CONSUME(String).image);
+                    return this.utils.toString($.CONSUME(String).image);
                 }
             }, {
                 ALT: () => {
-                    return toBoolean($.CONSUME(Boolean).image);
+                    return this.utils.toBoolean($.CONSUME(Boolean).image);
                 }
             }, {
                 ALT: () => {
-                    return toError($.CONSUME(FormulaError).image);
+                    return this.utils.toError($.CONSUME(FormulaError).image);
                 }
             },
         ]));
@@ -351,7 +350,7 @@ class Parser extends chevrotain.Parser {
 
         $.RULE('referenceWithoutInfix', () => $.OR([
 
-            {ALT: () => getCell($.SUBRULE($.referenceItem))},
+            {ALT: () => ($.SUBRULE($.referenceItem))},
             {ALT: () => $.SUBRULE($.referenceFunctionCall)},
 
             {
@@ -361,8 +360,8 @@ class Parser extends chevrotain.Parser {
                     const sheetName = $.SUBRULE($.prefixName);
                     // console.log('sheetName', sheetName);
                     const referenceItem = $.SUBRULE2($.formulaWithRange);
-                    referenceItem.sheet = sheetName;
-                    return getCell(referenceItem);
+                    referenceItem.ref.sheet = sheetName;
+                    return (referenceItem);
                 }
             },
 
@@ -388,37 +387,19 @@ class Parser extends chevrotain.Parser {
         ]));
 
         $.RULE('referenceItem', () => $.OR([
-            {ALT: () => $.SUBRULE($.cell)},
-            {ALT: () => $.SUBRULE($.namedRange)},
-            {ALT: () => $.SUBRULE($.vRange)},
-            {ALT: () => $.SUBRULE($.hRange)},
-            {ALT: () => $.SUBRULE($.refError)},
+            {ALT: () => this.utils.parseCellAddress($.CONSUME(Cell).image)},
+            {ALT: () => getVariable($.CONSUME(Name).image)},
+            {ALT: () => this.utils.parseColRange($.CONSUME(RangeColumn).image)},
+            {ALT: () => this.utils.parseRowRange($.CONSUME(RangeRow).image)},
+            {ALT: () => this.utils.toError($.CONSUME(RefError).image)},
             // {ALT: () => $.SUBRULE($.udfFunctionCall)},
             // {ALT: () => $.SUBRULE($.structuredReference)},
         ]));
-
-        $.RULE('vRange', () => {
-            return getColumnRange(parseColRange($.CONSUME(RangeColumn).image));
-        });
-
-        $.RULE('hRange', () => {
-            return getRowRange(parseRowRange($.CONSUME(RangeRow).image));
-        });
-
-        $.RULE('cell', () => {
-            return parseCellAddress($.CONSUME(Cell).image);
-        });
-
-        $.RULE('namedRange', () => {
-            return getVariable($.CONSUME(Name).image);
-        });
 
         $.RULE('prefixName', () => $.OR([
             {ALT: () => $.CONSUME(Sheet).image.slice(0, -1)},
             {ALT: () => $.CONSUME(SheetQuoted).image.slice(1, -2)},
         ]));
-
-        $.RULE('refError', () => $.CONSUME(RefError).image);
 
         this.performSelfAnalysis();
     }

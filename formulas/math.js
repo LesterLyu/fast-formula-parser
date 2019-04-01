@@ -6,38 +6,33 @@ const H = FormulaHelpers;
 const MathFunctions = {
     ABS: number => {
         number = H.accept(number, [Types.NUMBER]);
-        const res = Math.abs(number);
-        return FormulaHelpers.checkResult(res);
+        return Math.abs(number);
     },
 
     ACOS: number => {
         number = H.accept(number, [Types.NUMBER]);
         if (number > 1 || number < -1)
             throw FormulaError.NUM;
-        const res = Math.acos(number);
-        return FormulaHelpers.checkResult(res);
+        return Math.acos(number);
     },
 
     ACOSH: number => {
         number = H.accept(number, [Types.NUMBER]);
         if (number < 1)
             throw FormulaError.NUM;
-        const res = Math.acosh(number);
-        return FormulaHelpers.checkResult(res);
+        return Math.acosh(number);
     },
 
     ACOT: number => {
         number = H.accept(number, [Types.NUMBER]);
-        const res = Math.PI / 2 - Math.atan(number);
-        return FormulaHelpers.checkResult(res);
+        return Math.PI / 2 - Math.atan(number);
     },
 
     ACOTH: number => {
         number = H.accept(number, [Types.NUMBER]);
         if (Math.abs(number) <= 1)
             throw FormulaError.NUM;
-        const res = Math.atanh(1 / number);
-        return FormulaHelpers.checkResult(res);
+        return Math.atanh(1 / number);
     },
 
     AGGREGATE: (functionNum, options, ref1, ...refs) => {
@@ -76,20 +71,17 @@ const MathFunctions = {
         number = H.accept(number, [Types.NUMBER]);
         if (number > 1 || number < -1)
             throw FormulaError.NUM;
-        const res = Math.asin(number);
-        return FormulaHelpers.checkResult(res);
+        return Math.asin(number);
     },
 
     ASINH: number => {
         number = H.accept(number, [Types.NUMBER]);
-        const res = Math.asinh(number);
-        return FormulaHelpers.checkResult(res);
+        return Math.asinh(number);
     },
 
     ATAN: number => {
         number = H.accept(number, [Types.NUMBER]);
-        const res = Math.atan(number);
-        return FormulaHelpers.checkResult(res);
+        return Math.atan(number);
     },
 
     ATAN2: (x, y) => {
@@ -97,16 +89,14 @@ const MathFunctions = {
         y = H.accept(y, [Types.NUMBER]);
         if (y === 0 && x === 0)
             throw FormulaError.DIV0;
-        const res = Math.atan2(y, x);
-        return FormulaHelpers.checkResult(res);
+        return Math.atan2(y, x);
     },
 
     ATANH: number => {
         number = H.accept(number, [Types.NUMBER]);
         if (Math.abs(number) > 1)
             throw FormulaError.NUM;
-        const res = Math.atanh(number);
-        return FormulaHelpers.checkResult(res);
+        return Math.atanh(number);
     },
 
     BASE: (number, radix, minLength = 0) => {

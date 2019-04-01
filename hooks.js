@@ -1,6 +1,7 @@
 const TextFormulas = require('./formulas/text');
 const MathFormulas = require('./formulas/math');
 const FormulaError = require('./formulas/error');
+const {FormulaHelpers} = require('./formulas/helpers');
 const {Parser} = require('./parsing2');
 const lexer = require('./lexing');
 
@@ -15,7 +16,7 @@ class FormulaParser {
             functions: {},
             variables: {},
             onCell: () => 0,
-            onRange: () => [],
+            onRange: () => [[0]],
         }, config);
 
         this.variables = config.variables;
@@ -23,28 +24,24 @@ class FormulaParser {
         this.onRange = config.onRange;
         this.onCell = config.onCell;
 
-        // uses ES5 syntax here... I don't want to compile the code...
-        this.getCell = (cell) => {
-            // console.log('get cell', JSON.stringify(cell));
-            return {ref: cell, value: this.onCell(cell)};
+        // uses ES5 syntax here... I don't want to transpile the code...
+        this.getCell = (ref) => {
+            // console.log('get cell', JSON.stringify(ref));
+            return this.onCell(ref);
         };
 
-        this.getColumnRange = (range) => {
-            // console.log('get col range', range);
-            return {ref: range, value: this.onRange(range)}
-        };
+        // this.getColumnRange = (range) => {
+        //     // console.log('get col range', range);
+        //     return {ref: range, value: this.onRange(range)}
+        // };
+        //
+        // this.getRowRange = (range) => {
+        //     // console.log('get row range', range);
+        //     return {ref: range, value: this.onRange(range)}
+        // };
 
-        this.getRowRange = (range) => {
-            // console.log('get row range', range);
-            return {ref: range, value: this.onRange(range)}
-        };
-
-        this.getRange = (refs) => {
-            // TODO: Parse range into 1 to 1.
-            // console.log('get range', refs);
-            // const ref = {from: refs[0], to: refs[1]};
-            // return {ref, value: this.onRange(ref)}
-            return {value: []}
+        this.getRange = (ref) => {
+            return this.onRange(ref)
         };
 
         this.getVariable = (name) => {
@@ -59,14 +56,27 @@ class FormulaParser {
             name = name.toUpperCase();
             // console.log('callFunction', name, args)
             // TODO: handle ref functions
-            if (this.functions[name])
-                return {value: this.functions[name](...args), ref: {}};
+            if (this.functions[name]) {
+                const res = (this.functions[name](...args));
+                return {value: res, ref: {}};
+            }
+
             else {
                 // console.log(`Function ${name} is not implemented`)
                 return {value: 0, ref: {}};
             }
             // throw Error()
             // return
+        };
+
+        this.retrieveRef = value => {
+            if (FormulaHelpers.isRangeRef(value)) {
+                return this.getRange(value.ref);
+            }
+            if (FormulaHelpers.isCellRef(value)) {
+                return this.getCell(value.ref)
+            }
+            return value;
         };
 
         this.parser = new Parser(this);

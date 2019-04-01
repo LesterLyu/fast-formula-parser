@@ -25,10 +25,16 @@ class FormulaHelpers {
         };
     }
 
-    checkResult(result) {
-        if (isNaN(result)) {
-            throw FormulaError.VALUE;
+    checkFunctionResult(result, ) {
+        // number
+        if (typeof result === 'number') {
+            if (isNaN(result)) {
+                throw FormulaError.VALUE;
+            }
         }
+        // string: OK
+        // TODO...
+
         return result;
     }
 
@@ -40,8 +46,31 @@ class FormulaHelpers {
      */
     acceptMany(param, types, flatten=true) {
 
+    }
+
+    acceptNumber(obj) {
+        let number;
+
+        if (typeof obj === 'number')
+            number = obj;
+        else if (typeof obj === 'boolean')
+            number = Number(obj);
+        else if (typeof obj === 'string') {
+            number = Number(obj);
+            if (isNaN(number))
+                throw FormulaError;
+        }
+        else if (Array.isArray(obj)) {
+            if (obj[0].length === 1)
+                number = this.acceptNumber(obj[0][0]);
+        }
+        else {
+            throw Error('Unknown error in FormulaHelpers.acceptNumber')
+        }
+        return number;
 
     }
+
 
     /**
      * Check if the param valid, return the parsed param.
