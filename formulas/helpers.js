@@ -48,6 +48,10 @@ class FormulaHelpers {
 
     }
 
+    acceptString(obj) {
+
+    }
+
     acceptNumber(obj) {
         let number;
 
@@ -58,7 +62,7 @@ class FormulaHelpers {
         else if (typeof obj === 'string') {
             number = Number(obj);
             if (isNaN(number))
-                throw FormulaError;
+                throw FormulaError.VALUE;
         }
         else if (Array.isArray(obj)) {
             if (obj[0].length === 1)

@@ -124,6 +124,13 @@ class Utils {
     applyInfix(value1, infix, value2) {
         value1 = this.extractRefValue(value1);
         value2 = this.extractRefValue(value2);
+        // infix that supports string
+        if (infix === '&') {
+            return '' + value1 + value2;
+        } else if (infix === '=') {
+            return value1 === value2;
+        } // TODO: all comparison operators should also support string
+
         value1 = FormulaHelpers.acceptNumber(value1);
         value2 = FormulaHelpers.acceptNumber(value2);
         // console.log('applyInfix', value1, infix, value2)
@@ -139,14 +146,10 @@ class Utils {
                 return value1 + value2;
             case '-':
                 return value1 - value2;
-            case '&':
-                return '' + value1 + value2;
             case '>':
                 return value1 > value2;
             case '<':
                 return value1 < value2;
-            case '=':
-                return value1 === value2;
             case '<>':
                 return value1 !== value2;
             case '<=':
