@@ -126,6 +126,21 @@ const MathFunctions = {
 
 
     },
+
+    ROUND: (number, digits) => {
+        number = H.accept(number, [Types.NUMBER]);
+        digits = H.accept(digits, [Types.NUMBER]);
+
+        const multiplier = Math.pow(10, Math.abs(digits));
+        const sign = number > 0 ? 1 : -1;
+        if (digits > 0) {
+            return sign * Math.round(Math.abs(number) * multiplier) / multiplier;
+        } else if (digits === 0) {
+            return sign * Math.round(Math.abs(number));
+        } else {
+            return sign * Math.round(Math.abs(number) / multiplier) * multiplier;
+        }
+    },
 };
 
 
