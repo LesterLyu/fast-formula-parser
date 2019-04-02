@@ -123,6 +123,7 @@ class FormulaParser {
             if (isNaN(result)) {
                 throw FormulaError.VALUE;
             }
+            result += 0; // make -0 to 0
         }
         else if (type === 'boolean')
             result = result ? 'TRUE' : 'FALSE';
