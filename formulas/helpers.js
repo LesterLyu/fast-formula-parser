@@ -25,7 +25,7 @@ class FormulaHelpers {
         };
     }
 
-    checkFunctionResult(result,) {
+    checkFunctionResult(result) {
         // number
         if (typeof result === 'number') {
             if (isNaN(result)) {
