@@ -66,10 +66,12 @@ class FormulaParser {
 
             if (this.functions[name]) {
                 const res = (this.functions[name](...args));
-
+                if (res === undefined) {
+                    // console.log(`Function ${name} is not implemented`)
+                    return {value: 0, ref: {}};
+                }
                 return FormulaHelpers.checkFunctionResult(res);
             }
-
             else {
                 // console.log(`Function ${name} is not implemented`)
                 return {value: 0, ref: {}};
@@ -124,13 +126,11 @@ class FormulaParser {
         }
         else if (type === 'boolean')
             return result ? 'TRUE' : 'FALSE';
-        else if (type === 'string')
-            return result;
-        else if (result.ref && !result.ref.from) {
-            // single cell reference
-            return this.retrieveRef(result).val;
-        }
         else if (type === 'object') {
+            if (result.ref && !result.ref.from) {
+                // single cell reference
+                return this.retrieveRef(result).val;
+            }
             // array, range reference, union collections
             throw FormulaError.VALUE;
         }
