@@ -48,8 +48,13 @@ class FormulaHelpers {
 
     }
 
-    acceptString(obj) {
-
+    /**
+     * Flatten an array
+     * @param {Array} arr1
+     * @returns {*}
+     */
+    flattenDeep(arr1) {
+        return arr1.reduce((acc, val) => Array.isArray(val) ? acc.concat(this.flattenDeep(val)) : acc.concat(val), []);
     }
 
     /**
@@ -88,10 +93,9 @@ class FormulaHelpers {
      * @param {*} param
      * @param {Array} types - The expected type
      * @param [optional]
-     * @param expectSingle
      * @return {string|number|boolean|{}}
      */
-    accept(param, types, optional = false, expectSingle = true) {
+    accept(param, types, optional = false) {
         const isArray = param.isArray;
         param = param.value;
         if ((param === undefined || param === null) && !optional) {
@@ -102,37 +106,35 @@ class FormulaHelpers {
             return undefined;
 
         // change expectSingle to false when needed
-        if (types.includes(Types.ARRAY)) {
-            expectSingle = false;
+        if (types.includes(Types.ARRAY) && Array.isArray(param)) {
+            // flatten the array
+            return this.flattenDeep(param);
         }
 
         // the only possible types for expectSingle=true are: string, boolean, number;
         // If array encountered, extract the first element.
-        if (expectSingle) {
-            // extract first element from array
-            if (isArray) {
-                param = param[0][0];
-            }
-            const paramType = this.type(param);
-            types.forEach(type => {
-                if (type === Types.STRING) {
-                    if (paramType === Types.BOOLEAN)
-                        param = param ? 'TRUE' : 'FALSE';
-                    else
-                        param = `${param}`
-                } else if (type === Types.BOOLEAN) {
-                    if (paramType === Types.STRING)
-                        throw FormulaError.VALUE;
-                    if (paramType === Types.NUMBER)
-                        param = Boolean(param);
-                } else if (type === Types.NUMBER) {
-                    param = this.acceptNumber(param, false);
-                }
-            });
-            return param;
-        } else {
-            return param;
+        // extract first element from array
+        if (isArray) {
+            param = param[0][0];
         }
+        const paramType = this.type(param);
+        types.forEach(type => {
+            if (type === Types.STRING) {
+                if (paramType === Types.BOOLEAN)
+                    param = param ? 'TRUE' : 'FALSE';
+                else
+                    param = `${param}`
+            } else if (type === Types.BOOLEAN) {
+                if (paramType === Types.STRING)
+                    throw FormulaError.VALUE;
+                if (paramType === Types.NUMBER)
+                    param = Boolean(param);
+            } else if (type === Types.NUMBER) {
+                param = this.acceptNumber(param, false);
+            }
+        });
+        return param;
+
     }
 
     type(variable) {
