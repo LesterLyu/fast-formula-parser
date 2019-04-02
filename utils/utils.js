@@ -24,7 +24,7 @@ class Utils {
     /**
      * Parse the cell address only.
      * @param {string} cellAddress
-     * @return {{ref: {col: (*|number), address: string, isColAbsolute: boolean, isRowAbsolute: boolean, row: number}, value: null}}
+     * @return {{ref: {col: number, address: string, row: number}}}
      */
     parseCellAddress(cellAddress) {
         const res = cellAddress.match(/([$]?)([A-Za-z]{1,3})([$]?)([1-9][0-9]*)/);
@@ -32,12 +32,9 @@ class Utils {
         return {
             ref: {
                 address: res[0],
-                isRowAbsolute: res[1].length !== 0,
                 col: this.columnNameToNumber(res[2]),
-                isColAbsolute: res[3].length !== 0,
                 row: +res[4]
             },
-            value: undefined // `undefined` means the value is not yet retrieved.
         };
     }
 
@@ -49,15 +46,11 @@ class Utils {
                 from: {
                     address: res[2],
                     col: this.columnNameToNumber(res[2]),
-                    isColAbsolute: res[1].length !== 0,
-                    isRowAbsolute: null,
                     row: null
                 },
                 to: {
                     address: res[4],
                     col: this.columnNameToNumber(res[4]),
-                    isColAbsolute: res[3].length !== 0,
-                    isRowAbsolute: null,
                     row: null
                 }
             }
@@ -72,15 +65,11 @@ class Utils {
                 from: {
                     address: res[2],
                     col: null,
-                    isColAbsolute: null,
-                    isRowAbsolute: res[1].length !== 0,
                     row: +res[2],
                 },
                 to: {
                     address: res[4],
                     col: null,
-                    isColAbsolute: null,
-                    isRowAbsolute: res[3].length !== 0,
                     row: +res[4]
                 }
             }
@@ -122,14 +111,89 @@ class Utils {
 
     }
 
-    applyIntersect(...params) {
-        console.log('applyIntersect', params)
-        return [];
+    applyIntersect(refs) {
+        console.log('applyIntersect', refs);
+        // a intersection will keep track of references, value won't be retrieved here.
+        let maxRow, maxCol, minRow, minCol, sheet, res; // index start from 1
+        // first time setup
+        const ref = refs.shift().ref;
+        sheet = ref.sheet;
+        if (!ref.from) {
+            // cell ref
+            maxRow = minRow = ref.row;
+            maxCol = minCol = ref.col;
+        }
+        else {
+            // range ref
+            // update
+            maxRow = Math.max(ref.from.row, ref.to.row);
+            minRow = Math.min(ref.from.row, ref.to.row);
+            maxCol = Math.max(ref.from.col, ref.to.col);
+            minCol = Math.min(ref.from.col, ref.to.col);
+        }
+
+        refs.forEach(ref => {
+            ref = ref.ref;
+            if (!ref.from) {
+                // cell ref
+                if (ref.row > maxRow || ref.row < minRow || ref.col > maxCol || ref.col < minCol
+                    || sheet !== ref.sheet) {
+                    throw FormulaError.NULL;
+                }
+                maxRow = minRow = ref.row;
+                maxCol = minCol = ref.col;
+            }
+            else {
+                // range ref
+                const refMaxRow = Math.max(ref.from.row, ref.to.row);
+                const refMinRow = Math.min(ref.from.row, ref.to.row);
+                const refMaxCol = Math.max(ref.from.col, ref.to.col);
+                const refMinCol = Math.min(ref.from.col, ref.to.col);
+                if (refMinRow > maxRow || refMaxRow < minRow || refMinCol > maxCol || refMaxCol < minCol
+                    || sheet !== ref.sheet) {
+                    throw FormulaError.NULL;
+                }
+                // update
+                maxRow = Math.min(maxRow, refMaxRow);
+                minRow = Math.max(minRow, refMinRow);
+                maxCol = Math.min(maxCol, refMaxCol);
+                minCol = Math.max(minCol, refMinCol);
+            }
+        });
+        // check if the ref can be reduced to cell reference
+        if (maxRow === minRow && maxCol === minCol) {
+            res = {
+                ref: {
+                    sheet,
+                    row: maxRow,
+                    col: maxCol
+                }
+            }
+        }
+        else {
+            res = {
+                ref: {
+                    sheet,
+                    from: {row: minRow, col: minCol},
+                    to: {row: maxRow, col: maxCol}
+                }
+            };
+        }
+
+        if (!res.ref.sheet)
+            delete res.ref.sheet;
+        return res;
     }
 
-    applyUnion(...params) {
-        console.log('applyUnion', params)
-        return params;
+    applyUnion(refs) {
+        const unions = [];
+        // a union won't keep references
+        refs.forEach(ref => {
+            unions.push(this.extractRefValue(ref).val);
+        });
+
+        console.log('applyUnion', unions);
+        return {collections: unions};
     }
 
     /**

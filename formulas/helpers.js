@@ -119,7 +119,7 @@ class FormulaHelpers {
                     if (paramType === Types.BOOLEAN)
                         param = param ? 'TRUE' : 'FALSE';
                     else
-                     param = `${param}`
+                        param = `${param}`
                 } else if (type === Types.BOOLEAN) {
                     if (paramType === Types.STRING)
                         throw FormulaError.VALUE;

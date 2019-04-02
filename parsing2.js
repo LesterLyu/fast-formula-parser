@@ -222,7 +222,7 @@ class Parser extends chevrotain.Parser {
                 refs.push($.SUBRULE2($.formulaWithCompareOp));
             });
             if (refs.length > 1)
-                result = this.utils.applyUnion(...refs);
+                result = this.utils.applyUnion(refs);
             else
                 result = refs[0];
 
