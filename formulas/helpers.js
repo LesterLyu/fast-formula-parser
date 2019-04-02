@@ -113,6 +113,9 @@ class FormulaHelpers {
         } else if (param === undefined || param === null)
             return undefined;
 
+        if (typeof param !== "object")
+            return param;
+
         const isArray = param.isArray;
         param = param.value;
         // change expectSingle to false when needed
