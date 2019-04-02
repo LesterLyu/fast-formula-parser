@@ -110,7 +110,7 @@ class Utils {
         const res1 = this.extractRefValue(value1);
         const val1 = res1.val, isArray1 = res1.isArray;
         const res2 = this.extractRefValue(value2);
-        const val2 = res1.val, isArray2 = res2.isArray;
+        const val2 = res2.val, isArray2 = res2.isArray;
         if (Operators.compareOp.includes(infix))
             return Infix.compareOp(val1, infix, val2, isArray1, isArray2);
         else if (Operators.concatOp.includes(infix))
@@ -123,19 +123,19 @@ class Utils {
     }
 
     applyIntersect(...params) {
-        // console.log('applyIntersect', params)
+        console.log('applyIntersect', params)
         return [];
     }
 
     applyUnion(...params) {
-        // console.log('applyUnion', params)
-        return [];
+        console.log('applyUnion', params)
+        return params;
     }
 
     /**
      * Apply multiple references, e.g. A1:B3:C8:.....
      * @param refs
-     * @return {{ref: {sheet: string, from: {col: number, row: number}, to: {col: number, row: number}}}}
+     * @return {{ref: {from: {col: number, row: number}, to: {col: number, row: number}}}}
      */
     applyRange(refs) {
         let maxRow = -1, maxCol = -1, minRow = 1048577, minCol = 1048577;

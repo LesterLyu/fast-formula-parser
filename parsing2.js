@@ -65,7 +65,7 @@ class Parser extends chevrotain.Parser {
             }
         });
         const {getCell, getColumnRange, getRowRange, getRange, getVariable, callFunction} = context;
-        this.utils = new Utils(context);
+        this.utils = context.utils;
         const $ = this;
 
         // Adopted from https://github.com/spreadsheetlab/XLParser/blob/master/src/XLParser/ExcelFormulaGrammar.cs
@@ -77,7 +77,7 @@ class Parser extends chevrotain.Parser {
                 const value2 = $.SUBRULE2($.formulaWithConcatOp);
                 value = this.utils.applyInfix(value, infix, value2);
             });
-            return getCell(value);
+            return value;
         });
 
         $.RULE('compareOp', () => $.OR([
@@ -319,7 +319,7 @@ class Parser extends chevrotain.Parser {
                 ALT: () => {
                     const functionName = $.CONSUME(Function).image.slice(0, -1);
                     // console.log('functionName', functionName);
-                    const args = $.OPTION(() => $.SUBRULE($.arguments));
+                    const args = $.SUBRULE($.arguments);
                     $.CONSUME(CloseParen);
                     return callFunction(functionName, args);
                 }

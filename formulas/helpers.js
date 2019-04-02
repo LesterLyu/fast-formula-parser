@@ -25,7 +25,7 @@ class FormulaHelpers {
         };
     }
 
-    checkFunctionResult(result, ) {
+    checkFunctionResult(result,) {
         // number
         if (typeof result === 'number') {
             if (isNaN(result)) {
@@ -44,7 +44,7 @@ class FormulaHelpers {
      * @param types - Types can only be ARRAY or RANGE_REF
      * @param flatten
      */
-    acceptMany(param, types, flatten=true) {
+    acceptMany(param, types, flatten = true) {
 
     }
 
@@ -58,7 +58,7 @@ class FormulaHelpers {
      * @param allowArray - if it is an array: {1,2,3}, will extract the first element
      * @returns {number}
      */
-    acceptNumber(obj, allowArray=true) {
+    acceptNumber(obj, allowArray = true) {
         let number;
 
         if (typeof obj === 'number')
@@ -71,14 +71,12 @@ class FormulaHelpers {
             number = Number(obj);
             if (isNaN(number))
                 throw FormulaError.VALUE;
-        }
-        else if (Array.isArray(obj)) {
+        } else if (Array.isArray(obj)) {
             if (!allowArray)
                 throw FormulaError.VALUE;
             if (obj[0].length === 1)
                 number = this.acceptNumber(obj[0][0]);
-        }
-        else {
+        } else {
             throw Error('Unknown type in FormulaHelpers.acceptNumber')
         }
         return number;
@@ -90,11 +88,12 @@ class FormulaHelpers {
      * @param {*} param
      * @param {Array} types - The expected type
      * @param [optional]
-     * @param [expectSingle] - If the param is only one value
-     * @param {boolean} [extractRef]
+     * @param expectSingle
      * @return {string|number|boolean|{}}
      */
-    accept(param, types, optional=false, expectSingle=true, extractRef=true) {
+    accept(param, types, optional = false, expectSingle = true) {
+        const isArray = param.isArray;
+        param = param.value;
         if ((param === undefined || param === null) && !optional) {
             const args = [];
             types.forEach(type => args.push(ReversedTypes[type]));
@@ -103,47 +102,36 @@ class FormulaHelpers {
             return undefined;
 
         // change expectSingle to false when needed
-        if (types.includes(Types.CELL_REF) || types.includes(Types.RANGE_REF) || types.includes(Types.ARRAY)) {
+        if (types.includes(Types.ARRAY)) {
             expectSingle = false;
         }
 
         // the only possible types for expectSingle=true are: string, boolean, number;
-        // If array or range ref encountered, extract the first element.
+        // If array encountered, extract the first element.
         if (expectSingle) {
-            // extract first element from array, except reference a row of elements, e.g. A1:C1
-            // e.g. A1:A5
-            if (this.isRangeRef(param)) {
-                if (param.ref.from.col === param.ref.to.col)
-                    param = param.value[0][0];
-                else
-                    // e.g. A1:C3, A1:C1
-                    throw FormulaError.VALUE;
-            } else if (this.isCellRef(param)) {
-                param = param.value;
-            } else if (Array.isArray(param)) {
+            // extract first element from array
+            if (isArray) {
                 param = param[0][0];
             }
             const paramType = this.type(param);
             types.forEach(type => {
                 if (type === Types.STRING) {
-                    param = `${param}`
-                }
-                else if (type === Types.BOOLEAN) {
+                    if (paramType === Types.BOOLEAN)
+                        param = param ? 'TRUE' : 'FALSE';
+                    else
+                     param = `${param}`
+                } else if (type === Types.BOOLEAN) {
                     if (paramType === Types.STRING)
                         throw FormulaError.VALUE;
                     if (paramType === Types.NUMBER)
                         param = Boolean(param);
-                }
-                else if (type === Types.NUMBER) {
-                    if (paramType === Types.STRING)
-                        throw FormulaError.VALUE;
-                    if (paramType === Types.BOOLEAN)
-                        param = Number(param);
+                } else if (type === Types.NUMBER) {
+                    param = this.acceptNumber(param, false);
                 }
             });
             return param;
         } else {
-            throw FormulaError.NOT_IMPLEMENTED();
+            return param;
         }
     }
 

@@ -4,6 +4,7 @@ const FormulaError = require('./formulas/error');
 const {FormulaHelpers} = require('./formulas/helpers');
 const {Parser} = require('./parsing2');
 const lexer = require('./lexing');
+const Utils = require('./utils/utils');
 
 class FormulaParser {
 
@@ -12,6 +13,7 @@ class FormulaParser {
      * @param {{functions: {}, variables: {}, onCell: function, onRange: function}} [config]
      */
     constructor(config) {
+        this.utils = new Utils(this);
         config = Object.assign({
             functions: {},
             variables: {},
@@ -54,8 +56,14 @@ class FormulaParser {
 
         this.callFunction = (name, args) => {
             name = name.toUpperCase();
+            // retrieve reference
+            args = args.map(arg => {
+                const res = this.utils.extractRefValue(arg);
+                return {value: res.val, isArray: res.isArray};
+            });
+
             // console.log('callFunction', name, args)
-            // TODO: handle ref functions
+
             if (this.functions[name]) {
                 const res = (this.functions[name](...args));
                 return {value: res, ref: {}};
@@ -79,7 +87,7 @@ class FormulaParser {
             return value;
         };
 
-        this.parser = new Parser(this);
+        this.parser = new Parser(this, this.utils);
     }
 
     supportedFunctions() {
