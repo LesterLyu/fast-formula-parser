@@ -67,7 +67,7 @@ class FormulaParser {
             if (this.functions[name]) {
                 const res = (this.functions[name](...args));
 
-                return {value: FormulaHelpers.checkFunctionResult(res), ref: {}};
+                return FormulaHelpers.checkFunctionResult(res);
             }
 
             else {

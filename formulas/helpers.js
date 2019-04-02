@@ -106,8 +106,6 @@ class FormulaHelpers {
      * @return {string|number|boolean|{}}
      */
     accept(param, types, optional = false) {
-        const isArray = param.isArray;
-        param = param.value;
         if ((param === undefined || param === null) && !optional) {
             const args = [];
             types.forEach(type => args.push(ReversedTypes[type]));
@@ -115,6 +113,8 @@ class FormulaHelpers {
         } else if (param === undefined || param === null)
             return undefined;
 
+        const isArray = param.isArray;
+        param = param.value;
         // change expectSingle to false when needed
         if (types.includes(Types.ARRAY) && (Array.isArray(param) || param.collections)) {
             // flatten the array
