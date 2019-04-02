@@ -121,7 +121,12 @@ class FormulaParser {
             if (isNaN(result)) {
                 throw FormulaError.VALUE;
             }
-        } else if (result.ref && !result.ref.from) {
+        }
+        else if (type === 'boolean')
+            return result ? 'TRUE' : 'FALSE';
+        else if (type === 'string')
+            return result;
+        else if (result.ref && !result.ref.from) {
             // single cell reference
             return this.retrieveRef(result).val;
         }
