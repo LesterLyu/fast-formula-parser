@@ -7,6 +7,7 @@ const Types = {
     STRING: 3,
     RANGE_REF: 4, // can be 'A:C' or '1:4', not only 'A1:C3'
     CELL_REF: 5,
+    COLLECTIONS: 6, // Unions of references
 };
 
 const ReversedTypes = {};
@@ -26,26 +27,14 @@ class FormulaHelpers {
     }
 
     checkFunctionResult(result) {
+        const type = typeof result;
         // number
-        if (typeof result === 'number') {
+        if (type === 'number') {
             if (isNaN(result)) {
                 throw FormulaError.VALUE;
             }
         }
-        // string: OK
-        // TODO...
-
         return result;
-    }
-
-    /**
-     *
-     * @param param
-     * @param types - Types can only be ARRAY or RANGE_REF
-     * @param flatten
-     */
-    acceptMany(param, types, flatten = true) {
-
     }
 
     /**
@@ -87,11 +76,32 @@ class FormulaHelpers {
         return number;
     }
 
+    /**
+     * Check many params.
+     * @see {@link FormulaHelpers.accept}
+     * @param {Array} params
+     * @param types
+     */
+    acceptMany(params, types) {
+        if (types.length !== params.length)
+            throw Error('FormulaHelpers.acceptMany: params length should match types.');
+        const res = [];
+        for (let i = 0; i < params.length; i++) {
+            res.push(this.accept(params[i], types[i]))
+        }
+      return res;
+    }
 
     /**
      * Check if the param valid, return the parsed param.
      * @param {*} param
-     * @param {Array} types - The expected type
+     * @param {number[]} types - The expected type
+     *           NUMBER: Expect a single number,
+     *           ARRAY: Expect an flatten array,
+     *           BOOLEAN: Expect a single boolean,
+     *           STRING: Expect a single string,
+     *           COLLECTIONS: Expect a Array of the above types
+     *              e.g. [NUMBER, ARRAY, STRING]. The collection is not a flatted array.
      * @param [optional]
      * @return {string|number|boolean|{}}
      */
@@ -106,10 +116,13 @@ class FormulaHelpers {
             return undefined;
 
         // change expectSingle to false when needed
-        if (types.includes(Types.ARRAY) && Array.isArray(param)) {
+        if (types.includes(Types.ARRAY) && (Array.isArray(param) || param.collections)) {
             // flatten the array
+            if (param.collections)
+                param = param.collections;
             return this.flattenDeep(param);
-        }
+        } else if (types.includes(Types.COLLECTIONS))
+            return param;
 
         // the only possible types for expectSingle=true are: string, boolean, number;
         // If array encountered, extract the first element.
@@ -148,7 +161,8 @@ class FormulaHelpers {
                 } else {
                     type = Types.CELL_REF;
                 }
-            }
+            } else if (variable.collections)
+                type = Types.COLLECTIONS;
         }
         return type;
     }

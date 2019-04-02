@@ -110,6 +110,24 @@ class FormulaParser {
         return supported.sort();
     }
 
+    checkFormulaResult(result) {
+        const type = typeof result;
+        // number
+        if (type === 'number') {
+            if (isNaN(result)) {
+                throw FormulaError.VALUE;
+            }
+        } else if (result.ref && !result.ref.from) {
+            // single cell reference
+            return this.retrieveRef(result).val;
+        }
+        else if (type === 'object') {
+            // array, range reference, union collections
+            throw FormulaError.VALUE;
+        }
+        return result;
+    }
+
     /**
      *
      * @param inputText
@@ -121,6 +139,7 @@ class FormulaParser {
         let res;
         try {
             res = this.parser.formulaWithCompareOp();
+            res = this.checkFormulaResult(res);
         } catch (e) {
             // console.log(e);
             if (e instanceof FormulaError)

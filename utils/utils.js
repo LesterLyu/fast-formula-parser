@@ -202,7 +202,7 @@ class Utils {
      * @return {{ref: {from: {col: number, row: number}, to: {col: number, row: number}}}}
      */
     applyRange(refs) {
-        let maxRow = -1, maxCol = -1, minRow = 1048577, minCol = 1048577;
+        let res, maxRow = -1, maxCol = -1, minRow = 1048577, minCol = 1048577;
         refs.forEach(ref => {
             ref = ref.ref;
             if (ref.row > maxRow)
@@ -214,12 +214,22 @@ class Utils {
             if (ref.col < minCol)
                 minCol = ref.col;
         });
-        return {
-            ref: {
-                from: {row: minRow, col: minCol},
-                to: {row: maxRow, col: maxCol}
+        if (maxRow === minRow && maxCol === minCol) {
+            res = {
+                ref: {
+                    row: maxRow,
+                    col: maxCol
+                }
             }
-        };
+        } else {
+            res = {
+                ref: {
+                    from: {row: minRow, col: minCol},
+                    to: {row: maxRow, col: maxCol}
+                }
+            };
+        }
+        return res;
     }
 
     /**
