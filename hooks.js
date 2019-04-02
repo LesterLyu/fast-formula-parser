@@ -2,7 +2,7 @@ const TextFormulas = require('./formulas/text');
 const MathFormulas = require('./formulas/math');
 const FormulaError = require('./formulas/error');
 const {FormulaHelpers} = require('./formulas/helpers');
-const {Parser} = require('./parsing2');
+const {Parser, allTokens} = require('./parsing2');
 const lexer = require('./lexing');
 const Utils = require('./utils/utils');
 
@@ -89,6 +89,10 @@ class FormulaParser {
         };
 
         this.parser = new Parser(this, this.utils);
+    }
+
+    static get allTokens() {
+        return allTokens;
     }
 
     supportedFunctions() {
