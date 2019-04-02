@@ -22,8 +22,9 @@ let input = '-1 + 2 * (5 + 10) ^ 3 / 2% + (A1 - (A1:A2) +A2)';
 // input = 'B5*IF(AX5="H",3,IF(AX5="M",2,IF(AX5="L",1," ")))';
 // input = 'sheet!A1 + 1'
 // input = 'SUM((Exercises 4, 5 and 6!$H$2:$H$11-Exercise 7!B2:B11)/Exercise 7!B2:B11)'
-input = 'A1';
-// console.log(JSON.stringify(lexing.lex(input), null, 1));
+// input = 'SUM(Jan:Dec!AD12)';
+
+console.log(JSON.stringify(lexing.lex(input), null, 1));
 console.log(parser.parse(input));
 //
 // for (let i = 0; i < 3000; i++) {

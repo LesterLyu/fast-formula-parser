@@ -1,6 +1,7 @@
 const FormulaError = require('../formulas/error');
 const {FormulaHelpers, Types} = require('../formulas/helpers');
 const {Prefix, Postfix, Infix, Operators} = require('../formulas/operators');
+const MAX_ROW = 1048576, MAX_COLUMN = 16384;
 
 class Utils {
 
@@ -38,39 +39,56 @@ class Utils {
         };
     }
 
-    parseColRange(colRange) {
-        const res = colRange.match(/([$]?)([A-Za-z]{1,3}):([$]?)([A-Za-z]{1,4})/);
+    parseRow(row) {
+        const rowNum = +row;
+        if (!Number.isInteger(rowNum))
+            throw Error('Row number must be integer.');
         return {
             ref: {
-                address: res[0],
+                col: undefined,
+                row: +row
+            },
+        };
+    }
+
+    parseCol(col) {
+        return {
+            ref: {
+                col: this.columnNameToNumber(col),
+                row: undefined,
+            },
+        };
+    }
+
+    parseColRange(col1, col2) {
+        // const res = colRange.match(/([$]?)([A-Za-z]{1,3}):([$]?)([A-Za-z]{1,4})/);
+        col1 = this.columnNameToNumber(col1);
+        col2 = this.columnNameToNumber(col2);
+        return {
+            ref: {
                 from: {
-                    address: res[2],
-                    col: this.columnNameToNumber(res[2]),
+                    col: Math.min(col1, col2),
                     row: null
                 },
                 to: {
-                    address: res[4],
-                    col: this.columnNameToNumber(res[4]),
+                    col: Math.max(col1, col2),
                     row: null
                 }
             }
         }
     }
 
-    parseRowRange(rowRange) {
-        const res = rowRange.match(/([$]?)([1-9][0-9]*):([$]?)([1-9][0-9]*)/);
+    parseRowRange(row1, row2) {
+        // const res = rowRange.match(/([$]?)([1-9][0-9]*):([$]?)([1-9][0-9]*)/);
         return {
             ref: {
-                address: res[0],
                 from: {
-                    address: res[2],
                     col: null,
-                    row: +res[2],
+                    row: Math.min(row1, row2),
                 },
                 to: {
-                    address: res[4],
                     col: null,
-                    row: +res[4]
+                    row: Math.max(row1, row2),
                 }
             }
 
@@ -119,11 +137,15 @@ class Utils {
         const ref = refs.shift().ref;
         sheet = ref.sheet;
         if (!ref.from) {
+            // check whole row/col reference
+            if (ref.row === undefined || ref.col === undefined) {
+                throw Error('Cannot intersect the whole row or column.')
+            }
+
             // cell ref
             maxRow = minRow = ref.row;
             maxCol = minCol = ref.col;
-        }
-        else {
+        } else {
             // range ref
             // update
             maxRow = Math.max(ref.from.row, ref.to.row);
@@ -135,6 +157,9 @@ class Utils {
         refs.forEach(ref => {
             ref = ref.ref;
             if (!ref.from) {
+                if (ref.row === undefined || ref.col === undefined) {
+                    throw Error('Cannot intersect the whole row or column.')
+                }
                 // cell ref
                 if (ref.row > maxRow || ref.row < minRow || ref.col > maxCol || ref.col < minCol
                     || sheet !== ref.sheet) {
@@ -142,8 +167,7 @@ class Utils {
                 }
                 maxRow = minRow = ref.row;
                 maxCol = minCol = ref.col;
-            }
-            else {
+            } else {
                 // range ref
                 const refMaxRow = Math.max(ref.from.row, ref.to.row);
                 const refMinRow = Math.min(ref.from.row, ref.to.row);
@@ -169,8 +193,7 @@ class Utils {
                     col: maxCol
                 }
             }
-        }
-        else {
+        } else {
             res = {
                 ref: {
                     sheet,
@@ -197,14 +220,28 @@ class Utils {
     }
 
     /**
-     * Apply multiple references, e.g. A1:B3:C8:.....
+     * Apply multiple references, e.g. A1:B3:C8:A:1:.....
      * @param refs
-     * @return {{ref: {from: {col: number, row: number}, to: {col: number, row: number}}}}
+     // * @return {{ref: {from: {col: number, row: number}, to: {col: number, row: number}}}}
      */
     applyRange(refs) {
-        let res, maxRow = -1, maxCol = -1, minRow = 1048577, minCol = 1048577;
+        let res, maxRow = -1, maxCol = -1, minRow = MAX_ROW + 1, minCol = MAX_COLUMN + 1;
         refs.forEach(ref => {
+            // row ref is saved as number, parse the number to row ref here
+            if (typeof ref === 'number') {
+                ref = this.parseRow(ref);
+            }
             ref = ref.ref;
+            // check whole row/col reference
+            if (ref.row === undefined) {
+                minRow = 1;
+                maxRow = MAX_ROW
+            }
+            if (ref.col === undefined) {
+                minCol = 1;
+                maxCol = MAX_COLUMN;
+            }
+
             if (ref.row > maxRow)
                 maxRow = ref.row;
             if (ref.row < minRow)

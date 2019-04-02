@@ -57,9 +57,21 @@ const RefError = createToken({
     pattern: /#REF!/
 });
 
+// max column: XFD
+const RangeColumn = createToken({
+    name: 'RangeColumn',
+    pattern: /[$]?[A-Za-z]{1,3}:[$]?[A-Za-z]{1,4}/
+});
+
+const RangeRow = createToken({
+    name: 'RangeRow',
+    pattern: /[$]?[1-9][0-9]*:[$]?[1-9][0-9]*/
+});
+
 const Name = createToken({
     name: 'Name',
-    pattern: /[a-zA-Z_][a-zA-Z0-9_.?]*/
+    pattern: /[a-zA-Z_][a-zA-Z0-9_.?]*/,
+    // longer_alt: RangeColumn // e.g. A:AA
 });
 
 const Sheet = createToken({
@@ -71,17 +83,6 @@ const Cell = createToken({
     name: 'Cell',
     pattern: /[$]?[A-Za-z]{1,3}[$]?[1-9][0-9]*/,
     longer_alt: Name
-});
-
-// max column: XFD
-const RangeColumn = createToken({
-    name: 'RangeColumn',
-    pattern: /[$]?[A-Za-z]{1,3}:[$]?[A-Za-z]{1,4}/
-});
-
-const RangeRow = createToken({
-    name: 'RangeRow',
-    pattern: /[$]?[1-9][0-9]*:[$]?[1-9][0-9]*/
 });
 
 const ReservedName = createToken({
@@ -98,6 +99,19 @@ const Boolean = createToken({
     name: 'Boolean',
     pattern: /TRUE|FALSE/i
 });
+
+const Row = createToken({
+    name: 'Row',
+    pattern: /[$]?[1-9][0-9]*/,
+    longer_alt: Number
+});
+
+const Column = createToken({
+    name: 'Column',
+    pattern: /[$]?[A-Za-z]{1,3}/,
+    longer_alt: Name
+});
+
 
 /**
  * Symbols and operators
@@ -244,9 +258,10 @@ const allTokens = [
     Sheet,
     Cell,
     Boolean,
+    Column,
     Name,
-    RangeColumn,
-    RangeRow,
+    // RangeColumn,
+    // RangeRow,
     ReservedName,
     Number,
     // Array,

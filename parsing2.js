@@ -16,13 +16,14 @@ const {
     FormulaError,
     RefError,
     Cell,
-    RangeColumn,
-    RangeRow,
+    // RangeColumn,
+    // RangeRow,
     Sheet,
     ReservedName,
     Name,
     Number,
     Boolean,
+    Column,
     // Array,
 
     At,
@@ -265,7 +266,7 @@ class Parser extends chevrotain.Parser {
             {
                 ALT: () => {
                     const prefix = $.OPTION(() => $.SUBRULE($.plusMinusOp));
-                    const number =  this.utils.toNumber($.CONSUME(Number).image);
+                    const number = this.utils.toNumber($.CONSUME(Number).image);
                     if (prefix)
                         return this.utils.applyPrefix([prefix], number);
                     return number;
@@ -389,8 +390,10 @@ class Parser extends chevrotain.Parser {
         $.RULE('referenceItem', () => $.OR([
             {ALT: () => this.utils.parseCellAddress($.CONSUME(Cell).image)},
             {ALT: () => getVariable($.CONSUME(Name).image)},
-            {ALT: () => this.utils.parseColRange($.CONSUME(RangeColumn).image)},
-            {ALT: () => this.utils.parseRowRange($.CONSUME(RangeRow).image)},
+            {ALT: () => this.utils.parseCol($.CONSUME(Column).image)},
+            // A row check should be here, but the token is same with Number,
+            // In other to resolve ambiguities, I leave this empty, and
+            // parse the number to row number when needed.
             {ALT: () => this.utils.toError($.CONSUME(RefError).image)},
             // {ALT: () => $.SUBRULE($.udfFunctionCall)},
             // {ALT: () => $.SUBRULE($.structuredReference)},
