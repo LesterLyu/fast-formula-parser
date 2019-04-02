@@ -125,14 +125,15 @@ class FormulaParser {
             }
         }
         else if (type === 'boolean')
-            return result ? 'TRUE' : 'FALSE';
+            result = result ? 'TRUE' : 'FALSE';
         else if (type === 'object') {
             if (result.ref && !result.ref.from) {
                 // single cell reference
-                return this.retrieveRef(result).val;
+                result = this.retrieveRef(result);
+            } else {
+                // array, range reference, union collections
+                throw FormulaError.VALUE;
             }
-            // array, range reference, union collections
-            throw FormulaError.VALUE;
         }
         return result;
     }
