@@ -34,6 +34,8 @@ class FormulaHelpers {
                 throw FormulaError.VALUE;
             }
         }
+        if (result === undefined || result === null)
+            throw FormulaError.NULL;
         return result;
     }
 
