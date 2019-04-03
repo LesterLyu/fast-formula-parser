@@ -79,7 +79,7 @@ class FormulaParser {
                     }
                 }
                 if (res === undefined) {
-                    // console.log(`Function ${name} may be not implemented.`);
+                    console.log(`Function ${name} may be not implemented.`);
                     return {value: 0, ref: {}};
                 }
                 return FormulaHelpers.checkFunctionResult(res);

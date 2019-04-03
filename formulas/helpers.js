@@ -73,10 +73,10 @@ class FormulaHelpers {
         else if (typeof obj === 'string') {
             number = Number(obj);
             if (isNaN(number))
-                return FormulaError.VALUE;
+                throw FormulaError.VALUE;
         } else if (Array.isArray(obj)) {
             if (!allowArray)
-                return FormulaError.VALUE;
+                throw FormulaError.VALUE;
             if (obj[0].length === 1)
                 number = this.acceptNumber(obj[0][0]);
         } else {
@@ -133,8 +133,10 @@ class FormulaHelpers {
             if (param.collections)
                 param = param.collections;
             return this.flattenDeep(param);
-        } else if (types.includes(Types.COLLECTIONS))
+        } else if (types.includes(Types.COLLECTIONS)) {
             return param;
+        }
+
 
         // the only possible types for expectSingle=true are: string, boolean, number;
         // If array encountered, extract the first element.
@@ -151,7 +153,7 @@ class FormulaHelpers {
                     param = `${param}`
             } else if (type === Types.BOOLEAN) {
                 if (paramType === Types.STRING)
-                    return FormulaError.VALUE;
+                    throw FormulaError.VALUE;
                 if (paramType === Types.NUMBER)
                     param = Boolean(param);
             } else if (type === Types.NUMBER) {

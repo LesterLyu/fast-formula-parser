@@ -407,7 +407,7 @@ class Parser extends chevrotain.Parser {
 
         $.RULE('prefixName', () => $.OR([
             {ALT: () => $.CONSUME(Sheet).image.slice(0, -1)},
-            {ALT: () => $.CONSUME(SheetQuoted).image.slice(1, -2)},
+            {ALT: () => $.CONSUME(SheetQuoted).image.slice(1, -2).replace(/''/g, "'")},
         ]));
 
         this.performSelfAnalysis();

@@ -3,7 +3,13 @@ const {FormulaHelpers, Types} = require('../formulas/helpers');
 
 const Prefix = {
     unaryOp: (prefixes, value, isArray) => {
-        value = FormulaHelpers.acceptNumber(value, isArray);
+        try {
+            value = FormulaHelpers.acceptNumber(value, isArray);
+        } catch (e) {
+            if (e instanceof FormulaError)
+                return e;
+            throw e;
+        }
 
         prefixes.forEach(prefix => {
             if (prefix === '+') {
@@ -20,7 +26,13 @@ const Prefix = {
 
 const Postfix = {
     percentOp: (value, postfix, isArray) => {
-        value = FormulaHelpers.acceptNumber(value, isArray);
+        try {
+            value = FormulaHelpers.acceptNumber(value, isArray);
+        } catch (e) {
+            if (e instanceof FormulaError)
+                return e;
+            throw e;
+        }
         if (postfix === '%') {
             return value / 100;
         }
@@ -39,6 +51,11 @@ const Infix = {
         if (isArray2) {
             value2 = value2[0][0];
         }
+
+        if (value1 instanceof FormulaError)
+            return value1;
+        if (value2 instanceof FormulaError)
+            return value2;
 
         const type1 = typeof value1, type2 = typeof value2;
 
@@ -87,6 +104,12 @@ const Infix = {
         if (isArray2) {
             value2 = value2[0][0];
         }
+
+        if (value1 instanceof FormulaError)
+            return value1;
+        if (value2 instanceof FormulaError)
+            return value2;
+
         const type1 = typeof value1, type2 = typeof value2;
         // convert boolean to string
         if (type1 === 'boolean')
@@ -97,8 +120,14 @@ const Infix = {
     },
 
     mathOp: (value1, infix, value2, isArray1, isArray2) => {
-        value1 = FormulaHelpers.acceptNumber(value1, isArray1);
-        value2 = FormulaHelpers.acceptNumber(value2, isArray2);
+        try {
+            value1 = FormulaHelpers.acceptNumber(value1, isArray1);
+            value2 = FormulaHelpers.acceptNumber(value2, isArray2);
+        } catch (e) {
+            if (e instanceof FormulaError)
+                return e;
+            throw e;
+        }
 
         switch (infix) {
             case '+':

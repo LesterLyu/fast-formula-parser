@@ -1,3 +1,6 @@
+const FormulaError = require('./error');
+const {FormulaHelpers, Types} = require('./helpers');
+const H = FormulaHelpers;
 
 const TextFunctions = {
     ASC: (...params) => {
@@ -8,8 +11,11 @@ const TextFunctions = {
 
     },
 
-    CHAR: (...params) => {
-
+    CHAR: (number) => {
+        number = H.accept(number, [Types.NUMBER]);
+        if (number > 255 || number < 1)
+            throw FormulaError.VALUE;
+        return String.fromCharCode(number);
     },
 
     CLEAN: (...params) => {
@@ -25,7 +31,13 @@ const TextFunctions = {
     },
 
     CONCATENATE: (...params) => {
-
+        let texts = H.accept(params.shift(), [Types.STRING]);
+        params.forEach(param => {
+            const text = H.accept(params.shift(), [Types.STRING], true);
+            if (text)
+                texts += text;
+        });
+        return texts
     },
 
     DBCS: (...params) => {

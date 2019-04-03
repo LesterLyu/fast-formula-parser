@@ -327,7 +327,7 @@ class Utils {
      * @return {string}
      */
     toString(string) {
-        return string.substring(1, string.length - 1);
+        return string.substring(1, string.length - 1) .replace(/""/g, '"');
     }
 
     /**
