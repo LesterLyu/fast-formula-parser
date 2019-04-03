@@ -34,7 +34,7 @@ const SheetQuoted = createToken({
 
 const Function = createToken({
     name: 'Function',
-    pattern: /[A-Za-z]+[A-Za-z_0-9.]*\(/
+    pattern: /[A-Za-z_]+[A-Za-z_0-9.]*\(/
 });
 
 const ExcelRefFunction = createToken({

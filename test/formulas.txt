@@ -32935,7 +32935,7 @@
 "SUM(B2:B11)"
 "(B2/80)*100"
 "SUM(B2:B11)"
-"SUM((Exercises 4, 5 and 6!$H$2:$H$11-Exercise 7!B2:B11)/Exercise 7!B2:B11)"
+"SUM(('Exercises 4, 5 and 6'!$H$2:$H$11-'Exercise 7'!B2:B11)/'Exercise 7'!B2:B11)"
 "CHIDST(E3,9)"
 "CHIINV(0.05,9)"
 "NORMSDIST(64,75.25,10.37,TRUE)-NORMSDIST(60,75.25,10.37,TRUE)"

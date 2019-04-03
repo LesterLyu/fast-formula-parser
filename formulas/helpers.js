@@ -33,13 +33,13 @@ class FormulaHelpers {
         // number
         if (type === 'number') {
             if (isNaN(result)) {
-                throw FormulaError.VALUE;
+                return FormulaError.VALUE;
             } else if (!isFinite(result)) {
-                throw FormulaError.NUM;
+                return FormulaError.NUM;
             }
         }
         if (result === undefined || result === null)
-            throw FormulaError.NULL;
+            return FormulaError.NULL;
         return result;
     }
 
@@ -56,9 +56,12 @@ class FormulaHelpers {
      *
      * @param obj
      * @param allowArray - if it is an array: {1,2,3}, will extract the first element
-     * @returns {number}
+     * @returns {number|FormulaError}
      */
     acceptNumber(obj, allowArray = true) {
+        // check error
+        if (obj instanceof FormulaError)
+            return obj;
         let number;
 
         if (typeof obj === 'number')
@@ -70,10 +73,10 @@ class FormulaHelpers {
         else if (typeof obj === 'string') {
             number = Number(obj);
             if (isNaN(number))
-                throw FormulaError.VALUE;
+                return FormulaError.VALUE;
         } else if (Array.isArray(obj)) {
             if (!allowArray)
-                throw FormulaError.VALUE;
+                return FormulaError.VALUE;
             if (obj[0].length === 1)
                 number = this.acceptNumber(obj[0][0]);
         } else {
@@ -106,7 +109,7 @@ class FormulaHelpers {
      *           ARRAY: Expect an flatten array,
      *           BOOLEAN: Expect a single boolean,
      *           STRING: Expect a single string,
-     *           COLLECTIONS: Expect a Array of the above types
+     *           COLLECTIONS: Expect an Array of the above types
      *              e.g. [NUMBER, ARRAY, STRING]. The collection is not a flatted array.
      * @param [optional]
      * @return {string|number|boolean|{}}
@@ -148,7 +151,7 @@ class FormulaHelpers {
                     param = `${param}`
             } else if (type === Types.BOOLEAN) {
                 if (paramType === Types.STRING)
-                    throw FormulaError.VALUE;
+                    return FormulaError.VALUE;
                 if (paramType === Types.NUMBER)
                     param = Boolean(param);
             } else if (type === Types.NUMBER) {

@@ -52,7 +52,7 @@ class FormulaParser {
             // console.log('get variable', name);
             const val = this.variables[name];
             if (val === undefined || val === null)
-                throw FormulaError.NAME;
+                return FormulaError.NAME;
             return val;
         };
 
@@ -67,9 +67,19 @@ class FormulaParser {
             // console.log('callFunction', name, args)
 
             if (this.functions[name]) {
-                const res = (this.functions[name](...args));
+                let res;
+                try {
+                    res = (this.functions[name](...args));
+                } catch (e) {
+                    // allow functions throw FormulaError, this make functions easier to implement!
+                    if (e instanceof FormulaError) {
+                        return e;
+                    } else {
+                        throw e;
+                    }
+                }
                 if (res === undefined) {
-                    // console.log(`Function ${name} is not implemented`)
+                    // console.log(`Function ${name} may be not implemented.`);
                     return {value: 0, ref: {}};
                 }
                 return FormulaHelpers.checkFunctionResult(res);
@@ -123,9 +133,9 @@ class FormulaParser {
         // number
         if (type === 'number') {
             if (isNaN(result)) {
-                throw FormulaError.VALUE;
+                return FormulaError.VALUE;
             } else if (!isFinite(result)) {
-                throw FormulaError.NUM;
+                return FormulaError.NUM;
             }
             result += 0; // make -0 to 0
         }
@@ -137,7 +147,7 @@ class FormulaParser {
                 result = this.retrieveRef(result);
             } else {
                 // array, range reference, union collections
-                throw FormulaError.VALUE;
+                return FormulaError.VALUE;
             }
         }
         return result;
@@ -155,10 +165,11 @@ class FormulaParser {
         try {
             res = this.parser.formulaWithCompareOp();
             res = this.checkFormulaResult(res);
+            if (res instanceof FormulaError) {
+                return {result: res.toString(), detail: ''};
+            }
         } catch (e) {
             // console.log(e);
-            if (e instanceof FormulaError)
-                return {result: e.toString(), detail: ''};
             throw e;
         }
         if (this.parser.errors.length > 0) {

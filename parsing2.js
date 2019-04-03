@@ -365,6 +365,8 @@ class Parser extends chevrotain.Parser {
                     const sheetName = $.SUBRULE($.prefixName);
                     // console.log('sheetName', sheetName);
                     const referenceItem = $.SUBRULE2($.formulaWithRange);
+                    if (this.utils.isFormulaError(referenceItem))
+                        return referenceItem;
                     referenceItem.ref.sheet = sheetName;
                     return (referenceItem);
                 }

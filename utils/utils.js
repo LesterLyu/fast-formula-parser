@@ -104,12 +104,16 @@ class Utils {
     applyPrefix(prefixes, value) {
         // console.log('applyPrefix', prefixes, value);
         const {val, isArray} = this.extractRefValue(value);
+        if (this.isFormulaError(val))
+            return val;
         return Prefix.unaryOp(prefixes, val, isArray);
     }
 
     applyPostfix(value, postfix) {
         // console.log('applyPostfix', value, postfix);
         const {val, isArray} = this.extractRefValue(value);
+        if (this.isFormulaError(val))
+            return val;
         return Postfix.percentOp(val, postfix, isArray);
     }
 
@@ -118,6 +122,10 @@ class Utils {
         const val1 = res1.val, isArray1 = res1.isArray;
         const res2 = this.extractRefValue(value2);
         const val2 = res2.val, isArray2 = res2.isArray;
+        if (this.isFormulaError(val1))
+            return val1;
+        if (this.isFormulaError(val2))
+            return val2;
         if (Operators.compareOp.includes(infix))
             return Infix.compareOp(val1, infix, val2, isArray1, isArray2);
         else if (Operators.concatOp.includes(infix))
@@ -130,7 +138,11 @@ class Utils {
     }
 
     applyIntersect(refs) {
-        console.log('applyIntersect', refs);
+        // console.log('applyIntersect', refs);
+        if (this.isFormulaError(refs[0]))
+            return refs[0];
+        if (!refs[0].ref)
+            throw Error(`Expecting a reference, but got ${refs[0]}.`);
         // a intersection will keep track of references, value won't be retrieved here.
         let maxRow, maxCol, minRow, minCol, sheet, res; // index start from 1
         // first time setup
@@ -155,7 +167,10 @@ class Utils {
         }
 
         refs.forEach(ref => {
+            if (this.isFormulaError(ref))
+                return ref;
             ref = ref.ref;
+            if (!ref) throw Error(`Expecting a reference, but got ${ref}.`);
             if (!ref.from) {
                 if (ref.row === undefined || ref.col === undefined) {
                     throw Error('Cannot intersect the whole row or column.')
@@ -163,7 +178,7 @@ class Utils {
                 // cell ref
                 if (ref.row > maxRow || ref.row < minRow || ref.col > maxCol || ref.col < minCol
                     || sheet !== ref.sheet) {
-                    throw FormulaError.NULL;
+                    return FormulaError.NULL;
                 }
                 maxRow = minRow = ref.row;
                 maxCol = minCol = ref.col;
@@ -175,7 +190,7 @@ class Utils {
                 const refMinCol = Math.min(ref.from.col, ref.to.col);
                 if (refMinRow > maxRow || refMaxRow < minRow || refMinCol > maxCol || refMaxCol < minCol
                     || sheet !== ref.sheet) {
-                    throw FormulaError.NULL;
+                    return FormulaError.NULL;
                 }
                 // update
                 maxRow = Math.min(maxRow, refMaxRow);
@@ -212,6 +227,8 @@ class Utils {
         const unions = [];
         // a union won't keep references
         refs.forEach(ref => {
+            if (this.isFormulaError(ref))
+                return ref;
             unions.push(this.extractRefValue(ref).val);
         });
 
@@ -227,6 +244,8 @@ class Utils {
     applyRange(refs) {
         let res, maxRow = -1, maxCol = -1, minRow = MAX_ROW + 1, minCol = MAX_COLUMN + 1;
         refs.forEach(ref => {
+            if (this.isFormulaError(ref))
+                return ref;
             // row ref is saved as number, parse the number to row ref here
             if (typeof ref === 'number') {
                 ref = this.parseRow(ref);
@@ -320,12 +339,16 @@ class Utils {
     }
 
     /**
-     * Throw an error.
+     * Parse an error.
      * @param {string} error
      * @return {string}
      */
     toError(error) {
-        throw new FormulaError(error.toUpperCase());
+        return new FormulaError(error.toUpperCase());
+    }
+
+    isFormulaError(obj) {
+        return obj instanceof FormulaError;
     }
 }
 

@@ -3,7 +3,7 @@ const {FormulaParser} = require('./hooks');
 const parser = new FormulaParser();
 // console.log('supported:', parser.supportedFunctions());
 
-let input = '-1 + 2 * (5 + 10) ^ 3 / 2% + (A1 - (A1:A2) +A2)';
+let input = '-1 + 2 * (5 + 10) ^ 3 / 2% + (A1 -2  +A2)';
 // input = 'SUM((\'Exercises 4, 5 and 6\'!$H$2:$H$11-B2:B11)/B2:B11)'
 // input = "'sheet 45'!A1:A2";
 // input = '_xlnm.ewrew';
@@ -23,6 +23,10 @@ let input = '-1 + 2 * (5 + 10) ^ 3 / 2% + (A1 - (A1:A2) +A2)';
 // input = 'sheet!A1 + 1'
 // input = 'SUM((Exercises 4, 5 and 6!$H$2:$H$11-Exercise 7!B2:B11)/Exercise 7!B2:B11)'
 // input = 'SUM(Jan:Dec!AD12)';
+
+// errors
+input = 'SUM((Exercises 4, 5 and 6!$H$2:$H$11-Exercise 7!B2:B11)/Exercise 7!B2:B11)'
+
 
 console.log(JSON.stringify(lexing.lex(input), null, 1));
 console.log(parser.parse(input));
