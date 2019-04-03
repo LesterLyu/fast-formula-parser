@@ -9,32 +9,6 @@ const MathFunctions = {
         return Math.abs(number);
     },
 
-    ACOS: number => {
-        number = H.accept(number, [Types.NUMBER]);
-        if (number > 1 || number < -1)
-            throw FormulaError.NUM;
-        return Math.acos(number);
-    },
-
-    ACOSH: number => {
-        number = H.accept(number, [Types.NUMBER]);
-        if (number < 1)
-            throw FormulaError.NUM;
-        return Math.acosh(number);
-    },
-
-    ACOT: number => {
-        number = H.accept(number, [Types.NUMBER]);
-        return Math.PI / 2 - Math.atan(number);
-    },
-
-    ACOTH: number => {
-        number = H.accept(number, [Types.NUMBER]);
-        if (Math.abs(number) <= 1)
-            throw FormulaError.NUM;
-        return Math.atanh(1 / number);
-    },
-
     AGGREGATE: (functionNum, options, ref1, ...refs) => {
         functionNum = H.accept(functionNum, [Types.NUMBER]);
         throw FormulaError.NOT_IMPLEMENTED('AGGREGATE');
@@ -67,38 +41,6 @@ const MathFunctions = {
         return r;
     },
 
-    ASIN: number => {
-        number = H.accept(number, [Types.NUMBER]);
-        if (number > 1 || number < -1)
-            throw FormulaError.NUM;
-        return Math.asin(number);
-    },
-
-    ASINH: number => {
-        number = H.accept(number, [Types.NUMBER]);
-        return Math.asinh(number);
-    },
-
-    ATAN: number => {
-        number = H.accept(number, [Types.NUMBER]);
-        return Math.atan(number);
-    },
-
-    ATAN2: (x, y) => {
-        x = H.accept(x, [Types.NUMBER]);
-        y = H.accept(y, [Types.NUMBER]);
-        if (y === 0 && x === 0)
-            throw FormulaError.DIV0;
-        return Math.atan2(y, x);
-    },
-
-    ATANH: number => {
-        number = H.accept(number, [Types.NUMBER]);
-        if (Math.abs(number) > 1)
-            throw FormulaError.NUM;
-        return Math.atanh(number);
-    },
-
     BASE: (number, radix, minLength = 0) => {
         number = H.accept(number, [Types.NUMBER]);
         if (number < 0 || number > 2 ** 53)
@@ -119,9 +61,9 @@ const MathFunctions = {
         number = H.accept(number, [Types.NUMBER]);
         if (number >= 9.99E+307 || number <= -2.229E-308)
             throw FormulaError.NUM;
+        significance = H.accept(significance, [Types.NUMBER], true);
         if (significance === undefined)
             significance = number > 0 ? 1 : -1;
-        significance = H.accept(significance, [Types.NUMBER]);
         mode = H.accept(mode, [Types.NUMBER]);
 
 
@@ -141,6 +83,44 @@ const MathFunctions = {
             return sign * Math.round(Math.abs(number) / multiplier) * multiplier;
         }
     },
+
+    ROUNDDOWN: (number, digits) => {
+        number = H.accept(number, [Types.NUMBER]);
+        digits = H.accept(digits, [Types.NUMBER]);
+
+        const multiplier = Math.pow(10, Math.abs(digits));
+        const sign = number > 0 ? 1 : -1;
+        if (digits > 0) {
+            const offset = 1 / multiplier * 0.5;
+            return sign * Math.round((Math.abs(number) - offset) * multiplier) / multiplier;
+        } else if (digits === 0) {
+            const offset = 0.5;
+            return sign * Math.round((Math.abs(number) - offset));
+        } else {
+            const offset = multiplier * 0.5;
+            return sign * Math.round((Math.abs(number) - offset) / multiplier) * multiplier;
+        }
+    },
+
+    ROUNDUP: (number, digits) => {
+        number = H.accept(number, [Types.NUMBER]);
+        digits = H.accept(digits, [Types.NUMBER]);
+
+        const multiplier = Math.pow(10, Math.abs(digits));
+        const sign = number > 0 ? 1 : -1;
+        if (digits > 0) {
+            const offset = 1 / multiplier * 0.5;
+            return sign * Math.round((Math.abs(number) + offset) * multiplier) / multiplier;
+        } else if (digits === 0) {
+            const offset = 0.5;
+            return sign * Math.round((Math.abs(number) + offset));
+        } else {
+            const offset = multiplier * 0.5;
+            return sign * Math.round((Math.abs(number) + offset) / multiplier) * multiplier;
+        }
+    },
+
+
 };
 
 

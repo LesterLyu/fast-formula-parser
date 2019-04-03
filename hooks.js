@@ -1,5 +1,6 @@
-const TextFormulas = require('./formulas/text');
-const MathFormulas = require('./formulas/math');
+const TextFunctions = require('./formulas/text');
+const MathFunctions = require('./formulas/math');
+const TrigFunctions = require('./formulas/trigonometry');
 const FormulaError = require('./formulas/error');
 const {FormulaHelpers} = require('./formulas/helpers');
 const {Parser, allTokens} = require('./parsing2');
@@ -22,7 +23,8 @@ class FormulaParser {
         }, config);
 
         this.variables = config.variables;
-        this.functions = Object.assign({}, TextFormulas, MathFormulas, config.functions);
+        this.functions = Object.assign({},
+            TextFunctions, MathFunctions, TrigFunctions, config.functions);
         this.onRange = config.onRange;
         this.onCell = config.onCell;
 
@@ -122,6 +124,8 @@ class FormulaParser {
         if (type === 'number') {
             if (isNaN(result)) {
                 throw FormulaError.VALUE;
+            } else if (!isFinite(result)) {
+                throw FormulaError.NUM;
             }
             result += 0; // make -0 to 0
         }

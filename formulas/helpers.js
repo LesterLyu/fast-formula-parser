@@ -32,6 +32,8 @@ class FormulaHelpers {
         if (type === 'number') {
             if (isNaN(result)) {
                 throw FormulaError.VALUE;
+            } else if (!isFinite(result)) {
+                throw FormulaError.NUM;
             }
         }
         if (result === undefined || result === null)
