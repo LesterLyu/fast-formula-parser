@@ -1,7 +1,8 @@
 const lexing = require('./lexing');
 const {FormulaParser} = require('./hooks');
 const parser = new FormulaParser();
-// console.log('supported:', parser.supportedFunctions());
+const funs = parser.supportedFunctions();
+console.log('Supported:', funs.join(', '), `\nTotal ${funs.length} functions.`);
 
 let input = '-1 + 2 * (5 + 10) ^ 3 / 2% + (A1 -2  +A2)';
 // input = 'SUM((\'Exercises 4, 5 and 6\'!$H$2:$H$11-B2:B11)/B2:B11)'
@@ -23,12 +24,12 @@ let input = '-1 + 2 * (5 + 10) ^ 3 / 2% + (A1 -2  +A2)';
 // input = 'sheet!A1 + 1'
 // input = 'SUM((Exercises 4, 5 and 6!$H$2:$H$11-Exercise 7!B2:B11)/Exercise 7!B2:B11)'
 // input = 'SUM(Jan:Dec!AD12)';
-
+input = 'SEARCH("""","The ""boss"" is here.")';
 // errors
-input = 'SUM((Exercises 4, 5 and 6!$H$2:$H$11-Exercise 7!B2:B11)/Exercise 7!B2:B11)'
+// input = 'SUM((Exercises 4, 5 and 6!$H$2:$H$11-Exercise 7!B2:B11)/Exercise 7!B2:B11)'
 
 
-console.log(JSON.stringify(lexing.lex(input), null, 1));
+// console.log(JSON.stringify(lexing.lex(input), null, 1));
 console.log(parser.parse(input));
 //
 // for (let i = 0; i < 3000; i++) {
