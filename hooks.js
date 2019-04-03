@@ -28,6 +28,11 @@ class FormulaParser {
         this.onRange = config.onRange;
         this.onCell = config.onCell;
 
+        // functions treat null as 0
+        this.funsNullAs0 = Object.keys(MathFunctions).concat(Object.keys(TrigFunctions));
+        // functions treat null as ""
+        this.funsNullAsString = Object.keys(TextFunctions);
+
         // uses ES5 syntax here... I don't want to transpile the code...
         this.getCell = (ref) => {
             // console.log('get cell', JSON.stringify(ref));
@@ -58,8 +63,13 @@ class FormulaParser {
 
         this.callFunction = (name, args) => {
             name = name.toUpperCase();
+            // if one arg is null, it means 0 or "" depends on the function it calls
+            const nullValue = this.funsNullAs0.includes(name) ? 0 : '';
+
             // retrieve reference
             args = args.map(arg => {
+                if (arg === null)
+                    return {value: nullValue, isArray: false, omitted: true};
                 const res = this.utils.extractRefValue(arg);
                 return {value: res.val, isArray: res.isArray};
             });
@@ -88,8 +98,6 @@ class FormulaParser {
                 // console.log(`Function ${name} is not implemented`)
                 return {value: 0, ref: {}};
             }
-            // throw Error()
-            // return
         };
 
         this.retrieveRef = value => {
@@ -119,7 +127,7 @@ class FormulaParser {
                 if (res === undefined) return;
                 supported.push(fun);
             } catch (e) {
-                if (e instanceof FormulaError)
+                if (e instanceof FormulaError || e instanceof TypeError)
                     supported.push(fun);
                 // else
                 //     console.log(e)
@@ -142,6 +150,8 @@ class FormulaParser {
         else if (type === 'boolean')
             result = result ? 'TRUE' : 'FALSE';
         else if (type === 'object') {
+            if (result instanceof FormulaError)
+                return result;
             if (result.ref && !result.ref.from) {
                 // single cell reference
                 result = this.retrieveRef(result);

@@ -340,7 +340,7 @@ class Parser extends chevrotain.Parser {
                 args.push($.SUBRULE($.formulaWithCompareOp));
                 $.MANY(() => {
                     $.CONSUME1(Comma);
-                    args.push(0);
+                    args.push(null); // e.g. ROUND(1.5,)
                     $.OPTION3(() => {
                         args.pop();
                         args.push($.SUBRULE2($.formulaWithCompareOp))
