@@ -1,5 +1,5 @@
 const assert = require('assert');
-const {FormulaParser} = require('../hooks');
+const {FormulaParser} = require('../grammar/hooks');
 const parser = new FormulaParser();
 
 const fs = require('fs');

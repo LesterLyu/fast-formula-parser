@@ -1,7 +1,7 @@
-const FormulaError = require('./error');
-const {FormulaHelpers, Types} = require('./helpers');
+const FormulaError = require('../error');
+const {FormulaHelpers, Types} = require('../helpers');
 const H = FormulaHelpers;
-const ssf = require('ssf');
+const ssf = require('../../ssf/ssf');
 
 const TextFunctions = {
     ASC: (...params) => {
@@ -109,7 +109,7 @@ const TextFunctions = {
     },
 
     LENB: (...params) => {
-
+        return TextFunctions.LEN(...params);
     },
 
     LOWER: (...params) => {
@@ -198,7 +198,7 @@ const TextFunctions = {
     },
 
     SEARCHB: (...params) => {
-
+        return TextFunctions.SEARCH(...params)
     },
 
     SUBSTITUTE: (...params) => {
@@ -217,7 +217,12 @@ const TextFunctions = {
         value = H.accept(value, Types.NUMBER);
         formatText = H.accept(formatText, Types.STRING);
         // I know ssf contains bugs...
-        return ssf.format(formatText, value);
+        try {
+            return ssf.format(formatText, value);
+        } catch (e) {
+            console.error(e)
+            throw FormulaError.VALUE;
+        }
     },
 
     TEXTJOIN: (...params) => {

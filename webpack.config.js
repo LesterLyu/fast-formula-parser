@@ -1,6 +1,6 @@
 const path = require("path");
 const TerserPlugin = require("terser-webpack-plugin");
-const { allTokens } = require("./parsing2");
+const { allTokens } = require("./grammar/parsing");
 
 // extract the names of the TokenTypes to avoid name mangling them.
 const allTokenNames = allTokens.map(tokenType => tokenType.name);

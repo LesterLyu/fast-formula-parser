@@ -1,5 +1,5 @@
-const FormulaError = require('./error');
-const {FormulaHelpers, Types} = require('./helpers');
+const FormulaError = require('../error');
+const {FormulaHelpers, Types} = require('../helpers');
 const H = FormulaHelpers;
 
 // https://support.office.com/en-us/article/excel-functions-by-category-5f91f4e9-7b42-46d2-9bd1-63f26a86c0eb

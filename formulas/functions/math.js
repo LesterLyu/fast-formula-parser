@@ -1,5 +1,5 @@
-const FormulaError = require('./error');
-const {FormulaHelpers, Types, Factorials} = require('./helpers');
+const FormulaError = require('../error');
+const {FormulaHelpers, Types, Factorials} = require('../helpers');
 const H = FormulaHelpers;
 
 // factorials

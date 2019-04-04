@@ -1,11 +1,11 @@
-const TextFunctions = require('./formulas/text');
-const MathFunctions = require('./formulas/math');
-const TrigFunctions = require('./formulas/trigonometry');
-const FormulaError = require('./formulas/error');
-const {FormulaHelpers} = require('./formulas/helpers');
-const {Parser, allTokens} = require('./parsing2');
+const TextFunctions = require('../formulas/functions/text');
+const MathFunctions = require('../formulas/functions/math');
+const TrigFunctions = require('../formulas/functions/trigonometry');
+const FormulaError = require('../formulas/error');
+const {FormulaHelpers} = require('../formulas/helpers');
+const {Parser, allTokens} = require('./parsing');
 const lexer = require('./lexing');
-const Utils = require('./utils/utils');
+const Utils = require('./utils');
 
 class FormulaParser {
 

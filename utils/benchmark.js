@@ -1,6 +1,6 @@
 const colCache = require('./col-cache');
 const addressConverter = require('./addressConverter');
-const utils = require('./utils');
+const utils = require('../grammar/utils');
 
 let start = Date.now();
 for (let i = 0; i < 100000; i++) {

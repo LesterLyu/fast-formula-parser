@@ -2,7 +2,7 @@ const lexer = require('./lexing');
 const chevrotain = require("chevrotain");
 const tokenVocabulary = lexer.tokenVocabulary;
 
-const Utils = require('./utils/utils');
+const Utils = require('./utils');
 
 const {
     // IntersectOp,
