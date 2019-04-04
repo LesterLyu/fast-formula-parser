@@ -181,7 +181,12 @@ const TextFunctions = {
         for (let i = 0; i < findText.length; i++) {
             const char = findText[i];
             // A question mark matches any single character; an asterisk matches any sequence of characters.
-            if (char === '*' || char === '?') {
+            if (char === '~') {
+                const nextChar = findText[i + 1];
+                if (nextChar === '?' || nextChar === '*') {
+                    // TODO;
+                }
+            } else if (char === '*' || char === '?') {
                 findTextRegex += `]${char === '*' ? '.*' : '.'}[`;
             } else if (char === '[' || char === ']') {
                 findTextRegex += '\\' + char;

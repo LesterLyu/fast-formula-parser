@@ -432,6 +432,10 @@ const MathFunctions = {
         return result
     },
 
+    SUMIF: (...params) => {
+
+    },
+
 
 };
 
