@@ -3,7 +3,7 @@ const {FormulaHelpers, Types, Factorials} = require('../helpers');
 const H = FormulaHelpers;
 
 // factorials
-const f = [];
+const f = [], fd= [];
 
 function factorial(n) {
     if (n <= 100)
@@ -11,6 +11,16 @@ function factorial(n) {
     if (f[n] > 0)
         return f[n];
     return f[n] = factorial(n - 1) * n;
+}
+
+function factorialDouble(n) {
+    if (n === 1 || n === 0)
+        return 1;
+    if (n === 2)
+        return 2;
+    if (fd[n] > 0)
+        return fd[n];
+    return fd[n] = factorialDouble(n - 2) * n;
 }
 
 // https://support.office.com/en-us/article/excel-functions-by-category-5f91f4e9-7b42-46d2-9bd1-63f26a86c0eb
@@ -70,7 +80,7 @@ const MathFunctions = {
 
     CEILING: (number, significance) => {
         number = H.accept(number, Types.NUMBER);
-        if (number >= 9.99E+307 || number <= -2.229E-308)
+        if (number >= 9.99E+307 || number <= -2.229E+308)
             throw FormulaError.NUM;
         significance = H.accept(significance, Types.NUMBER);
         if (significance === 0)
@@ -90,12 +100,12 @@ const MathFunctions = {
 
     'CEILING.MATH': (number, significance, mode) => {
         number = H.accept(number, Types.NUMBER);
-        if (number >= 9.99E+307 || number <= -2.229E-308)
+        if (number >= 9.99E+307 || number <= -2.229E+308)
             throw FormulaError.NUM;
         significance = H.accept(significance, Types.NUMBER, true);
         if (significance === undefined)
             significance = number > 0 ? 1 : -1;
-        // mode can be 0 or -1 or undefined
+        // mode can be any number
         mode = H.accept(mode, Types.NUMBER, true);
         // The Mode argument does not affect positive numbers.
         if (mode === undefined || number > 0) {
@@ -143,7 +153,19 @@ const MathFunctions = {
         return parseInt(text, radix);
     },
 
-    // TODO: Here
+    DEGREES: (radians) => {
+        radians = H.accept(radians, Types.NUMBER);
+        return radians * (180/Math.PI);
+    },
+
+    EVEN: (number) => {
+        return MathFunctions.CEILING(number, -2);
+    },
+
+    EXP: (number) => {
+        number = H.accept(number, Types.NUMBER);
+        return Math.exp(number)
+    },
 
     FACT: (number) => {
         number = H.accept(number, Types.NUMBER);
@@ -154,6 +176,75 @@ const MathFunctions = {
             return Factorials[number];
         number = Math.trunc(number);
         return factorial(number);
+    },
+
+    FACTDOUBLE: (number) => {
+        number = H.accept(number, Types.NUMBER);
+        // max number = 170
+        if (number < -1)
+            throw FormulaError.NUM;
+        if (number === -1)
+            return 1;
+        number = Math.trunc(number);
+        return factorialDouble(number);
+    },
+
+    FLOOR: (number, significance) => {
+        number = H.accept(number, Types.NUMBER);
+        if (number >= 9.99E+307 || number <= -2.229E+308)
+            throw FormulaError.NUM;
+        significance = H.accept(significance, Types.NUMBER);
+        if (significance === 0)
+            return 0;
+        if (number > 0 && significance < 0)
+            throw FormulaError.NUM;
+        if (number / significance % 1 === 0)
+            return number;
+        const absSignificance = Math.abs(significance);
+        const times = Math.floor(Math.abs(number) / absSignificance);
+        if (number < 0) {
+            // round down, away from zero
+            const roundDown = significance < 0;
+            return roundDown ? -absSignificance * times : -absSignificance * (times + 1);
+        } else {
+            // toward zero
+            return times * absSignificance;
+        }
+    },
+
+    'FLOOR.MATH': (number, significance, mode) => {
+        number = H.accept(number, Types.NUMBER);
+        if (number >= 9.99E+307 || number <= -2.229E+308)
+            throw FormulaError.NUM;
+        significance = H.accept(significance, Types.NUMBER, true);
+        if (significance === undefined)
+            significance = number > 0 ? 1 : -1;
+        // mode can be 0 or any other number, 0 means away from zero
+        mode = H.accept(mode, Types.NUMBER, true);
+        // The Mode argument does not affect positive numbers.
+        if (mode === undefined || number > 0) {
+            // away from zero
+            return MathFunctions.FLOOR(number, Math.abs(significance));
+        }
+        // if round down, away from zero, then significance
+        const offset = mode ? significance : 0;
+        return MathFunctions.FLOOR(number, significance) - offset;
+    },
+
+    'FLOOR.PRECISE': (number, significance) => {
+        number = H.accept(number, Types.NUMBER);
+        significance = H.accept(significance, Types.NUMBER, true);
+        if (significance === undefined) significance = 1;
+        // always round up
+        return MathFunctions.CEILING(number, Math.abs(significance));
+    },
+
+
+
+
+    RADIANS: (degrees) => {
+        degrees = H.accept(degrees, Types.NUMBER);
+        return degrees / 180 * Math.PI;
     },
 
     ROUND: (number, digits) => {

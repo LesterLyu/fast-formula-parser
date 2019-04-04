@@ -8,7 +8,9 @@ const lineReader = require('readline').createInterface({
     input: fs.createReadStream('./test/formulas.txt')
 });
 
-describe('All formulas', function () {
+require('./formulas/math/math');
+
+describe('Parsing Formulas 1', function () {
     let success = 0;
     const formulas = [];
     const failures = [];
@@ -48,7 +50,7 @@ describe('All formulas', function () {
     });
 });
 
-describe('formulas2', () => {
+describe('Parsing Formulas 2', () => {
     let success = 0;
     let formulas;
     const failures = [];
