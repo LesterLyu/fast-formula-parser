@@ -4,12 +4,13 @@ const H = FormulaHelpers;
 
 // factorials
 const f = [];
+
 function factorial(n) {
     if (n <= 100)
         return Factorials[n];
     if (f[n] > 0)
         return f[n];
-    return f[n] = factorial(n-1) * n;
+    return f[n] = factorial(n - 1) * n;
 }
 
 // https://support.office.com/en-us/article/excel-functions-by-category-5f91f4e9-7b42-46d2-9bd1-63f26a86c0eb
@@ -142,6 +143,8 @@ const MathFunctions = {
         return parseInt(text, radix);
     },
 
+    // TODO: Here
+
     FACT: (number) => {
         number = H.accept(number, Types.NUMBER);
         // max number = 170
@@ -202,6 +205,25 @@ const MathFunctions = {
             const offset = multiplier * 0.5;
             return sign * Math.round((Math.abs(number) + offset) / multiplier) * multiplier;
         }
+    },
+
+    SUM: (...params) => {
+        let result = H.accept(params.shift(), Types.ARRAY_OR_NUMBER);
+        const getSum = (partial_sum, a) => partial_sum + a;
+
+        if (Array.isArray(result))
+            result = result.reduce(getSum);
+
+        params.forEach(param => {
+            param = H.accept(param, Types.ARRAY_OR_NUMBER, true);
+            if (param !== undefined) {
+                if (Array.isArray(param))
+                    result += param.reduce(getSum);
+                else
+                    result += param;
+            }
+        });
+        return result
     },
 
 

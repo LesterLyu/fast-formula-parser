@@ -150,7 +150,7 @@ class FormulaHelpers {
             return param;
         } else if (type === Types.ARRAY_OR_NUMBER) {
             if (Array.isArray(param)) {
-                param = this.flattenDeep(param);
+                return this.flattenDeep(param);
             } else {
                 type = Types.NUMBER;
             }

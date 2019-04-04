@@ -1,6 +1,7 @@
 const TextFunctions = require('../formulas/functions/text');
 const MathFunctions = require('../formulas/functions/math');
 const TrigFunctions = require('../formulas/functions/trigonometry');
+const LogicalFunctions = require('../formulas/functions/logical');
 const FormulaError = require('../formulas/error');
 const {FormulaHelpers} = require('../formulas/helpers');
 const {Parser, allTokens} = require('./parsing');
@@ -24,12 +25,14 @@ class FormulaParser {
 
         this.variables = config.variables;
         this.functions = Object.assign({},
-            TextFunctions, MathFunctions, TrigFunctions, config.functions);
+            LogicalFunctions, TextFunctions, MathFunctions, TrigFunctions, config.functions);
         this.onRange = config.onRange;
         this.onCell = config.onCell;
 
         // functions treat null as 0
-        this.funsNullAs0 = Object.keys(MathFunctions).concat(Object.keys(TrigFunctions));
+        this.funsNullAs0 = Object.keys(MathFunctions)
+            .concat(Object.keys(TrigFunctions))
+            .concat(Object.keys(LogicalFunctions));
         // functions treat null as ""
         this.funsNullAsString = Object.keys(TextFunctions);
 
@@ -95,7 +98,7 @@ class FormulaParser {
                 return FormulaHelpers.checkFunctionResult(res);
             }
             else {
-                // console.log(`Function ${name} is not implemented`)
+                console.log(`Function ${name} is not implemented`)
                 return {value: 0, ref: {}};
             }
         };

@@ -53,7 +53,7 @@ describe('formulas2', () => {
     before(done => {
         fs.readFile('./test/formulas2.json', (err, data) => {
             if (err) throw err;
-            formulas = JSON.parse(data);
+            formulas = JSON.parse(data.toString());
             done();
         });
     });
@@ -64,7 +64,6 @@ describe('formulas2', () => {
         this.timeout(20000);
         formulas.forEach((formula, index)  => {
             // console.log('testing #', index, formula);
-
             try {
                 parser.parse(formula);
                 success++;
