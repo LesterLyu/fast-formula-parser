@@ -92,13 +92,13 @@ class FormulaParser {
                     }
                 }
                 if (res === undefined) {
-                    console.log(`Function ${name} may be not implemented.`);
+                    // console.log(`Function ${name} may be not implemented.`);
                     return {value: 0, ref: {}};
                 }
                 return FormulaHelpers.checkFunctionResult(res);
             }
             else {
-                console.log(`Function ${name} is not implemented`)
+                // console.log(`Function ${name} is not implemented`)
                 return {value: 0, ref: {}};
             }
         };
