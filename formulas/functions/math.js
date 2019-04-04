@@ -108,7 +108,7 @@ const MathFunctions = {
         // mode can be any number
         mode = H.accept(mode, Types.NUMBER, true);
         // The Mode argument does not affect positive numbers.
-        if (mode === undefined || number > 0) {
+        if (mode === undefined || number >= 0) {
             return MathFunctions.CEILING(number, significance);
         }
         // if round down, away from zero, then significance
@@ -220,15 +220,16 @@ const MathFunctions = {
         if (significance === undefined)
             significance = number > 0 ? 1 : -1;
         // mode can be 0 or any other number, 0 means away from zero
+        // the official documentation seems wrong
         mode = H.accept(mode, Types.NUMBER, true);
         // The Mode argument does not affect positive numbers.
-        if (mode === undefined || number > 0) {
+        if (mode === undefined || number >= 0) {
             // away from zero
             return MathFunctions.FLOOR(number, Math.abs(significance));
         }
-        // if round down, away from zero, then significance
+        // if away from zero, add a significance
         const offset = mode ? significance : 0;
-        return MathFunctions.FLOOR(number, significance) - offset;
+        return MathFunctions.FLOOR(number,  significance) + offset;
     },
 
     'FLOOR.PRECISE': (number, significance) => {
@@ -236,7 +237,7 @@ const MathFunctions = {
         significance = H.accept(significance, Types.NUMBER, true);
         if (significance === undefined) significance = 1;
         // always round up
-        return MathFunctions.CEILING(number, Math.abs(significance));
+        return MathFunctions.FLOOR(number, Math.abs(significance));
     },
 
 
