@@ -3,7 +3,7 @@ const {FormulaHelpers, Types, Factorials} = require('../helpers');
 const H = FormulaHelpers;
 
 // factorials
-const f = [], fd= [];
+const f = [], fd = [];
 
 function factorial(n) {
     if (n <= 100)
@@ -155,7 +155,7 @@ const MathFunctions = {
 
     DEGREES: (radians) => {
         radians = H.accept(radians, Types.NUMBER);
-        return radians * (180/Math.PI);
+        return radians * (180 / Math.PI);
     },
 
     EVEN: (number) => {
@@ -229,7 +229,7 @@ const MathFunctions = {
         }
         // if away from zero, add a significance
         const offset = mode ? significance : 0;
-        return MathFunctions.FLOOR(number,  significance) + offset;
+        return MathFunctions.FLOOR(number, significance) + offset;
     },
 
     'FLOOR.PRECISE': (number, significance) => {
@@ -240,8 +240,122 @@ const MathFunctions = {
         return MathFunctions.FLOOR(number, Math.abs(significance));
     },
 
+    GCD: (...params) => {
+        const arr = H.flattenParams(params, Types.NUMBER, param => {
+            if (param < 0 || param > 9007199254740990) // 2^53
+                throw FormulaError.NUM;
+            return Math.trunc(param);
+        });
+        // http://rosettacode.org/wiki/Greatest_common_divisor#JavaScript
+        let i, y,
+            n = params.length,
+            x = Math.abs(arr[0]);
 
+        for (i = 1; i < n; i++) {
+            y = Math.abs(arr[i]);
 
+            while (x && y) {
+                (x > y) ? x %= y : y %= x;
+            }
+            x += y;
+        }
+        return x;
+    },
+
+    INT: (number) => {
+        number = H.accept(number, Types.NUMBER);
+        return Math.floor(number);
+    },
+
+    'ISO.CEILING': (...params) => {
+        return MathFunctions['CEILING.PRECISE'](params);
+    },
+
+    LCM: (...params) => {
+        const arr = H.flattenParams(params, Types.NUMBER, param => {
+            if (param < 0 || param > 9007199254740990) // 2^53
+                throw FormulaError.NUM;
+            return Math.trunc(param);
+        }, 1);
+        // http://rosettacode.org/wiki/Least_common_multiple#JavaScript
+        let n = arr.length, a = Math.abs(arr[0]);
+        for (let i = 1; i < n; i++) {
+            let b = Math.abs(arr[i]), c = a;
+            while (a && b) {
+                a > b ? a %= b : b %= a;
+            }
+            a = Math.abs(c * arr[i]) / (a + b);
+        }
+        return a;
+    },
+
+    LN: number => {
+        number = H.accept(number, Types.NUMBER);
+        return Math.log(number);
+    },
+
+    LOG: (number, base) => {
+        number = H.accept(number, Types.NUMBER);
+        base = H.accept(base, Types.NUMBER, true);
+        if (base === undefined)
+            base = 10;
+        return Math.log(number) / Math.log(base);
+    },
+
+    LOG10: number => {
+        number = H.accept(number, Types.NUMBER);
+        return Math.log10(number);
+    },
+
+    MDETERM: () => {
+
+    },
+
+    MINVERSE: () => {
+
+    },
+
+    MMULT: () => {
+
+    },
+
+    MOD: () => {
+
+    },
+
+    MROUND: () => {
+
+    },
+
+    MULTINOMIAL: () => {
+
+    },
+
+    MUNIT: () => {
+
+    },
+
+    ODD: () => {
+
+    },
+
+    PI: () => {
+        return Math.PI;
+    },
+
+    POWER: (number, power) => {
+        number = H.accept(number, Types.NUMBER);
+        power = H.accept(power, Types.NUMBER);
+        return number ** power;
+    },
+
+    PRODUCT: () => {
+
+    },
+
+    QUOTIENT: () => {
+
+    },
 
     RADIANS: (degrees) => {
         degrees = H.accept(degrees, Types.NUMBER);

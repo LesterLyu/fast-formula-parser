@@ -88,6 +88,45 @@ class FormulaHelpers {
     }
 
     /**
+     * Flatten parameters to 1D array.
+     * @param {Array} params
+     * @param type
+     * @param hook - An extra work after get one value
+     * @param [omittedValue] - The value if an param is omitted. i.e. SUM(1,2,,,,,)
+     * @param [minSize]
+     * @return {Array}
+     */
+    flattenParams(params, type, hook, omittedValue = null, minSize = 1) {
+        if (params.length < minSize)
+            throw Error(`flattenParams: requires at least ${minSize} parameters.`);
+        const result = [];
+        if (type === Types.NUMBER) {
+            params.forEach(param => {
+                if (param.omitted)
+                    param = omittedValue === null ? 0 : omittedValue;
+                else
+                    param = this.accept(param, Types.ARRAY_OR_NUMBER, true);
+                if (hook) param = hook(param);
+                if (param !== undefined)
+                    result.push(param);
+            })
+        } else if (type === Types.STRING) {
+            params.forEach(param => {
+                if (param.omitted)
+                    param = omittedValue === null ? '' : omittedValue;
+                else
+                    param = this.accept(param, Types.ARRAY_OR_STRING, true);
+                if (hook) param = hook(param);
+                if (param)
+                    result.push(param);
+            })
+        } else {
+            throw Error(`flattenParams: type id ${this.type} is not supported`)
+        }
+        return result;
+    }
+
+    /**
      * Check many params.
      * @see {@link FormulaHelpers.accept}
      * @param {Array} params
@@ -116,9 +155,9 @@ class FormulaHelpers {
      *           undefined: Do not parse the value, return it directly.
      *              e.g. [NUMBER, ARRAY, STRING]. The collection is not a flatted array.
      * @param [optional] - Is the parameter optional.
-    * @return {string|number|boolean|{}}
+     * @return {string|number|boolean|{}}
      */
-    accept(param, type=undefined, optional = false) {
+    accept(param, type = undefined, optional = false) {
         // TODO: remove this array check
         if (Array.isArray(type))
             type = type[0];
