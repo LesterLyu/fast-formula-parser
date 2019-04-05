@@ -89,6 +89,7 @@ class FormulaHelpers {
 
     /**
      * Flatten parameters to 1D array.
+     * @see {@link FormulaHelpers.accept}
      * @param {Array} params
      * @param {Types} type
      * @param {function} [hook] - Invoked after parsing each item.
@@ -102,10 +103,14 @@ class FormulaHelpers {
         if (params.length < minSize)
             throw FormulaError.ARG_MISSING([type]);
         const result = [];
-        if (type === Types.NUMBER)
+        if (type === Types.NUMBER) {
             type = allowRangeRef ? Types.ARRAY_OR_NUMBER : Types.NUMBER;
-        else if (type === Types.STRING)
+            omittedValue = omittedValue === null ? 0 : omittedValue;
+        }
+        else if (type === Types.STRING) {
             type = allowRangeRef ? Types.ARRAY_OR_STRING : Types.STRING;
+            omittedValue = omittedValue === null ? '' : omittedValue;
+        }
         else {
             throw Error(`flattenParams: type id ${this.type} is not supported`)
         }

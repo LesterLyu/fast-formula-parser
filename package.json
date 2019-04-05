@@ -10,6 +10,7 @@
   "author": "Lester(Dishu) Lyu",
   "license": "MIT",
   "dependencies": {
+    "bahttext": "^1.1.0",
     "chevrotain": "^4.3.2"
   },
   "devDependencies": {

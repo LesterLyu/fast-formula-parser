@@ -1,15 +1,52 @@
 const FormulaError = require('../error');
 const {FormulaHelpers, Types} = require('../helpers');
 const H = FormulaHelpers;
+
+// Spreadsheet number format
 const ssf = require('../../ssf/ssf');
 
-const TextFunctions = {
-    ASC: (...params) => {
+// Change number to Thai pronunciation string
+const bahttext = require('bahttext');
 
+// full-width and half-width converter
+const charsets = {
+    latin: {halfRE: /[!-~]/g, fullRE: /[！-～]/g, delta: 0xFEE0},
+    hangul1: {halfRE: /[ﾡ-ﾾ]/g, fullRE: /[ᆨ-ᇂ]/g, delta: -0xEDF9},
+    hangul2: {halfRE: /[ￂ-ￜ]/g, fullRE: /[ᅡ-ᅵ]/g, delta: -0xEE61},
+    kana: {delta: 0,
+        half: "｡｢｣､･ｦｧｨｩｪｫｬｭｮｯｰｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝﾞﾟ",
+        full: "。「」、・ヲァィゥェォャュョッーアイウエオカキクケコサシ" +
+            "スセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワン゛゜"},
+    extras: {delta: 0,
+        half: "¢£¬¯¦¥₩\u0020|←↑→↓■°",
+        full: "￠￡￢￣￤￥￦\u3000￨￩￪￫￬￭￮"}
+};
+const toFull = set => c => set.delta ?
+    String.fromCharCode(c.charCodeAt(0) + set.delta) :
+    [...set.full][[...set.half].indexOf(c)];
+const toHalf = set => c => set.delta ?
+    String.fromCharCode(c.charCodeAt(0) - set.delta) :
+    [...set.half][[...set.full].indexOf(c)];
+const re = (set, way) => set[way + "RE"] || new RegExp("[" + set[way] + "]", "g");
+const sets = Object.keys(charsets).map(i => charsets[i]);
+const toFullWidth = str0 =>
+    sets.reduce((str,set) => str.replace(re(set, "half"), toFull(set)), str0);
+const toHalfWidth = str0 =>
+    sets.reduce((str,set) => str.replace(re(set, "full"), toHalf(set)), str0);
+
+const TextFunctions = {
+    ASC: (text) => {
+        text = H.accept(text, Types.STRING);
+        return toHalfWidth(text);
     },
 
-    BAHTTEXT: (...params) => {
-
+    BAHTTEXT: (number) => {
+        number = H.accept(number, Types.NUMBER);
+        try {
+            return bahttext(number);
+        } catch (e) {
+            throw Error(`Error in https://github.com/jojoee/bahttext \n${e.toString()}`)
+        }
     },
 
     CHAR: (number) => {
@@ -19,12 +56,14 @@ const TextFunctions = {
         return String.fromCharCode(number);
     },
 
-    CLEAN: (...params) => {
-
+    CLEAN: (text) => {
+        text = H.accept(text, Types.STRING);
+        return text.replace(/[\x00-\x1F]/g, '');
     },
 
-    CODE: (...params) => {
-
+    CODE: (text) => {
+        text = H.accept(text, Types.STRING);
+        return text.charCodeAt(0);
     },
 
     CONCAT: (...params) => {
@@ -43,16 +82,27 @@ const TextFunctions = {
         return text;
     },
 
-    DBCS: (...params) => {
-
+    DBCS: (text) => {
+        text = H.accept(text, Types.STRING);
+        return toFullWidth(text);
     },
 
-    DOLLAR: (...params) => {
-
+    DOLLAR: (number, decimals) => {
+        number = H.accept(number, Types.NUMBER);
+        decimals = H.accept(decimals, Types.NUMBER, true);
+        if (decimals === undefined)
+            decimals = 2;
+        const decimalString = Array(decimals).fill('0').join('');
+        // Note: does not support locales
+        // TODO: change currency based on user locale or settings from this library
+        return ssf.format(`$#,##0.${decimalString}_);($#,##0.${decimalString})`, number).trim();
     },
 
-    EXACT: (...params) => {
+    EXACT: (text1, text2) => {
+        text1 = H.accept(text1, [Types.STRING]);
+        text2 = H.accept(text2, [Types.STRING]);
 
+        return text1 === text2;
     },
 
     FIND: (findText, withinText, startNum) => {
@@ -73,8 +123,16 @@ const TextFunctions = {
         return TextFunctions.FIND(...params);
     },
 
-    FIXED: (...params) => {
+    FIXED: (number, decimals, noCommas) => {
+        number = H.accept(number, Types.NUMBER);
+        decimals = H.accept(decimals, Types.NUMBER, true);
+        noCommas = H.accept(noCommas, Types.BOOLEAN,true);
 
+        if (decimals === undefined)
+            decimals = 2;
+        const decimalString = Array(decimals).fill('0').join('');
+        const comma = noCommas ? '' : '#,';
+        return ssf.format(`${comma}##0.${decimalString}_);(${comma}##0.${decimalString})`, number).trim();
     },
 
     LEFT: (text, numChars) => {
@@ -103,16 +161,25 @@ const TextFunctions = {
         return TextFunctions.LEN(...params);
     },
 
-    LOWER: (...params) => {
-
+    LOWER: (text) => {
+        text = H.accept(text, [Types.STRING]);
+        return text.toLowerCase();
     },
 
-    MID: (...params) => {
+    MID: (text, start_num, num_chars) => {
+        text = H.accept(text, [Types.STRING]);
+        start_num = H.accept(start_num, [Types.NUMBER]);
+        num_chars = H.accept(num_chars, [Types.NUMBER]);
+        let str = "";
 
+        for (let i = start_num - 1; i < num_chars; i++) {
+            str += text[i];
+        }
+        return str;
     },
 
     MIDB: (...params) => {
-
+        return TextFunctions.MID(...params);
     },
 
     NUMBERVALUE: (...params) => {
@@ -123,29 +190,49 @@ const TextFunctions = {
 
     },
 
-    PROPER: (...params) => {
+    PROPER: (text) => {
+        text = H.accept(text, [Types.STRING]);
+        let str = text.split(" ");
+        const word = [];
 
+        for (let char of str) {
+            word.push(char[0].toUpperCase() + char.slice(1));
+        }
+        return word.join(" ");
     },
 
-    REPLACE: (...params) => {
+    REPLACE: (old_text, start_num, num_chars, new_text) => {
+        old_text = H.accept(old_text, [Types.STRING]);
+        start_num = H.accept(start_num, [Types.NUMBER]);
+        num_chars = H.accept(num_chars, [Types.NUMBER]);
+        new_text = H.accept(new_text, [Types.STRING]);
 
+        let arr = old_text.split("");
+        arr.splice(start_num - 1, num_chars, new_text);
+
+        return arr.join("");
     },
 
     REPLACEB: (...params) => {
-
+        return TextFunctions.REPLACE(...params)
     },
 
-    REPT: (...params) => {
+    REPT: (text, number_times) => {
+        text = H.accept(text, [Types.STRING]);
+        number_times = H.accept(number_times, [Types.NUMBER]);
+        let str = "";
 
+        for (let i = 0; i < number_times; i++) {
+            str += text;
+        }
+        return str;
     },
 
     RIGHT: (text, numChars) => {
         text = H.accept(text, Types.STRING);
-        if (numChars.omitted) {
+        numChars = H.accept(numChars, Types.NUMBER, true);
+        if (numChars === undefined)
             numChars = 1;
-        } else {
-            numChars = H.accept(numChars, Types.NUMBER);
-        }
         if (numChars < 0)
             throw FormulaError.VALUE;
         const len = text.length;
@@ -155,7 +242,7 @@ const TextFunctions = {
     },
 
     RIGHTB: (...params) => {
-
+        return TextFunctions.RIGHT(...params);
     },
 
     SEARCH: (findText, withinText, startNum) => {
@@ -225,20 +312,23 @@ const TextFunctions = {
 
     },
 
-    TRIM: (...params) => {
-
+    TRIM: (text) => {
+        text = H.accept(text, [Types.STRING]);
+        return text.replace(/^\s+|\s+$/g, '')
     },
 
     TEXTJOIN: (...params) => {
 
     },
 
-    UNICHAR: (...params) => {
-
+    UNICHAR: (number) => {
+        number = H.accept(number, [Types.NUMBER]);
+        return TextFunctions.CHAR(number);
     },
 
-    UNICODE: (...params) => {
-
+    UNICODE: (text) => {
+        text = H.accept(text, [Types.STRING]);
+        return TextFunctions.CODE(text);
     },
 };
 
