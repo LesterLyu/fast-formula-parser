@@ -11,6 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "bahttext": "^1.1.0",
+    "bessel": "^1.0.2",
     "chevrotain": "^4.3.2"
   },
   "devDependencies": {

@@ -162,26 +162,26 @@ const TextFunctions = {
     },
 
     LOWER: (text) => {
-        text = H.accept(text, [Types.STRING]);
+        text = H.accept(text, Types.STRING);
         return text.toLowerCase();
     },
 
-    MID: (text, start_num, num_chars) => {
-        text = H.accept(text, [Types.STRING]);
-        start_num = H.accept(start_num, [Types.NUMBER]);
-        num_chars = H.accept(num_chars, [Types.NUMBER]);
-        let str = "";
-
-        for (let i = start_num - 1; i < num_chars; i++) {
-            str += text[i];
-        }
-        return str;
+    MID: (text, startNum, numChars) => {
+        text = H.accept(text, Types.STRING);
+        startNum = H.accept(startNum, Types.NUMBER);
+        numChars = H.accept(numChars, Types.NUMBER);
+        if (startNum > text.length)
+            return '';
+        if (startNum < 1 || numChars < 1)
+            throw FormulaError.VALUE;
+        return text.slice(startNum - 1, startNum + numChars - 1);
     },
 
     MIDB: (...params) => {
         return TextFunctions.MID(...params);
     },
 
+    // TODO: Start from here.
     NUMBERVALUE: (...params) => {
 
     },

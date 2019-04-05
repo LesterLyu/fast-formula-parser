@@ -88,7 +88,11 @@ module.exports = {
     },
 
     MID: {
-        'MID("Fluid Flow",1,5)': "Fluid"
+        'MID("Fluid Flow",1,5)': "Fluid",
+        'MID("Foo",5,1)': "",
+        'MID("Foo",1,5)': "Foo",
+        'MID("Foo",-1,5)': "#VALUE!",
+        'MID("Foo",1,-5)': "#VALUE!"
     },
 
     PROPER: {
