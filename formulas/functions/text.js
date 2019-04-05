@@ -28,28 +28,19 @@ const TextFunctions = {
     },
 
     CONCAT: (...params) => {
-        let texts = H.accept(params.shift(), Types.ARRAY_OR_STRING);
-        if (Array.isArray(texts))
-            texts = texts.join('');
-        params.forEach(param => {
-            let text = H.accept(param, Types.ARRAY_OR_STRING, true);
-            if (text) {
-                if (Array.isArray(text))
-                    text = text.join('');
-                texts += text;
-            }
+        let text = '';
+        H.flattenParams(params, Types.STRING, item => {
+            text += item;
         });
-        return texts
+        return text
     },
 
     CONCATENATE: (...params) => {
-        let texts = H.accept(params.shift(), Types.STRING);
-        params.forEach(param => {
-            const text = H.accept(param, Types.STRING, true);
-            if (text)
-                texts += text;
-        });
-        return texts
+        let text = '';
+        H.flattenParams(params, Types.STRING, item => {
+            text += item;
+        }, false);
+        return text;
     },
 
     DBCS: (...params) => {

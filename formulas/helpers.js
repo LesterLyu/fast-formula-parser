@@ -90,39 +90,47 @@ class FormulaHelpers {
     /**
      * Flatten parameters to 1D array.
      * @param {Array} params
-     * @param type
-     * @param hook - An extra work after get one value
-     * @param [omittedValue] - The value if an param is omitted. i.e. SUM(1,2,,,,,)
-     * @param [minSize]
+     * @param {Types} type
+     * @param {function} [hook] - Invoked after parsing each item.
+     * @param {boolean} [allowRangeRef] - If true, will unpack the nested array, otherwise uses first element
+     *                         of the array.
+     * @param {*} [omittedValue] - The value if an param is omitted. i.e. SUM(1,2,,,,,)
+     * @param {number} [minSize]
      * @return {Array}
      */
-    flattenParams(params, type, hook, omittedValue = null, minSize = 1) {
+    flattenParams(params, type, hook, allowRangeRef = true, omittedValue = null, minSize = 1) {
         if (params.length < minSize)
-            throw Error(`flattenParams: requires at least ${minSize} parameters.`);
+            throw FormulaError.ARG_MISSING([type]);
         const result = [];
-        if (type === Types.NUMBER) {
-            params.forEach(param => {
-                if (param.omitted)
-                    param = omittedValue === null ? 0 : omittedValue;
-                else
-                    param = this.accept(param, Types.ARRAY_OR_NUMBER, true);
-                if (hook) param = hook(param);
-                if (param !== undefined)
-                    result.push(param);
-            })
-        } else if (type === Types.STRING) {
-            params.forEach(param => {
-                if (param.omitted)
-                    param = omittedValue === null ? '' : omittedValue;
-                else
-                    param = this.accept(param, Types.ARRAY_OR_STRING, true);
-                if (hook) param = hook(param);
-                if (param)
-                    result.push(param);
-            })
-        } else {
+        if (type === Types.NUMBER)
+            type = allowRangeRef ? Types.ARRAY_OR_NUMBER : Types.NUMBER;
+        else if (type === Types.STRING)
+            type = allowRangeRef ? Types.ARRAY_OR_STRING : Types.STRING;
+        else {
             throw Error(`flattenParams: type id ${this.type} is not supported`)
         }
+
+        params.forEach(param => {
+            if (param.omitted)
+                param = omittedValue === null ? 0 : omittedValue;
+            else
+                param = this.accept(param, type, true);
+            if (Array.isArray(param)) {
+                if (hook) {
+                    // the array is flattened by this.accept
+                    param = param.map(item => {
+                        item = hook(item);
+                        return item;
+                    });
+                }
+                params.concat(param);
+            } else {
+                if (hook)
+                    param = hook(param);
+                if (param !== undefined)
+                    result.push(param);
+            }
+        });
         return result;
     }
 

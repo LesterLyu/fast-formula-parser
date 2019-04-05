@@ -245,7 +245,7 @@ const MathFunctions = {
             if (param < 0 || param > 9007199254740990) // 2^53
                 throw FormulaError.NUM;
             return Math.trunc(param);
-        });
+        }, false);
         // http://rosettacode.org/wiki/Greatest_common_divisor#JavaScript
         let i, y,
             n = params.length,
@@ -276,7 +276,7 @@ const MathFunctions = {
             if (param < 0 || param > 9007199254740990) // 2^53
                 throw FormulaError.NUM;
             return Math.trunc(param);
-        }, 1);
+        }, false, 1);
         // http://rosettacode.org/wiki/Least_common_multiple#JavaScript
         let n = arr.length, a = Math.abs(arr[0]);
         for (let i = 1; i < n; i++) {
@@ -414,21 +414,10 @@ const MathFunctions = {
     },
 
     SUM: (...params) => {
-        let result = H.accept(params.shift(), Types.ARRAY_OR_NUMBER);
-        const getSum = (partial_sum, a) => partial_sum + a;
-
-        if (Array.isArray(result))
-            result = result.reduce(getSum);
-
-        params.forEach(param => {
-            param = H.accept(param, Types.ARRAY_OR_NUMBER, true);
-            if (param !== undefined) {
-                if (Array.isArray(param))
-                    result += param.reduce(getSum);
-                else
-                    result += param;
-            }
-        });
+        let result = 0;
+        H.flattenParams(params, Types.NUMBER, item => {
+            result += item;
+        }, true);
         return result
     },
 

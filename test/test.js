@@ -9,6 +9,7 @@ const lineReader = require('readline').createInterface({
 });
 
 require('./formulas/math/math');
+require('./formulas/text/text');
 
 describe('Parsing Formulas 1', function () {
     let success = 0;
