@@ -18,9 +18,8 @@ const LogicalFunctions = {
     IF: (logicalTest, valueIfTrue, valueIfFalse) => {
         logicalTest = H.accept(logicalTest, Types.BOOLEAN);
         valueIfTrue = H.accept(valueIfTrue); // do not parse type
-        valueIfFalse = H.accept(valueIfFalse, undefined, true); // do not parse type
-        if (valueIfFalse === undefined)
-            valueIfFalse = false;
+        valueIfFalse = H.accept(valueIfFalse, null, false); // do not parse type
+
         return logicalTest ? valueIfTrue : valueIfFalse;
     },
 

@@ -1,4 +1,86 @@
 module.exports = {
+    ADDRESS: {
+        'ADDRESS(2,3)': '$C$2',
+        'ADDRESS(2,3, 1)': '$C$2',
+        'ADDRESS(2,3,2)': 'C$2',
+        'ADDRESS(2,3,3)': '$C2',
+        'ADDRESS(2,3,4, TRUE)': 'C2',
+        'ADDRESS(2,3,2,FALSE)': 'R2C[3]',
+        'ADDRESS(2,3,1,FALSE,"[Book1]Sheet1")': "'[Book1]Sheet1'!R2C3",
+        'ADDRESS(2,3,1,FALSE,"EXCEL SHEET")': "'EXCEL SHEET'!R2C3",
+        'ADDRESS(2,3,4, 2, "abc")': 'abc!C2',
+    },
+
+    AREAS: {
+        'AREAS(B2:D4)': 1,
+        'AREAS((B2:D4,E5,F6:I9))': 3,
+        'AREAS(B2:D4 B2)': 1,
+    },
+
+    COLUMN: {
+        'COLUMN()': 1,
+        'COLUMN(C3)': 3,
+        'COLUMN(C3:V6)': 3,
+        'COLUMN(123)': '#VALUE!',
+        'COLUMN({1,2,3})': '#VALUE!',
+        'COLUMN("A1")': '#VALUE!'
+    },
+
+    COLUMNS: {
+        'COLUMNS(A1)': 1,
+        'COLUMNS(A1:C5)': 3,
+        'COLUMNS(123)': '#VALUE!',
+        'COLUMNS({1,2,3})': '#VALUE!',
+        'COLUMNS("A1")': '#VALUE!'
+    },
+
+    HLOOKUP: {
+        'HLOOKUP(3, {1,2,3,4,5}, 1)': 3,
+        'HLOOKUP(3, {3,2,1}, 1)': 1,
+        'HLOOKUP(3, {1,2,3,4,5}, 2)': '#REF!',
+        'HLOOKUP("a", {1,2,3,4,5}, 1)': '#N/A',
+        'HLOOKUP(3, {1.1,2.2,3.3,4.4,5.5}, 1)': 2.2,
+        // should handle like Excel.
+        'HLOOKUP(63, {"c",FALSE,"abc",65,63,61,"b","a",FALSE,TRUE}, 1)': 63,
+        'HLOOKUP(TRUE, {"c",FALSE,"abc",65,63,61,"b","a",FALSE,TRUE}, 1)': 'TRUE',
+        'HLOOKUP(FALSE, {"c",FALSE,"abc",65,63,61,"b","a",FALSE,TRUE}, 1)': 'FALSE',
+        'HLOOKUP(FALSE, {"c",TRUE,"abc",65,63,61,"b","a",TRUE,FALSE}, 1)': '#N/A',
+        'HLOOKUP("c", {"c",TRUE,"abc",65,63,61,"b","a",TRUE,FALSE}, 1)': 'a',
+        'HLOOKUP("b", {"c",TRUE,"abc",65,63,61,"b","a",TRUE,FALSE}, 1)': 'b',
+        'HLOOKUP("abc", {"c",TRUE,"abc",65,63,61,"b","a",TRUE,FALSE}, 1)': 'abc',
+        'HLOOKUP("a", {"c",TRUE,"abc",65,63,61,"b","a",TRUE,FALSE}, 1)': '#N/A',
+        'HLOOKUP("a*", {"c",TRUE,"abc",65,63,61,"b","a",TRUE,FALSE}, 1)': '#N/A',
+        // with rangeLookup = FALSE
+        'HLOOKUP(3, 3, 1,FALSE)': '#N/A',
+        'HLOOKUP(3, {1,2,3}, 1,FALSE)': 3,
+        'HLOOKUP("a", {1,2,3,"a","b"}, 1,FALSE)': 'a',
+        'HLOOKUP(3, {1,2,3;"a","b","c"}, 2,FALSE)': 'c',
+        'HLOOKUP(6, {1,2,3;"a","b","c"}, 2,FALSE)': '#N/A',
+        // wildcard support
+        'HLOOKUP("s?", {"abc", "sd", "qwe"}, 1,FALSE)': 'sd',
+        'HLOOKUP("*e", {"abc", "sd", "qwe"}, 1,FALSE)': 'qwe',
+        'HLOOKUP("*e?2?", {"abc", "sd", "qwe123"}, 1,FALSE)': 'qwe123',
+        // case insensitive
+        'HLOOKUP("a*", {"c",TRUE,"AbC",65,63,61,"b","a",TRUE,FALSE}, 1, FALSE)': 'AbC'
+    },
+
+    ROW: {
+        'ROW()': 1,
+        'ROW(C4)': 4,
+        'ROW(C4:V6)': 4,
+        'ROW(123)': '#VALUE!',
+        'ROW({1,2,3})': '#VALUE!',
+        'ROW("A1")': '#VALUE!'
+    },
+
+    ROWS: {
+        'ROWS(A1)': 1,
+        'ROWS(A1:C5)': 5,
+        'ROWS(123)': '#VALUE!',
+        'ROWS({1,2,3})': '#VALUE!',
+        'ROWS("A1")': '#VALUE!'
+    },
+
     VLOOKUP: {
         'VLOOKUP(3, {1;2;3;4;5}, 1)': 3,
         'VLOOKUP(3, {3;2;1}, 1)': 1,
@@ -25,6 +107,8 @@ module.exports = {
         'VLOOKUP("s?", {"abc"; "sd"; "qwe"}, 1,FALSE)': 'sd',
         'VLOOKUP("*e", {"abc"; "sd"; "qwe"}, 1,FALSE)': 'qwe',
         'VLOOKUP("*e?2?", {"abc"; "sd"; "qwe123"}, 1,FALSE)': 'qwe123',
+        // case insensitive
+        'VLOOKUP("a*", {"c";TRUE;"AbC";65;63;61;"b";"a";TRUE;FALSE}, 1, FALSE)': 'AbC'
     }
 
 };

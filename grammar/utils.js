@@ -1,5 +1,5 @@
 const FormulaError = require('../formulas/error');
-const {FormulaHelpers, Types} = require('../formulas/helpers');
+const {FormulaHelpers, Types, Address} = require('../formulas/helpers');
 const {Prefix, Postfix, Infix, Operators} = require('../formulas/operators');
 const MAX_ROW = 1048576, MAX_COLUMN = 16384;
 
@@ -10,16 +10,7 @@ class Utils {
     }
 
     columnNameToNumber(columnName) {
-        columnName = columnName.toUpperCase();
-        const len = columnName.length;
-        let number = 0;
-        for (let i = 0; i < len; i++) {
-            const code = columnName.charCodeAt(i);
-            if (!isNaN(code)) {
-                number += (code - 64) * 26 ** (len - i - 1)
-            }
-        }
-        return number;
+        return Address.columnNameToNumber(columnName);
     }
 
     /**

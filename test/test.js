@@ -35,7 +35,7 @@ describe('Parsing Formulas 1', function () {
         formulas.forEach((formula, index) => {
             // console.log('testing #', index, formula);
             try {
-                parser.parse(formula);
+                parser.parse(formula, {row: 2, col: 2});
                 success++;
             } catch (e) {
                 failures.push(formula);

@@ -115,9 +115,9 @@ class FormulaHelpers {
 
         params.forEach(param => {
             if (param.omitted)
-                param = omittedValue === null ? 0 : omittedValue;
+                param = omittedValue;
             else
-                param = this.accept(param, type, true);
+                param = this.accept(param, type, omittedValue);
             if (Array.isArray(param)) {
                 if (hook) {
                     // the array is flattened by this.accept
@@ -168,7 +168,8 @@ class FormulaHelpers {
      * @param {*} defValue - Default value if the param is not given.
      *               if null, this param is required, a Error will throw if not given.
      * @param {boolean} [flat=true] - If the array should be flattened,
-     *                              only applicable when type is ARRAY
+     *                      only applicable when type is ARRAY.
+     *                      If false, collection is disallowed.
      * @return {string|number|boolean|{}|Array}
      */
     accept(param, type = null, defValue = null, flat = true) {
@@ -194,11 +195,14 @@ class FormulaHelpers {
             throw param;
 
         // return a flatten array
-        if (type === Types.ARRAY && (Array.isArray(param) || param.collections)) {
+        if (flat && type === Types.ARRAY && (Array.isArray(param) || param.collections)) {
             // flatten the array
             if (param.collections)
                 param = param.collections;
-            return flat ? this.flattenDeep(param) : param;
+            return this.flattenDeep(param);
+        } else if (!flat && type === Types.ARRAY && Array.isArray(param)) {
+            // disallow collections (unions) and do not flatten the array
+            return param;
         } else if (type === Types.COLLECTIONS) {
             return param;
         } else if (type === Types.ARRAY_OR_NUMBER) {
@@ -285,10 +289,41 @@ const WildCard = {
     }
 };
 
+const Address = {
+
+    columnNumberToName: (number) => {
+        let dividend = number;
+        let name = '';
+        let modulo = 0;
+
+        while (dividend > 0) {
+            modulo = (dividend - 1) % 26;
+            name = String.fromCharCode('A'.charCodeAt(0) + modulo) + name;
+            dividend = Math.floor((dividend - modulo) / 26);
+        }
+
+        return name;
+    },
+
+    columnNameToNumber: (columnName) => {
+        columnName = columnName.toUpperCase();
+        const len = columnName.length;
+        let number = 0;
+        for (let i = 0; i < len; i++) {
+            const code = columnName.charCodeAt(i);
+            if (!isNaN(code)) {
+                number += (code - 64) * 26 ** (len - i - 1)
+            }
+        }
+        return number;
+    },
+};
+
 module.exports = {
     FormulaHelpers: new FormulaHelpers(),
     Types,
     ReversedTypes,
     Factorials,
     WildCard,
+    Address,
 };

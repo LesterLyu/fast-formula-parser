@@ -32,14 +32,15 @@ class FormulaParser {
         this.onRange = config.onRange;
         this.onCell = config.onCell;
 
-        // functions treat null as 0
+        // functions treat null as 0, other functions treats null as ""
         this.funsNullAs0 = Object.keys(MathFunctions)
             .concat(Object.keys(TrigFunctions))
             .concat(Object.keys(LogicalFunctions))
             .concat(Object.keys(EngFunctions))
             .concat(Object.keys(ReferenceFunctions));
-        // functions treat null as ""
-        this.funsNullAsString = Object.keys(TextFunctions);
+
+        // functions need context and don't need to retrieve references
+        this.funsNeedContext = ['ROW', 'ROWS', 'COLUMN', 'COLUMNS'];
 
         // uses ES5 syntax here... I don't want to transpile the code...
         this.getCell = (ref) => {
@@ -74,20 +75,24 @@ class FormulaParser {
             // if one arg is null, it means 0 or "" depends on the function it calls
             const nullValue = this.funsNullAs0.includes(name) ? 0 : '';
 
-            // retrieve reference
-            args = args.map(arg => {
-                if (arg === null)
-                    return {value: nullValue, isArray: false, omitted: true};
-                const res = this.utils.extractRefValue(arg);
-                return {value: res.val, isArray: res.isArray};
-            });
-
+            if (!this.funsNeedContext.includes(name)) {
+                // retrieve reference
+                args = args.map(arg => {
+                    if (arg === null)
+                        return {value: nullValue, isArray: false, omitted: true};
+                    const res = this.utils.extractRefValue(arg);
+                    return {value: res.val, isArray: res.isArray};
+                });
+            }
             // console.log('callFunction', name, args)
 
             if (this.functions[name]) {
                 let res;
                 try {
-                    res = (this.functions[name](...args));
+                    if (!this.funsNeedContext.includes(name))
+                        res = (this.functions[name](...args));
+                    else
+                        res = (this.functions[name](this, ...args));
                 } catch (e) {
                     // allow functions throw FormulaError, this make functions easier to implement!
                     if (e instanceof FormulaError) {
@@ -102,8 +107,7 @@ class FormulaParser {
                     return {value: 0, ref: {}};
                 }
                 return FormulaHelpers.checkFunctionResult(res);
-            }
-            else {
+            } else {
                 if (!this.logs.includes(name)) this.logs.push(name);
                 // console.log(`Function ${name} is not implemented`)
                 return {value: 0, ref: {}};
@@ -133,7 +137,7 @@ class FormulaParser {
         functions.forEach(fun => {
             let res;
             try {
-                res = this.functions[fun](0,0,0,0,0,0,0,0,0,0,0);
+                res = this.functions[fun](0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 if (res === undefined) return;
                 supported.push(fun);
             } catch (e) {
@@ -156,8 +160,7 @@ class FormulaParser {
                 return FormulaError.NUM;
             }
             result += 0; // make -0 to 0
-        }
-        else if (type === 'boolean')
+        } else if (type === 'boolean')
             result = result ? 'TRUE' : 'FALSE';
         else if (type === 'object') {
             if (result instanceof FormulaError)
@@ -176,9 +179,12 @@ class FormulaParser {
     /**
      *
      * @param inputText
+     * @param {{row: number, col: number}} [position] - The position of the parsed formula
+     *              e.g. {row: 1, col: 1}
      * @returns {*}
      */
-    parse(inputText) {
+    parse(inputText, position) {
+        this.position = position;
         const lexResult = lexer.lex(inputText);
         this.parser.input = lexResult.tokens;
         let res;
@@ -198,7 +204,8 @@ class FormulaParser {
             let msg = '\n' + inputText.split('\n')[line - 1] + '\n';
             try {
                 msg += Array(column - 1).fill(' ').join('') + '^\n';
-            } catch (e) {}
+            } catch (e) {
+            }
             error.message = msg + `Error at position ${line}:${column}\n` + error.message;
             throw error
         }

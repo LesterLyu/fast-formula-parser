@@ -275,7 +275,7 @@ const TextFunctions = {
             throw FormulaError.VALUE;
 
         // transform to js regex expression
-        let findTextRegex = WildCard.toRegex(findText, 'i');
+        let findTextRegex = WildCard.isWildCard(findText) ? WildCard.toRegex(findText, 'i') : findText;
         const res = withinText.slice(startNum - 1).search(findTextRegex);
         if (res === -1)
             throw FormulaError.VALUE;
