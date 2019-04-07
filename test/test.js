@@ -45,6 +45,10 @@ describe('Parsing Formulas 1', function () {
             console.log(failures);
             console.log(`Success rate: ${success / formulas.length * 100}%`);
         }
+
+        const logs = parser.logs.sort();
+        console.log(`The following functions is not implemented: (${logs.length} in total)\n ${logs.join(', ')}`);
+        parser.logs = [];
         assert.strictEqual(success / formulas.length === 1, true);
     });
 });
@@ -79,8 +83,12 @@ describe('Parsing Formulas 2', () => {
             console.log(`Success rate: ${success / formulas.length * 100}%`);
         }
         assert.strictEqual(success / formulas.length === 1, true);
+        const logs = parser.logs.sort();
+        console.log(`The following functions is not implemented: (${logs.length} in total)\n ${logs.join(', ')}`);
+        parser.logs = [];
         done();
     });
+
 });
 
 

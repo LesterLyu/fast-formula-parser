@@ -102,13 +102,11 @@ const MathFunctions = {
         number = H.accept(number, Types.NUMBER);
         if (number >= 9.99E+307 || number <= -2.229E+308)
             throw FormulaError.NUM;
-        significance = H.accept(significance, Types.NUMBER, true);
-        if (significance === undefined)
-            significance = number > 0 ? 1 : -1;
+        significance = H.accept(significance, Types.NUMBER, number > 0 ? 1 : -1);
         // mode can be any number
-        mode = H.accept(mode, Types.NUMBER, true);
+        mode = H.accept(mode, Types.NUMBER, 0);
         // The Mode argument does not affect positive numbers.
-        if (mode === undefined || number >= 0) {
+        if (number >= 0) {
             return MathFunctions.CEILING(number, significance);
         }
         // if round down, away from zero, then significance
@@ -118,8 +116,7 @@ const MathFunctions = {
 
     'CEILING.PRECISE': (number, significance) => {
         number = H.accept(number, Types.NUMBER);
-        significance = H.accept(significance, Types.NUMBER, true);
-        if (significance === undefined) significance = 1;
+        significance = H.accept(significance, Types.NUMBER, 1);
         // always round up
         return MathFunctions.CEILING(number, Math.abs(significance));
     },
@@ -216,14 +213,13 @@ const MathFunctions = {
         number = H.accept(number, Types.NUMBER);
         if (number >= 9.99E+307 || number <= -2.229E+308)
             throw FormulaError.NUM;
-        significance = H.accept(significance, Types.NUMBER, true);
-        if (significance === undefined)
-            significance = number > 0 ? 1 : -1;
+        significance = H.accept(significance, Types.NUMBER, number > 0 ? 1 : -1);
+
         // mode can be 0 or any other number, 0 means away from zero
         // the official documentation seems wrong
-        mode = H.accept(mode, Types.NUMBER, true);
+        mode = H.accept(mode, Types.NUMBER, 0);
         // The Mode argument does not affect positive numbers.
-        if (mode === undefined || number >= 0) {
+        if (mode === 0 || number >= 0) {
             // away from zero
             return MathFunctions.FLOOR(number, Math.abs(significance));
         }
@@ -234,8 +230,7 @@ const MathFunctions = {
 
     'FLOOR.PRECISE': (number, significance) => {
         number = H.accept(number, Types.NUMBER);
-        significance = H.accept(significance, Types.NUMBER, true);
-        if (significance === undefined) significance = 1;
+        significance = H.accept(significance, Types.NUMBER, 1);
         // always round up
         return MathFunctions.FLOOR(number, Math.abs(significance));
     },
@@ -296,9 +291,8 @@ const MathFunctions = {
 
     LOG: (number, base) => {
         number = H.accept(number, Types.NUMBER);
-        base = H.accept(base, Types.NUMBER, true);
-        if (base === undefined)
-            base = 10;
+        base = H.accept(base, Types.NUMBER, 10);
+
         return Math.log(number) / Math.log(base);
     },
 

@@ -22,7 +22,8 @@ module.exports = {
     },
 
     CODE: {
-        'CODE("C")': 67
+        'CODE("C")': 67,
+        'CODE("")': '#VALUE!',
     },
 
     CONCAT: {
@@ -95,8 +96,29 @@ module.exports = {
         'MID("Foo",1,-5)': "#VALUE!"
     },
 
+    NUMBERVALUE: {
+        'NUMBERVALUE("2.500,27",",",".")': 2500.27,
+        // group separator occurs before the decimal separator
+        'NUMBERVALUE("2500.,27",",",".")': 2500.27,
+        'NUMBERVALUE("3.5%")': 0.035,
+        'NUMBERVALUE("3 50")': 350,
+        'NUMBERVALUE("$3 50")': 350,
+        'NUMBERVALUE("($3 50)")': -350,
+        'NUMBERVALUE("-($3 50)")': '#VALUE!',
+        'NUMBERVALUE("($-3 50)")': '#VALUE!',
+        'NUMBERVALUE("2500,.27",",",".")': '#VALUE!',
+        // group separator occurs after the decimal separator
+        'NUMBERVALUE("3.5%",".",".")': '#VALUE!',
+        'NUMBERVALUE("3.5%",,)': '#VALUE!',
+        // decimal separator is used more than once
+        'NUMBERVALUE("3..5")': '#VALUE!',
+
+    },
+
     PROPER: {
-        'PROPER("this is a tiTle")': "This Is A TiTle"
+        'PROPER("this is a tiTle")': "This Is A Title",
+        'PROPER("2-way street")': "2-Way Street",
+        'PROPER("76BudGet")': '76Budget',
     },
 
     REPLACE: {
@@ -106,6 +128,15 @@ module.exports = {
 
     REPT: {
         'REPT("*_",4)': "*_*_*_*_"
+    },
+
+    SEARCH: {
+        'SEARCH(",", "abcdef")': '#VALUE!',
+        'SEARCH("b", "abcdef")': 2,
+        'SEARCH("c*f", "abcdef")': 3,
+        'SEARCH("c?f", "abcdef")': '#VALUE!',
+        'SEARCH("c?e", "abcdef")': 3,
+        'SEARCH("c\\b", "abcabcac\\bacb", 6)': 8,
     },
 
     T: {
@@ -124,6 +155,14 @@ module.exports = {
     UNICHAR: {
         'UNICHAR(32)': " ",
         'UNICHAR(66)': "B",
-        'UNICHAR(32)': "#",
+        'UNICHAR(0)': "#VALUE!",
+        'UNICHAR(3333)': 'അ',
     },
+
+    UNICODE: {
+        'UNICODE(" ")': 32,
+        'UNICODE("B")': 66,
+        'UNICODE("")': '#VALUE!',
+    }
+
 };

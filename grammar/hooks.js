@@ -3,6 +3,7 @@ const MathFunctions = require('../formulas/functions/math');
 const TrigFunctions = require('../formulas/functions/trigonometry');
 const LogicalFunctions = require('../formulas/functions/logical');
 const EngFunctions = require('../formulas/functions/engineering');
+const ReferenceFunctions = require('../formulas/functions/reference');
 const FormulaError = require('../formulas/error');
 const {FormulaHelpers} = require('../formulas/helpers');
 const {Parser, allTokens} = require('./parsing');
@@ -16,6 +17,7 @@ class FormulaParser {
      * @param {{functions: {}, variables: {}, onCell: function, onRange: function}} [config]
      */
     constructor(config) {
+        this.logs = [];
         this.utils = new Utils(this);
         config = Object.assign({
             functions: {},
@@ -25,7 +27,7 @@ class FormulaParser {
         }, config);
 
         this.variables = config.variables;
-        this.functions = Object.assign({},
+        this.functions = Object.assign({}, ReferenceFunctions,
             EngFunctions, LogicalFunctions, TextFunctions, MathFunctions, TrigFunctions, config.functions);
         this.onRange = config.onRange;
         this.onCell = config.onCell;
@@ -34,7 +36,8 @@ class FormulaParser {
         this.funsNullAs0 = Object.keys(MathFunctions)
             .concat(Object.keys(TrigFunctions))
             .concat(Object.keys(LogicalFunctions))
-            .concat(Object.keys(EngFunctions));
+            .concat(Object.keys(EngFunctions))
+            .concat(Object.keys(ReferenceFunctions));
         // functions treat null as ""
         this.funsNullAsString = Object.keys(TextFunctions);
 
@@ -94,13 +97,15 @@ class FormulaParser {
                     }
                 }
                 if (res === undefined) {
-                    console.log(`Function ${name} may be not implemented.`);
+                    if (!this.logs.includes(name)) this.logs.push(name);
+                    // console.log(`Function ${name} may be not implemented.`);
                     return {value: 0, ref: {}};
                 }
                 return FormulaHelpers.checkFunctionResult(res);
             }
             else {
-                console.log(`Function ${name} is not implemented`)
+                if (!this.logs.includes(name)) this.logs.push(name);
+                // console.log(`Function ${name} is not implemented`)
                 return {value: 0, ref: {}};
             }
         };
@@ -191,7 +196,9 @@ class FormulaParser {
             const error = this.parser.errors[0];
             const line = error.token.startLine, column = error.token.startColumn;
             let msg = '\n' + inputText.split('\n')[line - 1] + '\n';
-            msg += Array(column - 1).fill(' ').join('') + '^\n';
+            try {
+                msg += Array(column - 1).fill(' ').join('') + '^\n';
+            } catch (e) {}
             error.message = msg + `Error at position ${line}:${column}\n` + error.message;
             throw error
         }

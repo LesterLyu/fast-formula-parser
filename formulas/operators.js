@@ -1,5 +1,5 @@
 const FormulaError = require('../formulas/error');
-const {FormulaHelpers, Types} = require('../formulas/helpers');
+const {FormulaHelpers} = require('../formulas/helpers');
 
 const Prefix = {
     unaryOp: (prefixes, value, isArray) => {

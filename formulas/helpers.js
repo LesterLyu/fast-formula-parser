@@ -106,12 +106,10 @@ class FormulaHelpers {
         if (type === Types.NUMBER) {
             type = allowRangeRef ? Types.ARRAY_OR_NUMBER : Types.NUMBER;
             omittedValue = omittedValue === null ? 0 : omittedValue;
-        }
-        else if (type === Types.STRING) {
+        } else if (type === Types.STRING) {
             type = allowRangeRef ? Types.ARRAY_OR_STRING : Types.STRING;
             omittedValue = omittedValue === null ? '' : omittedValue;
-        }
-        else {
+        } else {
             throw Error(`flattenParams: type id ${this.type} is not supported`)
         }
 
@@ -159,7 +157,7 @@ class FormulaHelpers {
      * Check if the param valid, return the parsed param.
      * If type is not given, return the un-parsed param.
      * @param {*} param
-     * @param {number} [type] - The expected type
+     * @param {number|null} [type] - The expected type
      *           NUMBER: Expect a single number,
      *           ARRAY: Expect an flatten array,
      *           BOOLEAN: Expect a single boolean,
@@ -167,17 +165,20 @@ class FormulaHelpers {
      *           COLLECTIONS: Expect an Array of the above types
      *           undefined: Do not parse the value, return it directly.
      *              e.g. [NUMBER, ARRAY, STRING]. The collection is not a flatted array.
-     * @param [optional] - Is the parameter optional.
-     * @return {string|number|boolean|{}}
+     * @param {*} defValue - Default value if the param is not given.
+     *               if null, this param is required, a Error will throw if not given.
+     * @param {boolean} [flat=true] - If the array should be flattened,
+     *                              only applicable when type is ARRAY
+     * @return {string|number|boolean|{}|Array}
      */
-    accept(param, type = undefined, optional = false) {
+    accept(param, type = null, defValue = null, flat = true) {
         // TODO: remove this array check
         if (Array.isArray(type))
             type = type[0];
-        if ((param === undefined || param === null) && !optional) {
+        if (param == null && defValue == null) {
             throw FormulaError.ARG_MISSING([type]);
-        } else if (param === undefined || param === null)
-            return undefined;
+        } else if (param == null)
+            return defValue;
 
         if (typeof param !== "object")
             return param;
@@ -186,7 +187,7 @@ class FormulaHelpers {
         param = param.value;
 
         // return an un-parsed type.
-        if (type === undefined)
+        if (type == null)
             return param;
 
         if (param instanceof FormulaError)
@@ -197,7 +198,7 @@ class FormulaHelpers {
             // flatten the array
             if (param.collections)
                 param = param.collections;
-            return this.flattenDeep(param);
+            return flat ? this.flattenDeep(param) : param;
         } else if (type === Types.COLLECTIONS) {
             return param;
         } else if (type === Types.ARRAY_OR_NUMBER) {
@@ -233,6 +234,8 @@ class FormulaHelpers {
                 param = Boolean(param);
         } else if (type === Types.NUMBER) {
             param = this.acceptNumber(param, false);
+        } else {
+            throw FormulaError.VALUE;
         }
         return param;
     }
@@ -263,9 +266,29 @@ class FormulaHelpers {
     }
 }
 
+const WildCard = {
+    /**
+     * @param {string|*} obj
+     * @returns {*}
+     */
+    isWildCard: obj => {
+        if (typeof obj === "string")
+            return /[*?]/.test(obj);
+        return false;
+    },
+
+    toRegex: (lookupText, flags) => {
+        return RegExp(lookupText.replace(/[.+^${}()|[\]\\]/g, '\\$&') // escape the special char for js regex
+            .replace(/(?<!~)[?]/g, '.') // ? => .
+            .replace(/(?<!~)[*]/g, '.*') // * => .*
+            .replace(/~([?*])/g, '$1'), flags); // ~* => * and ~? => ?
+    }
+};
+
 module.exports = {
     FormulaHelpers: new FormulaHelpers(),
     Types,
     ReversedTypes,
     Factorials,
+    WildCard,
 };

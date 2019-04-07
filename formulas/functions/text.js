@@ -1,5 +1,5 @@
 const FormulaError = require('../error');
-const {FormulaHelpers, Types} = require('../helpers');
+const {FormulaHelpers, Types, WildCard} = require('../helpers');
 const H = FormulaHelpers;
 
 // Spreadsheet number format
@@ -13,13 +13,17 @@ const charsets = {
     latin: {halfRE: /[!-~]/g, fullRE: /[！-～]/g, delta: 0xFEE0},
     hangul1: {halfRE: /[ﾡ-ﾾ]/g, fullRE: /[ᆨ-ᇂ]/g, delta: -0xEDF9},
     hangul2: {halfRE: /[ￂ-ￜ]/g, fullRE: /[ᅡ-ᅵ]/g, delta: -0xEE61},
-    kana: {delta: 0,
+    kana: {
+        delta: 0,
         half: "｡｢｣､･ｦｧｨｩｪｫｬｭｮｯｰｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝﾞﾟ",
         full: "。「」、・ヲァィゥェォャュョッーアイウエオカキクケコサシ" +
-            "スセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワン゛゜"},
-    extras: {delta: 0,
+            "スセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワン゛゜"
+    },
+    extras: {
+        delta: 0,
         half: "¢£¬¯¦¥₩\u0020|←↑→↓■°",
-        full: "￠￡￢￣￤￥￦\u3000￨￩￪￫￬￭￮"}
+        full: "￠￡￢￣￤￥￦\u3000￨￩￪￫￬￭￮"
+    }
 };
 const toFull = set => c => set.delta ?
     String.fromCharCode(c.charCodeAt(0) + set.delta) :
@@ -30,9 +34,9 @@ const toHalf = set => c => set.delta ?
 const re = (set, way) => set[way + "RE"] || new RegExp("[" + set[way] + "]", "g");
 const sets = Object.keys(charsets).map(i => charsets[i]);
 const toFullWidth = str0 =>
-    sets.reduce((str,set) => str.replace(re(set, "half"), toFull(set)), str0);
+    sets.reduce((str, set) => str.replace(re(set, "half"), toFull(set)), str0);
 const toHalfWidth = str0 =>
-    sets.reduce((str,set) => str.replace(re(set, "full"), toHalf(set)), str0);
+    sets.reduce((str, set) => str.replace(re(set, "full"), toHalf(set)), str0);
 
 const TextFunctions = {
     ASC: (text) => {
@@ -63,6 +67,8 @@ const TextFunctions = {
 
     CODE: (text) => {
         text = H.accept(text, Types.STRING);
+        if (text.length === 0)
+            throw FormulaError.VALUE;
         return text.charCodeAt(0);
     },
 
@@ -89,9 +95,7 @@ const TextFunctions = {
 
     DOLLAR: (number, decimals) => {
         number = H.accept(number, Types.NUMBER);
-        decimals = H.accept(decimals, Types.NUMBER, true);
-        if (decimals === undefined)
-            decimals = 2;
+        decimals = H.accept(decimals, Types.NUMBER, 2);
         const decimalString = Array(decimals).fill('0').join('');
         // Note: does not support locales
         // TODO: change currency based on user locale or settings from this library
@@ -108,9 +112,7 @@ const TextFunctions = {
     FIND: (findText, withinText, startNum) => {
         findText = H.accept(findText, Types.STRING);
         withinText = H.accept(withinText, Types.STRING);
-        startNum = H.accept(startNum, Types.NUMBER, true);
-        if (startNum === undefined)
-            startNum = 1;
+        startNum = H.accept(startNum, Types.NUMBER, 1);
         if (startNum < 1 || startNum > withinText.length)
             throw FormulaError.VALUE;
         const res = withinText.indexOf(findText, startNum - 1);
@@ -125,11 +127,9 @@ const TextFunctions = {
 
     FIXED: (number, decimals, noCommas) => {
         number = H.accept(number, Types.NUMBER);
-        decimals = H.accept(decimals, Types.NUMBER, true);
-        noCommas = H.accept(noCommas, Types.BOOLEAN,true);
+        decimals = H.accept(decimals, Types.NUMBER, 2);
+        noCommas = H.accept(noCommas, Types.BOOLEAN, false);
 
-        if (decimals === undefined)
-            decimals = 2;
         const decimalString = Array(decimals).fill('0').join('');
         const comma = noCommas ? '' : '#,';
         return ssf.format(`${comma}##0.${decimalString}_);(${comma}##0.${decimalString})`, number).trim();
@@ -137,9 +137,7 @@ const TextFunctions = {
 
     LEFT: (text, numChars) => {
         text = H.accept(text, Types.STRING);
-        numChars = H.accept(numChars, Types.NUMBER, true);
-        if (numChars === undefined)
-            numChars = 1;
+        numChars = H.accept(numChars, Types.NUMBER, 1);
 
         if (numChars < 0)
             throw FormulaError.VALUE;
@@ -181,26 +179,51 @@ const TextFunctions = {
         return TextFunctions.MID(...params);
     },
 
-    // TODO: Start from here.
-    NUMBERVALUE: (...params) => {
+    NUMBERVALUE: (text, decimalSeparator, groupSeparator) => {
+        text = H.accept(text, Types.STRING);
+        // TODO: support reading system locale and set separators
+        decimalSeparator = H.accept(decimalSeparator, Types.STRING, '.');
+        groupSeparator = H.accept(groupSeparator, Types.STRING, ',');
 
+        if (text.length === 0)
+            return 0;
+        if (decimalSeparator.length === 0 || groupSeparator.length === 0)
+            throw FormulaError.VALUE;
+        decimalSeparator = decimalSeparator[0];
+        groupSeparator = groupSeparator[0];
+        if (decimalSeparator === groupSeparator
+            || text.indexOf(decimalSeparator) < text.lastIndexOf(groupSeparator))
+            throw FormulaError.VALUE;
+
+        const res = text.replace(groupSeparator, '')
+            .replace(decimalSeparator, '.')
+            // remove chars that not related to number
+            .replace(/[^\-0-9.%()]/g, '')
+            .match(/([(-]*)([0-9]*[.]*[0-9]+)([)]?)([%]*)/);
+        if (!res)
+            throw FormulaError.VALUE;
+        // ["-123456.78%%", "(-", "123456.78", ")", "%%"]
+        const leftParenOrMinus = res[1].length, rightParen = res[3].length, percent = res[4].length;
+        let number = Number(res[2]);
+        if (leftParenOrMinus > 1 || leftParenOrMinus && !rightParen
+            || !leftParenOrMinus && rightParen || isNaN(number))
+            throw FormulaError.VALUE;
+        number = number / 100 ** percent;
+        return leftParenOrMinus ? -number : number;
     },
 
     PHONETIC: (...params) => {
-
+        throw FormulaError.NOT_IMPLEMENTED('PHONETIC');
     },
 
     PROPER: (text) => {
         text = H.accept(text, [Types.STRING]);
-        let str = text.split(" ");
-        const word = [];
-
-        for (let char of str) {
-            word.push(char[0].toUpperCase() + char.slice(1));
-        }
-        return word.join(" ");
+        return text.toLowerCase()
+            .replace(/(?<![a-zA-Z])([a-zA-Z])/g,
+                letter => letter.toUpperCase());
     },
 
+    // TODO: Start from here.
     REPLACE: (old_text, start_num, num_chars, new_text) => {
         old_text = H.accept(old_text, [Types.STRING]);
         start_num = H.accept(start_num, [Types.NUMBER]);
@@ -230,9 +253,8 @@ const TextFunctions = {
 
     RIGHT: (text, numChars) => {
         text = H.accept(text, Types.STRING);
-        numChars = H.accept(numChars, Types.NUMBER, true);
-        if (numChars === undefined)
-            numChars = 1;
+        numChars = H.accept(numChars, Types.NUMBER, 1);
+
         if (numChars < 0)
             throw FormulaError.VALUE;
         const len = text.length;
@@ -248,33 +270,13 @@ const TextFunctions = {
     SEARCH: (findText, withinText, startNum) => {
         findText = H.accept(findText, Types.STRING);
         withinText = H.accept(withinText, Types.STRING);
-        startNum = H.accept(startNum, Types.NUMBER, true);
-        if (startNum === undefined)
-            startNum = 1;
+        startNum = H.accept(startNum, Types.NUMBER, 1);
         if (startNum < 1 || startNum > withinText.length)
             throw FormulaError.VALUE;
-        findText = findText.replace(/[.]/, '')
-        // transform to regex expression
-        let findTextRegex = '[';
-        for (let i = 0; i < findText.length; i++) {
-            const char = findText[i];
-            // A question mark matches any single character; an asterisk matches any sequence of characters.
-            if (char === '~') {
-                const nextChar = findText[i + 1];
-                if (nextChar === '?' || nextChar === '*') {
-                    // TODO;
-                }
-            } else if (char === '*' || char === '?') {
-                findTextRegex += `]${char === '*' ? '.*' : '.'}[`;
-            } else if (char === '[' || char === ']') {
-                findTextRegex += '\\' + char;
-            } else {
-                findTextRegex += char;
-            }
-        }
-        findTextRegex += ']';
-        findTextRegex = findTextRegex.replace(/\[\]/, '');
-        const res = withinText.slice(startNum - 1).search(RegExp(findTextRegex, 'i'));
+
+        // transform to js regex expression
+        let findTextRegex = WildCard.toRegex(findText, 'i');
+        const res = withinText.slice(startNum - 1).search(findTextRegex);
         if (res === -1)
             throw FormulaError.VALUE;
         return res + startNum;
@@ -323,11 +325,12 @@ const TextFunctions = {
 
     UNICHAR: (number) => {
         number = H.accept(number, [Types.NUMBER]);
-        return TextFunctions.CHAR(number);
+        if (number <= 0)
+            throw FormulaError.VALUE;
+        return String.fromCharCode(number);
     },
 
     UNICODE: (text) => {
-        text = H.accept(text, [Types.STRING]);
         return TextFunctions.CODE(text);
     },
 };
