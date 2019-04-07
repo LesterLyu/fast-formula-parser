@@ -1,7 +1,7 @@
 ## A Fast Excel Formula Parser
 > **This project is under developments and not ready to publish.**
 
-Aim to be the fastest and the most reliable excel formula parser in javascript.
+Aim to be the fastest and the most reliable excel formula parser in javascript. Using **LL(1)** parser.
 
 ### Background
 
