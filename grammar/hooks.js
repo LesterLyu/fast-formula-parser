@@ -5,6 +5,7 @@ const LogicalFunctions = require('../formulas/functions/logical');
 const EngFunctions = require('../formulas/functions/engineering');
 const ReferenceFunctions = require('../formulas/functions/reference');
 const InformationFunctions = require('../formulas/functions/information');
+const StatisticalFunctions = require('../formulas/functions/statistical');
 const FormulaError = require('../formulas/error');
 const {FormulaHelpers} = require('../formulas/helpers');
 const {Parser, allTokens} = require('./parsing');
@@ -28,7 +29,7 @@ class FormulaParser {
         }, config);
 
         this.variables = config.variables;
-        this.functions = Object.assign({}, InformationFunctions, ReferenceFunctions,
+        this.functions = Object.assign({}, StatisticalFunctions, InformationFunctions, ReferenceFunctions,
             EngFunctions, LogicalFunctions, TextFunctions, MathFunctions, TrigFunctions, config.functions);
         this.onRange = config.onRange;
         this.onCell = config.onCell;
@@ -38,7 +39,8 @@ class FormulaParser {
             .concat(Object.keys(TrigFunctions))
             .concat(Object.keys(LogicalFunctions))
             .concat(Object.keys(EngFunctions))
-            .concat(Object.keys(ReferenceFunctions));
+            .concat(Object.keys(ReferenceFunctions))
+            .concat(Object.keys(StatisticalFunctions));
 
         // functions need context and don't need to retrieve references
         this.funsNeedContext = ['ROW', 'ROWS', 'COLUMN', 'COLUMNS'];
@@ -174,6 +176,13 @@ class FormulaParser {
             if (result.ref && !result.ref.from) {
                 // single cell reference
                 result = this.retrieveRef(result);
+            } else if (result.ref && result.ref.from.col === result.ref.to.col) {
+                // single Column reference
+                result = this.retrieveRef({
+                    ref: {
+                        row: result.ref.from.row, col: result.ref.from.col
+                    }
+                });
             } else if (Array.isArray(result)) {
                 result = result[0][0]
             } else {

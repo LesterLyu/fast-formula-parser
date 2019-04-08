@@ -170,9 +170,11 @@ class FormulaHelpers {
      * @param {boolean} [flat=true] - If the array should be flattened,
      *                      only applicable when type is ARRAY.
      *                      If false, collection is disallowed.
+     * @param {boolean} allowSingleValue - If pack single value into 2d array,
+     *                     only applicable when type is ARRAY.
      * @return {string|number|boolean|{}|Array}
      */
-    accept(param, type = null, defValue = null, flat = true) {
+    accept(param, type = null, defValue = null, flat = true, allowSingleValue = false) {
         // TODO: remove this array check
         if (Array.isArray(type))
             type = type[0];
@@ -185,7 +187,7 @@ class FormulaHelpers {
             return param;
 
         const isArray = param.isArray;
-        param = param.value;
+        if (param.value != null) param = param.value;
 
         // return an un-parsed type.
         if (type == null)
@@ -200,9 +202,12 @@ class FormulaHelpers {
             if (param.collections)
                 param = param.collections;
             return this.flattenDeep(param);
-        } else if (!flat && type === Types.ARRAY && Array.isArray(param)) {
+        } else if (!flat && type === Types.ARRAY) {
             // disallow collections (unions) and do not flatten the array
-            return param;
+            if (Array.isArray(param))
+                return param;
+            else if (allowSingleValue)
+                return [[param]];
         } else if (type === Types.COLLECTIONS) {
             return param;
         } else if (type === Types.ARRAY_OR_NUMBER) {
@@ -289,6 +294,61 @@ const WildCard = {
     }
 };
 
+const Criteria = {
+    /**
+     * Parse criteria, support comparison and wild card match.
+     * @param {string|number} criteria
+     * @return {{op: string, value: string|number|boolean}} - The parsed criteria.
+     */
+    parse: (criteria) => {
+        const type = typeof criteria;
+        if (type === "string") {
+            // criteria = 'TRUE' or 'FALSE'
+            const upper = criteria.toUpperCase();
+            if (upper === 'TRUE' || upper === 'FALSE') {
+                // excel boolean
+                return {op: '=', value: upper === 'TRUE'};
+            }
+
+            const res = criteria.match(/(<>|>=|<=|>|<|=)(.*)/);
+            // is comparison
+            if (res) {
+                // [">10", ">", "10", index: 0, input: ">10", groups: undefined]
+                let op = res[1], value;
+
+                // string or boolean or error
+                if (isNaN(res[2])) {
+                    const upper = res[2].toUpperCase();
+                    if (upper === 'TRUE' || upper === 'FALSE') {
+                        // excel boolean
+                        value = upper === 'TRUE';
+                    } else if (/#NULL!|#DIV\/0!|#VALUE!|#NAME\?|#NUM!|#N\/A|#REF!/.test(res[2])) {
+                        // formula error
+                        value = new FormulaError(res[2]);
+                    } else {
+                        // string
+                        value = res[2];
+                    }
+                } else {
+                    // number
+                    value = Number(res[2])
+                }
+                return {op, value};
+
+            } else if (WildCard.isWildCard(criteria)) {
+                return {op: 'wc', value: WildCard.toRegex(criteria)}
+            } else {
+                return {op: '=', value: criteria}
+            }
+        } else if (type === "boolean" || type === 'number' || (Array.isArray(criteria)
+            || criteria instanceof FormulaError)) {
+            return {op: '=', value: criteria}
+        } else {
+            throw Error(`Criteria.parse: type ${typeof criteria} not support`)
+        }
+    }
+};
+
 const Address = {
 
     columnNumberToName: (number) => {
@@ -325,5 +385,6 @@ module.exports = {
     ReversedTypes,
     Factorials,
     WildCard,
+    Criteria,
     Address,
 };

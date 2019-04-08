@@ -303,7 +303,7 @@ const MathFunctions = {
     },
 
     MDETERM: (array) => {
-        array = H.accept(array, Types.ARRAY, null, false);
+        array = H.accept(array, Types.ARRAY, null, false, true);
         if (array[0].length !== array.length)
             throw FormulaError.VALUE;
         // adopted from https://github.com/numbers/numbers.js/blob/master/lib/numbers/matrix.js#L261
@@ -340,8 +340,8 @@ const MathFunctions = {
     },
 
     MMULT: (array1, array2) => {
-        array1 = H.accept(array1, Types.ARRAY, null, false);
-        array2 = H.accept(array2, Types.ARRAY, null, false);
+        array1 = H.accept(array1, Types.ARRAY, null, false, true);
+        array2 = H.accept(array2, Types.ARRAY, null, false, true);
         if (array1[0].length !== array1.length)
             throw FormulaError.VALUE;
         // https://github.com/numbers/numbers.js/blob/master/lib/numbers/matrix.js#L233
@@ -476,9 +476,9 @@ const MathFunctions = {
 
 
     SUMPRODUCT: (array1, ...arrays) => {
-        array1 = H.accept(array1, Types.ARRAY, null, false);
+        array1 = H.accept(array1, Types.ARRAY, null, false, true);
         arrays.forEach(array => {
-            array = H.accept(array, Types.ARRAY, null, false);
+            array = H.accept(array, Types.ARRAY, null, false, true);
             if (array1[0].length !== array[0].length || array1.length !== array.length)
                 throw FormulaError.VALUE;
             for (let i = 0; i < array1.length; i++) {
