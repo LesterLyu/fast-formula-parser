@@ -3,7 +3,31 @@ const expect = require('chai').expect;
 const {FormulaParser} = require('../../../grammar/hooks');
 const TestCase = require('./testcase');
 
-const parser = new FormulaParser();
+const data = [
+    [1, 2, 3, 4, 5],
+    ['apples', 32, '{1,2}', 5, 6],
+    ['oranges', 54, 4, 5, 6],
+    ['peaches', 75, 4, 5, 6],
+    ['apples', 86, 4, 5, 6],
+    ['string', 3, 4, 5, 6],
+
+];
+const parser = new FormulaParser({
+    onCell: ref => {
+        return data[ref.row - 1][ref.col - 1];
+    },
+    onRange: ref => {
+        const arr = [];
+        for (let row = ref.from.row - 1; row < ref.to.row; row++) {
+            const innerArr = [];
+            for (let col = ref.from.col - 1; col < ref.to.col; col++) {
+                innerArr.push(data[row][col])
+            }
+            arr.push(innerArr);
+        }
+        return arr;
+    }
+});
 
 describe('Math Functions', function () {
     const funs = Object.keys(TestCase);

@@ -102,7 +102,10 @@ module.exports = {
         'MMULT({1,3;"r",2}, {2,0;0,2})': '#VALUE!',
     },
 
-
+    SUM: {
+        'SUM(1,2,3)': 6,
+        'SUM((A1:C1, C1:E1))': 6,
+    },
 
     SUMPRODUCT: {
         'SUMPRODUCT({1,"12";7,2}, {2,1;5,2})': 41,

@@ -1,6 +1,6 @@
 const FormulaError = require('../error');
 const ReferenceFunctions = require('./reference');
-const {FormulaHelpers, Types, Factorials} = require('../helpers');
+const {FormulaHelpers, Types, Factorials, ParamsTypes} = require('../helpers');
 const H = FormulaHelpers;
 
 // factorials
@@ -237,7 +237,7 @@ const MathFunctions = {
     },
 
     GCD: (...params) => {
-        const arr = H.flattenParams(params, Types.NUMBER, param => {
+        const arr = H.flattenParams(params, Types.NUMBER, ParamsTypes.ALLOW_RANGE_REF, param => {
             if (param < 0 || param > 9007199254740990) // 2^53
                 throw FormulaError.NUM;
             return Math.trunc(param);
@@ -268,6 +268,7 @@ const MathFunctions = {
     },
 
     LCM: (...params) => {
+        // always parse string to number if possible
         const arr = H.flattenParams(params, Types.NUMBER, param => {
             if (param < 0 || param > 9007199254740990) // 2^53
                 throw FormulaError.NUM;

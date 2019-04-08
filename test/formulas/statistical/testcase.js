@@ -1,4 +1,13 @@
 module.exports = {
+
+    COUNT: {
+        'COUNT(A2:A5)': 0,
+        'COUNT(A1:E1)': 1,
+        'COUNT(A2:E2)': 3,
+        'COUNT(A2:E2, A1:E1)': 4,
+        'COUNT((A2:E2, A1:E1))': 4,
+    },
+
     COUNTIF: {
         'COUNTIF(A2:A5, "apples")': 2,
         'COUNTIF(A2:A5,A4)': 1,

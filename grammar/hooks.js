@@ -89,7 +89,12 @@ class FormulaParser {
                     if (this.funsPreserveRef.includes(name)) {
                         return {value: res.val, isArray: res.isArray, ref: arg.ref};
                     }
-                    return {value: res.val, isArray: res.isArray};
+                    return {
+                        value: res.val,
+                        isArray: res.isArray,
+                        isRangeRef: FormulaHelpers.isRangeRef(arg),
+                        isCellRef: FormulaHelpers.isCellRef(arg)
+                    };
                 });
             }
             // console.log('callFunction', name, args)

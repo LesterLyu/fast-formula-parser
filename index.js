@@ -1,9 +1,7 @@
 const lexing = require('./grammar/lexing');
 const {FormulaParser} = require('./grammar/hooks');
-const parser = new FormulaParser();
-const funs = parser.supportedFunctions();
-console.log('Supported:', funs.join(', '),
-    `\nTotal: ${funs.length}/477, ${funs.length/477*100}% implemented.`);
+// const parser = new FormulaParser();
+
 
 let input = '-1 + 2 * (5 + 10) ^ 3 / 2% + (A1 +A2)';
 // input = 'SUM((\'Exercises 4, 5 and 6\'!$H$2:$H$11-B2:B11)/B2:B11)'
@@ -26,7 +24,39 @@ let input = '-1 + 2 * (5 + 10) ^ 3 / 2% + (A1 +A2)';
 // input = 'SUM((Exercises 4, 5 and 6!$H$2:$H$11-Exercise 7!B2:B11)/Exercise 7!B2:B11)'
 // input = 'SUM(Jan:Dec!AD12)';
 
-input = 'MMULT({1,3;7,2}, {2,0;0,2})';
+
+const data = [
+    [1, 2, 3, 4, 5],
+    ['apples', 32, '{1,2}', 5, 6],
+    ['oranges', 54, 4, 5, 6],
+    ['peaches', 75, 4, 5, 6],
+    ['apples', 86, 4, 5, 6],
+    ['string', 3, 4, 5, 6],
+
+];
+const parser = new FormulaParser({
+    onCell: ref => {
+        return data[ref.row - 1][ref.col - 1];
+    },
+    onRange: ref => {
+        const arr = [];
+        for (let row = ref.from.row - 1; row < ref.to.row; row++) {
+            const innerArr = [];
+            for (let col = ref.from.col - 1; col < ref.to.col; col++) {
+                innerArr.push(data[row][col])
+            }
+            arr.push(innerArr);
+        }
+        return arr;
+    }
+});
+
+const funs = parser.supportedFunctions();
+console.log('Supported:', funs.join(', '),
+    `\nTotal: ${funs.length}/477, ${funs.length/477*100}% implemented.`);
+
+
+input = 'SUM((A1:C1, C1:E1))';
 
 // input = 'TEXT(-12, """$""#,##0_);[RED](""$""#,##0)")'
 
