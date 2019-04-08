@@ -94,3 +94,4 @@ describe('Parsing Formulas 2', () => {
 
 require('./formulas/math/math');
 require('./formulas/text/text');
+require('./formulas/reference/reference');
