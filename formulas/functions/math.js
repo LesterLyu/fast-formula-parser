@@ -1,4 +1,5 @@
 const FormulaError = require('../error');
+const ReferenceFunctions = require('./reference');
 const {FormulaHelpers, Types, Factorials} = require('../helpers');
 const H = FormulaHelpers;
 
@@ -301,23 +302,76 @@ const MathFunctions = {
         return Math.log10(number);
     },
 
-    // TODO: Start from here.
-    MDETERM: () => {
+    MDETERM: (array) => {
+        array = H.accept(array, Types.ARRAY, null, false);
+        if (array[0].length !== array.length)
+            throw FormulaError.VALUE;
+        // adopted from https://github.com/numbers/numbers.js/blob/master/lib/numbers/matrix.js#L261
+        const numRow = array.length, numCol = array[0].length;
+        let det = 0, diagLeft, diagRight;
 
+        if (numRow === 1) {
+            return array[0][0];
+        } else if (numRow === 2) {
+            return array[0][0] * array[1][1] - array[0][1] * array[1][0];
+        }
+
+        for (let col = 0; col < numCol; col++) {
+            diagLeft = array[0][col];
+            diagRight = array[0][col];
+
+            for (let row = 1; row < numRow; row++) {
+                diagRight *= array[row][(((col + row) % numCol) + numCol) % numCol];
+                diagLeft *= array[row][(((col - row) % numCol) + numCol) % numCol];
+            }
+
+            det += diagRight - diagLeft;
+        }
+
+        return det;
     },
 
-    MINVERSE: () => {
-
+    MINVERSE: (array) => {
+        // TODO
+        // array = H.accept(array, Types.ARRAY, null, false);
+        // if (array[0].length !== array.length)
+        //     throw FormulaError.VALUE;
+        // throw FormulaError.NOT_IMPLEMENTED('MINVERSE');
     },
 
-    MMULT: () => {
+    MMULT: (array1, array2) => {
+        array1 = H.accept(array1, Types.ARRAY, null, false);
+        array2 = H.accept(array2, Types.ARRAY, null, false);
+        if (array1[0].length !== array1.length)
+            throw FormulaError.VALUE;
+        // https://github.com/numbers/numbers.js/blob/master/lib/numbers/matrix.js#L233
+        const result = [];
 
+        for (let x = 0; x < array1.length; x++) {
+            result[x] = [];
+        }
+
+        const array2_T = ReferenceFunctions.TRANSPOSE(array2);
+
+        for (let i = 0; i < array1.length; i++) {
+            for (let j = 0; j < array2[i].length; j++) {
+                array1[i].forEach(val => {
+                    if (typeof val !== "number") throw FormulaError.VALUE
+                });
+                array2_T[j].forEach(val => {
+                    if (typeof val !== "number") throw FormulaError.VALUE
+                });
+                result[i][j] = MathFunctions.SUMPRODUCT([array1[i]], [array2_T[j]]);
+            }
+        }
+        return result;
     },
 
     MOD: () => {
 
     },
 
+    // TODO: Start from here.
     MROUND: () => {
 
     },
@@ -421,6 +475,32 @@ const MathFunctions = {
     },
 
 
+    SUMPRODUCT: (array1, ...arrays) => {
+        array1 = H.accept(array1, Types.ARRAY, null, false);
+        arrays.forEach(array => {
+            array = H.accept(array, Types.ARRAY, null, false);
+            if (array1[0].length !== array[0].length || array1.length !== array.length)
+                throw FormulaError.VALUE;
+            for (let i = 0; i < array1.length; i++) {
+                for (let j = 0; j < array1[0].length; j++) {
+                    if (typeof array1[i][j] !== "number")
+                        array1[i][j] = 0;
+                    if (typeof array[i][j] !== "number")
+                        array[i][j] = 0;
+                    array1[i][j] *= array[i][j];
+                }
+            }
+        });
+        let result = 0;
+
+        array1.forEach(row => {
+            row.forEach(value => {
+                result += value;
+            })
+        });
+
+        return result;
+    },
 };
 
 

@@ -168,6 +168,8 @@ class FormulaParser {
             if (result.ref && !result.ref.from) {
                 // single cell reference
                 result = this.retrieveRef(result);
+            } else if (Array.isArray(result)) {
+                result = result[0][0]
             } else {
                 // array, range reference, union collections
                 return FormulaError.VALUE;

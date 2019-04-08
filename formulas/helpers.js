@@ -181,7 +181,7 @@ class FormulaHelpers {
         } else if (param == null)
             return defValue;
 
-        if (typeof param !== "object")
+        if (typeof param !== "object" || Array.isArray(param))
             return param;
 
         const isArray = param.isArray;

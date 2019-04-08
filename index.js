@@ -26,7 +26,7 @@ let input = '-1 + 2 * (5 + 10) ^ 3 / 2% + (A1 +A2)';
 // input = 'SUM((Exercises 4, 5 and 6!$H$2:$H$11-Exercise 7!B2:B11)/Exercise 7!B2:B11)'
 // input = 'SUM(Jan:Dec!AD12)';
 
-input = 'LARGE($B9:$I9,COLUMN()-1)';
+input = 'MMULT({1,3;7,2}, {2,0;0,2})';
 
 // input = 'TEXT(-12, """$""#,##0_);[RED](""$""#,##0)")'
 

@@ -187,6 +187,22 @@ const ReferenceFunctions = {
         }
     },
 
+    TRANSPOSE: (array) => {
+        array = H.accept(array, Types.ARRAY, null, false);
+        // https://github.com/numbers/numbers.js/blob/master/lib/numbers/matrix.js#L171
+        const result = [];
+
+        for (let i = 0; i < array[0].length; i++) {
+            result[i] = [];
+
+            for (let j = 0; j < array.length; j++) {
+                result[i][j] = array[j][i];
+            }
+        }
+
+        return result;
+    },
+
     VLOOKUP: (lookupValue, tableArray, colIndexNum, rangeLookup) => {
         // preserve type of lookupValue
         lookupValue = H.accept(lookupValue);
