@@ -4,6 +4,7 @@ const TrigFunctions = require('../formulas/functions/trigonometry');
 const LogicalFunctions = require('../formulas/functions/logical');
 const EngFunctions = require('../formulas/functions/engineering');
 const ReferenceFunctions = require('../formulas/functions/reference');
+const InformationFunctions = require('../formulas/functions/information');
 const FormulaError = require('../formulas/error');
 const {FormulaHelpers} = require('../formulas/helpers');
 const {Parser, allTokens} = require('./parsing');
@@ -27,7 +28,7 @@ class FormulaParser {
         }, config);
 
         this.variables = config.variables;
-        this.functions = Object.assign({}, ReferenceFunctions,
+        this.functions = Object.assign({}, InformationFunctions, ReferenceFunctions,
             EngFunctions, LogicalFunctions, TextFunctions, MathFunctions, TrigFunctions, config.functions);
         this.onRange = config.onRange;
         this.onCell = config.onCell;
@@ -41,6 +42,7 @@ class FormulaParser {
 
         // functions need context and don't need to retrieve references
         this.funsNeedContext = ['ROW', 'ROWS', 'COLUMN', 'COLUMNS'];
+        this.funsPreserveRef = Object.keys(InformationFunctions);
 
         // uses ES5 syntax here... I don't want to transpile the code...
         this.getCell = (ref) => {
@@ -81,6 +83,10 @@ class FormulaParser {
                     if (arg === null)
                         return {value: nullValue, isArray: false, omitted: true};
                     const res = this.utils.extractRefValue(arg);
+
+                    if (this.funsPreserveRef.includes(name)) {
+                        return {value: res.val, isArray: res.isArray, ref: arg.ref};
+                    }
                     return {value: res.val, isArray: res.isArray};
                 });
             }
