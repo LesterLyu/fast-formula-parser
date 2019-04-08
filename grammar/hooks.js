@@ -208,12 +208,9 @@ class FormulaParser {
         }
         if (this.parser.errors.length > 0) {
             const error = this.parser.errors[0];
-            const line = error.token.startLine, column = error.token.startColumn;
+            const line = error.previousToken.startLine, column = error.previousToken.startColumn + 1;
             let msg = '\n' + inputText.split('\n')[line - 1] + '\n';
-            try {
-                msg += Array(column - 1).fill(' ').join('') + '^\n';
-            } catch (e) {
-            }
+            msg += Array(column - 1).fill(' ').join('') + '^\n';
             error.message = msg + `Error at position ${line}:${column}\n` + error.message;
             throw error
         }
