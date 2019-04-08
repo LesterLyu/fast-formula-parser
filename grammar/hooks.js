@@ -220,4 +220,5 @@ class FormulaParser {
 
 module.exports = {
     FormulaParser,
+    FormulaHelpers,
 };
