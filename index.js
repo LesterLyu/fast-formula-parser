@@ -56,7 +56,7 @@ const parser = new FormulaParser({
 //     `\nTotal: ${funs.length}/477, ${funs.length/477*100}% implemented.`);
 
 
-input = '';
+// input = '';
 
 // input = 'TEXT(-12, """$""#,##0_);[RED](""$""#,##0)")'
 
