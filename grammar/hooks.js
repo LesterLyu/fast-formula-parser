@@ -12,6 +12,7 @@ const {Parser, allTokens} = require('./parsing');
 const lexer = require('./lexing');
 const Utils = require('./utils');
 
+
 class FormulaParser {
 
     /**
@@ -43,7 +44,8 @@ class FormulaParser {
             .concat(Object.keys(StatisticalFunctions));
 
         // functions need context and don't need to retrieve references
-        this.funsNeedContext = ['ROW', 'ROWS', 'COLUMN', 'COLUMNS'];
+        this.funsNeedContextAndNoDataRetrieve = ['ROW', 'ROWS', 'COLUMN', 'COLUMNS', 'SUMIF'];
+        this.funsNeedContext = [];
         this.funsPreserveRef = Object.keys(InformationFunctions);
 
         // uses ES5 syntax here... I don't want to transpile the code...
@@ -79,7 +81,7 @@ class FormulaParser {
             // if one arg is null, it means 0 or "" depends on the function it calls
             const nullValue = this.funsNullAs0.includes(name) ? 0 : '';
 
-            if (!this.funsNeedContext.includes(name)) {
+            if (!this.funsNeedContextAndNoDataRetrieve.includes(name)) {
                 // retrieve reference
                 args = args.map(arg => {
                     if (arg === null)
@@ -102,7 +104,7 @@ class FormulaParser {
             if (this.functions[name]) {
                 let res;
                 try {
-                    if (!this.funsNeedContext.includes(name))
+                    if (!this.funsNeedContextAndNoDataRetrieve.includes(name) || this.funsNeedContext.includes(name))
                         res = (this.functions[name](...args));
                     else
                         res = (this.functions[name](this, ...args));
@@ -206,6 +208,7 @@ class FormulaParser {
      * @returns {*}
      */
     parse(inputText, position) {
+        if (inputText.length === 0) throw Error('Input must not be empty.');
         this.position = position;
         const lexResult = lexer.lex(inputText);
         this.parser.input = lexResult.tokens;

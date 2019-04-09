@@ -1,6 +1,7 @@
 const FormulaError = require('../error');
 const ReferenceFunctions = require('./reference');
-const {FormulaHelpers, Types, Factorials, ParamsTypes} = require('../helpers');
+const {FormulaHelpers, Types, Factorials, Criteria} = require('../helpers');
+const {Infix} = require('../operators');
 const H = FormulaHelpers;
 
 // factorials
@@ -494,8 +495,73 @@ const MathFunctions = {
         return result
     },
 
-    SUMIF: (...params) => {
+    /**
+     * This functions requires instance of {@link FormulaParser}.
+     */
+    SUMIF: (context, range, criteria, sumRange) => {
+        // process args
+        if (sumRange == null) {
+            sumRange = range;
+        } else {
+            let rowOffset, colOffset;
+            if (H.isCellRef(range)) {
+                rowOffset = 0;
+                colOffset = 0;
+            } else if (H.isRangeRef(range)) {
+                rowOffset = range.ref.to.row - range.ref.from.row;
+                colOffset = range.ref.to.col - range.ref.from.col;
+            } else throw Error('SUMIF should not reach here.');
+            // if sum range is a cell reference
+            if (H.isCellRef(sumRange)) {
+                if (rowOffset > 0 || colOffset > 0)
+                    sumRange = {
+                        ref: {
+                            from: {col: sumRange.ref.col, row: sumRange.ref.row},
+                            to: {row: sumRange.ref.row + rowOffset, col: sumRange.ref.col + colOffset}
+                        }
+                    };
+            } else {
+                // sum range is a range reference
+                sumRange.ref.to.row = sumRange.ref.from.row + rowOffset;
+                sumRange.ref.to.col = sumRange.ref.from.col + colOffset;
+            }
+        }
 
+        // retrieve values
+        range = context.utils.extractRefValue(range);
+        range = {value: range.val, isArray: range.isArray};
+        range = H.accept(range, Types.ARRAY, null, false, true);
+
+        sumRange = context.utils.extractRefValue(sumRange);
+        sumRange = {value: sumRange.val, isArray: sumRange.isArray};
+        sumRange = H.accept(sumRange, Types.ARRAY, null, false, true);
+
+        criteria = context.utils.extractRefValue(criteria);
+        const isCriteriaArray = criteria.isArray;
+        criteria = {value: criteria.val, isArray: criteria.isArray};
+        criteria = H.accept(criteria);
+
+        // parse criteria
+        criteria = Criteria.parse(criteria);
+        let sum = 0;
+
+        range.forEach((row, rowNum) => {
+            row.forEach((value, colNum) => {
+                const valueToAdd = sumRange[rowNum][colNum];
+                if (typeof valueToAdd !== "number")
+                    return;
+                // wildcard
+                if (criteria.op === 'wc') {
+                    if (criteria.value.test(value)) {
+                        sum += valueToAdd;
+                    }
+
+                } else if (Infix.compareOp(value, criteria.op, criteria.value, Array.isArray(value), isCriteriaArray)) {
+                    sum += valueToAdd;
+                }
+            })
+        });
+        return sum;
     },
 
 

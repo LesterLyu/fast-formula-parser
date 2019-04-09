@@ -5,12 +5,18 @@ const TestCase = require('./testcase');
 
 const data = [
     [1, 2, 3, 4, 5],
-    ['apples', 32, '{1,2}', 5, 6],
-    ['oranges', 54, 4, 5, 6],
-    ['peaches', 75, 4, 5, 6],
-    ['apples', 86, 4, 5, 6],
+    [100000, 7000, 250000, 5, 6],
+    [200000, 14000, 4, 5, 6],
+    [300000, 21000, 4, 5, 6],
+    [400000, 28000, 4, 5, 6],
     ['string', 3, 4, 5, 6],
-
+    // for SUMIF ex2
+    ['Vegetables', 'Tomatoes', 2300, 5, 6], // row 7
+    ['Vegetables', 'Celery', 5500, 5, 6], // row 8
+    ['Fruits', 'Oranges', 800, 5, 6], // row 9
+    ['', 'Butter', 400, 5, 6], // row 10
+    ['Vegetables', 'Carrots',4200, 5, 6], // row 11
+    ['Fruits', 'Apples', 1200, 5, 6], // row 12
 ];
 const parser = new FormulaParser({
     onCell: ref => {

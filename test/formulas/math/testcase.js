@@ -130,6 +130,23 @@ module.exports = {
         'SUM("1", {"1"},TRUE)': 2,
     },
 
+    SUMIF: {
+        'SUMIF(A1:E1, ">1")': 14,
+        'SUMIF(A2:A5,">160000",B2:B5)': 63000,
+        'SUMIF(A2:A5,">160000")': 900000,
+        'SUMIF(A2:A5,300000,B2:B5)': 21000,
+        'SUMIF(A2:A5,">" & C2,B2:B5)': 49000,
+        'SUMIF(A7:A12,"Fruits",C7:C12)': 2000,
+        'SUMIF(A7:A12,"Vegetables",C7:C12)': 12000,
+        'SUMIF(B7:B12,"*es",C7:C12)': 4300,
+        'SUMIF(A7:A12,"",C7:C12)': 400,
+        //The sum_range argument does not have to be the same size and shape as the range argument.
+        // The actual cells that are added are determined by using the upper leftmost cell in the
+        // sum_range argument as the beginning cell, and then including cells that correspond in size
+        // and shape to the range argument. For example:
+        'SUMIF(A7:A12,"",C7)': 400,
+    },
+
     SUMPRODUCT: {
         'SUMPRODUCT({1,"12";7,2}, {2,1;5,2})': 41,
         'SUMPRODUCT({1,12;7,2}, {2,1;5,2})': 53,

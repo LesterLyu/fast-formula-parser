@@ -225,7 +225,7 @@ class Utils {
             unions.push(this.extractRefValue(ref).val);
         });
 
-        console.log('applyUnion', unions);
+        // console.log('applyUnion', unions);
         return {collections: unions};
     }
 
@@ -283,6 +283,7 @@ class Utils {
 
     /**
      * Throw away the refs, and retrieve the value.
+     * @return {{val: *, isArray: boolean}}
      */
     extractRefValue(obj) {
         let res = obj, isArray = false;

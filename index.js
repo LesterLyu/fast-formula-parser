@@ -35,20 +35,20 @@ const data = [
 
 ];
 const parser = new FormulaParser({
-    onCell: ref => {
-        return data[ref.row - 1][ref.col - 1];
-    },
-    onRange: ref => {
-        const arr = [];
-        for (let row = ref.from.row - 1; row < ref.to.row; row++) {
-            const innerArr = [];
-            for (let col = ref.from.col - 1; col < ref.to.col; col++) {
-                innerArr.push(data[row][col])
-            }
-            arr.push(innerArr);
-        }
-        return arr;
-    }
+    // onCell: ref => {
+    //     return data[ref.row - 1][ref.col - 1];
+    // },
+    // onRange: ref => {
+    //     const arr = [];
+    //     for (let row = ref.from.row - 1; row < ref.to.row; row++) {
+    //         const innerArr = [];
+    //         for (let col = ref.from.col - 1; col < ref.to.col; col++) {
+    //             innerArr.push(data[row][col])
+    //         }
+    //         arr.push(innerArr);
+    //     }
+    //     return arr;
+    // }
 });
 
 // const funs = parser.supportedFunctions();
@@ -56,7 +56,7 @@ const parser = new FormulaParser({
 //     `\nTotal: ${funs.length}/477, ${funs.length/477*100}% implemented.`);
 
 
-input = 'LCM(50,56,100,)';
+input = '';
 
 // input = 'TEXT(-12, """$""#,##0_);[RED](""$""#,##0)")'
 
