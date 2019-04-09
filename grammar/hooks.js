@@ -51,6 +51,8 @@ class FormulaParser {
         // uses ES5 syntax here... I don't want to transpile the code...
         this.getCell = (ref) => {
             // console.log('get cell', JSON.stringify(ref));
+            if (ref.sheet == null)
+                ref.sheet = this.position ? this.position.sheet : undefined;
             return this.onCell(ref);
         };
 
@@ -65,6 +67,9 @@ class FormulaParser {
         // };
 
         this.getRange = (ref) => {
+            // console.log('get range', JSON.stringify(ref));
+            if (ref.sheet == null)
+                ref.sheet = this.position ? this.position.sheet : undefined;
             return this.onRange(ref)
         };
 
