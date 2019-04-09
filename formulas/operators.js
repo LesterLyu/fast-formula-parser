@@ -6,9 +6,12 @@ const Prefix = {
         try {
             value = FormulaHelpers.acceptNumber(value, isArray);
         } catch (e) {
-            if (e instanceof FormulaError)
-                return e;
-            throw e;
+            if (e instanceof FormulaError) {
+                // parse number fails
+                if (Array.isArray(value))
+                    value = value[0][0]
+            } else
+                throw e;
         }
 
         prefixes.forEach(prefix => {
@@ -20,6 +23,7 @@ const Prefix = {
                 throw new Error(`Unrecognized prefix: ${prefix}`);
             }
         });
+        if (typeof value === "number" && isNaN(value)) return FormulaError.VALUE;
         return value;
     }
 };
@@ -75,8 +79,7 @@ const Infix = {
                 case '>=':
                     return value1 >= value2;
             }
-        }
-        else {
+        } else {
             switch (infix) {
                 case '=':
                     return false;

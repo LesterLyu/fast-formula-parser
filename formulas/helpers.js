@@ -69,10 +69,10 @@ class FormulaHelpers {
     /**
      *
      * @param obj
-     * @param allowArray - if it is an array: {1,2,3}, will extract the first element
+     * @param isArray - if it is an array: {1,2,3}, will extract the first element
      * @returns {number|FormulaError}
      */
-    acceptNumber(obj, allowArray = true) {
+    acceptNumber(obj, isArray = true) {
         // check error
         if (obj instanceof FormulaError)
             return obj;
@@ -89,10 +89,16 @@ class FormulaHelpers {
             if (isNaN(number))
                 throw FormulaError.VALUE;
         } else if (Array.isArray(obj)) {
-            if (!allowArray)
-                throw FormulaError.VALUE;
-            if (obj[0].length === 1)
+            if (!isArray) {
+                // for range ref, only allow single column range ref
+                if (obj[0].length === 1)
+                    number = this.acceptNumber(obj[0][0]);
+                else
+                    throw FormulaError.VALUE;
+            } else {
                 number = this.acceptNumber(obj[0][0]);
+            }
+
         } else {
             throw Error('Unknown type in FormulaHelpers.acceptNumber')
         }
