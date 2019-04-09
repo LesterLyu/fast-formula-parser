@@ -238,16 +238,15 @@ const MathFunctions = {
 
     GCD: (...params) => {
         const arr = [];
-        H.flattenParams(params, Types.NUMBER, false,
+        H.flattenParams(params, null, false,
             (param) => {
                 // allow array, range ref
-                param = Number(param);
+                param = typeof param === 'boolean' ? NaN : Number(param);
                 if (!isNaN(param)) {
                     if (param < 0 || param > 9007199254740990) // 2^53
                         throw FormulaError.NUM;
                     arr.push(Math.trunc(param))
-                }
-                else
+                } else
                     throw FormulaError.VALUE;
             }, 0);
         // http://rosettacode.org/wiki/Greatest_common_divisor#JavaScript
@@ -278,14 +277,15 @@ const MathFunctions = {
     LCM: (...params) => {
         const arr = [];
         // always parse string to number if possible
-        H.flattenParams(params, Types.NUMBER, false,
+        H.flattenParams(params, null, false,
             param => {
-                param = Number(param);
+                param = typeof param === 'boolean' ? NaN : Number(param);
                 if (!isNaN(param)) {
                     if (param < 0 || param > 9007199254740990) // 2^53
                         throw FormulaError.NUM;
                     arr.push(Math.trunc(param))
                 }
+                // throw value error if can't parse to string
                 else
                     throw FormulaError.VALUE;
             }, 1);
