@@ -56,6 +56,13 @@ module.exports = {
         'GCD(128, 80, 44,)': 4,
         'GCD(128, 80, 44, 2 ^ 53)': '#NUM!', // excel parse this as #NUM!
         'GCD("a")': '#VALUE!',
+        'GCD(5, 2, (A1))': 1,
+        'GCD(5, 2, A1:E1)': 1,
+        'GCD(5, 2, (A1:E1))': 1,
+        'GCD(5, 2, (A1, A2))': '#VALUE!', // does not support union
+        'GCD(5, 2, {3, 7})': 1,
+        'GCD(5, 2, {3, "7"})': 1,
+        'GCD(5, 2, {3, "7a"})': '#VALUE!',
     },
 
     INT: {
@@ -65,11 +72,19 @@ module.exports = {
     },
 
     LCM: {
+        'LCM("a")': '#VALUE!',
         'LCM(5, 2)': 10,
         'LCM(24, 36)': 72,
         'LCM(50,56,100)': 1400,
         'LCM(50,56,100,)': 1400,
         'LCM(128, 80, 44, 2 ^ 53)': '#NUM!', // excel parse this as #NUM!
+        'LCM(5, 2, (A1))': 10,
+        'LCM(5, 2, A1:E1)': 60,
+        'LCM(5, 2, (A1:E1))': 60,
+        'LCM(5, 2, (A1, A2))': '#VALUE!', // does not support union
+        'LCM(5, 2, {3, 7})': 210,
+        'LCM(5, 2, {3, "7"})': 210,
+        'LCM(5, 2, {3, "7a"})': '#VALUE!',
     },
 
     LN: {

@@ -136,7 +136,8 @@ class FormulaHelpers {
                 hook(param.value, info);
             }
             // union
-            else if (isUnion && allowUnion) {
+            else if (isUnion) {
+                if (!allowUnion) throw FormulaError.VALUE;
                 param = param.value.collections;
                 param = this.flattenDeep(param);
                 param.forEach(item => {

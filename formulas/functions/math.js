@@ -247,6 +247,8 @@ const MathFunctions = {
                         throw FormulaError.NUM;
                     arr.push(Math.trunc(param))
                 }
+                else
+                    throw FormulaError.VALUE;
             }, 0);
         // http://rosettacode.org/wiki/Greatest_common_divisor#JavaScript
         let i, y,
@@ -284,6 +286,8 @@ const MathFunctions = {
                         throw FormulaError.NUM;
                     arr.push(Math.trunc(param))
                 }
+                else
+                    throw FormulaError.VALUE;
             }, 1);
         // http://rosettacode.org/wiki/Least_common_multiple#JavaScript
         let n = arr.length, a = Math.abs(arr[0]);
