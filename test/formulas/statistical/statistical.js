@@ -3,7 +3,7 @@ const expect = require('chai').expect;
 const {FormulaParser} = require('../../../grammar/hooks');
 const TestCase = require('./testcase');
 const data = [
-    ['', true, [[1,2]], 'TRUE1', true],
+    ['', true, 1, 'TRUE1', true],
     ['apples', 32, '{1,2}', 5, 6],
     ['oranges', 54, 4, 5, 6],
     ['peaches', 75, 4, 5, 6],

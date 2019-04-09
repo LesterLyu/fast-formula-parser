@@ -5,23 +5,17 @@ const H = FormulaHelpers;
 
 const StatisticalFunctions = {
     COUNT: (...ranges) => {
-        ranges = H.flattenParams(ranges, null, item => {
-
-        });
-
-        range = H.accept(range, Types.ARRAY, null, false, true);
         let cnt = 0;
-        ranges.push(range);
-        ranges.forEach(range => {
-            range = H.accept(range, Types.ARRAY, null, false, true);
-            range.forEach(row => {
-                row.forEach(value => {
-                    const type = typeof value;
-                    if (type === "number" || (Array.isArray(value) && typeof value[0][0] === "number"))
+        H.flattenParams(ranges, null, true,
+            (item, info) => {
+                // literal will be parsed to Type.NUMBER
+                if (info.isLiteral && !isNaN(item)) {
+                   cnt++;
+                } else {
+                    if (typeof item === "number")
                         cnt++;
-                })
-            })
-        });
+                }
+            });
         return cnt;
     },
 

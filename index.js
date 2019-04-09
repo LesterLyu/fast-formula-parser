@@ -51,12 +51,12 @@ const parser = new FormulaParser({
     }
 });
 
-const funs = parser.supportedFunctions();
-console.log('Supported:', funs.join(', '),
-    `\nTotal: ${funs.length}/477, ${funs.length/477*100}% implemented.`);
+// const funs = parser.supportedFunctions();
+// console.log('Supported:', funs.join(', '),
+//     `\nTotal: ${funs.length}/477, ${funs.length/477*100}% implemented.`);
 
 
-input = 'SUM((A1:C1, C1:E1))';
+input = 'LCM(50,56,100,)';
 
 // input = 'TEXT(-12, """$""#,##0_);[RED](""$""#,##0)")'
 

@@ -92,8 +92,8 @@ class FormulaParser {
                     return {
                         value: res.val,
                         isArray: res.isArray,
-                        isRangeRef: FormulaHelpers.isRangeRef(arg),
-                        isCellRef: FormulaHelpers.isCellRef(arg)
+                        isRangeRef: !!FormulaHelpers.isRangeRef(arg),
+                        isCellRef: !!FormulaHelpers.isCellRef(arg)
                     };
                 });
             }

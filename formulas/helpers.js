@@ -14,7 +14,13 @@ const Types = {
 };
 
 const ParamsTypes = {
+    /**
+     *
+     */
     ALLOW_RANGE_REF_AND_UNION: 1, // allow unions, range reference, extract array.
+    /**
+     * Skip unions (collections)
+     */
     ALLOW_RANGE_REF: 2, // allow range reference and extract array.
 };
 
@@ -98,38 +104,48 @@ class FormulaHelpers {
      * @see {@link FormulaHelpers.accept}
      * @param {Array} params
      * @param {Types|null} valueType
-     * @param {ParamsTypes} paramsType
+     * @param {boolean} allowUnion
      * @param {function} hook - Invoked after parsing each item.
      *                         of the array.
-     * @param {*} [omittedValue] - The value if an param is omitted. i.e. SUM(1,2,,,,,)
+     * @param {*} [defValue] - The value if an param is omitted. i.e. SUM(1,2,,,,,)
      * @param {number} [minSize]
      * @return {Array}
      */
-    flattenParams(params, valueType, paramsType, hook, omittedValue = null, minSize = 1) {
+    flattenParams(params, valueType, allowUnion, hook, defValue = null, minSize = 1) {
         if (params.length < minSize)
             throw FormulaError.ARG_MISSING([valueType]);
-        if (omittedValue == null) {
-            omittedValue = valueType === Types.NUMBER ? 0 : valueType == null ? undefined : '';
+        if (defValue == null) {
+            defValue = valueType === Types.NUMBER ? 0 : valueType == null ? undefined : '';
         }
         params.forEach(param => {
             const {isCellRef, isRangeRef, isArray} = param;
-            const isUnion = !!param.collections;
+            const isUnion = !!param.value.collections;
+            const isLiteral = !isCellRef && !isRangeRef && !isArray && !isUnion;
+            const info = {isLiteral, isCellRef, isRangeRef, isArray, isUnion};
+
             // single element
-            if (typeof param.value !== 'object') {
-                param = this.accept(param, valueType, omittedValue);
-                hook(param, isCellRef, isRangeRef, isArray, isUnion); // param, isCellRef, isRangeRef, isUnion
+            if (isLiteral) {
+                if (param.omitted)
+                    param = defValue;
+                else
+                    param = this.accept(param, valueType, defValue);
+                hook(param, info);
             }
-            // multiple elements
-            else if (isUnion) {
+            // cell reference of single range reference (A1:A1)
+            else if (isCellRef) {
+                hook(param.value, info);
+            }
+            // union
+            else if (isUnion && allowUnion) {
                 param = param.value.collections;
                 param = this.flattenDeep(param);
                 param.forEach(item => {
-                    hook(item, isCellRef, isRangeRef, isArray, isUnion);
+                    hook(item, info);
                 })
-            } else if (isRangeRef) {
+            } else if (isRangeRef || isArray) {
                 param = this.flattenDeep(param.value);
                 param.forEach(item => {
-                    hook(item, isCellRef, isRangeRef, isArray, isUnion);
+                    hook(item, info);
                 })
             }
         });

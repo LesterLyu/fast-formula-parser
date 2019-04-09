@@ -237,11 +237,17 @@ const MathFunctions = {
     },
 
     GCD: (...params) => {
-        const arr = H.flattenParams(params, Types.NUMBER, ParamsTypes.ALLOW_RANGE_REF, param => {
-            if (param < 0 || param > 9007199254740990) // 2^53
-                throw FormulaError.NUM;
-            return Math.trunc(param);
-        }, false);
+        const arr = [];
+        H.flattenParams(params, Types.NUMBER, false,
+            (param) => {
+                // allow array, range ref
+                param = Number(param);
+                if (!isNaN(param)) {
+                    if (param < 0 || param > 9007199254740990) // 2^53
+                        throw FormulaError.NUM;
+                    arr.push(Math.trunc(param))
+                }
+            }, 0);
         // http://rosettacode.org/wiki/Greatest_common_divisor#JavaScript
         let i, y,
             n = params.length,
@@ -268,12 +274,17 @@ const MathFunctions = {
     },
 
     LCM: (...params) => {
+        const arr = [];
         // always parse string to number if possible
-        const arr = H.flattenParams(params, Types.NUMBER, param => {
-            if (param < 0 || param > 9007199254740990) // 2^53
-                throw FormulaError.NUM;
-            return Math.trunc(param);
-        }, false, 1);
+        H.flattenParams(params, Types.NUMBER, false,
+            param => {
+                param = Number(param);
+                if (!isNaN(param)) {
+                    if (param < 0 || param > 9007199254740990) // 2^53
+                        throw FormulaError.NUM;
+                    arr.push(Math.trunc(param))
+                }
+            }, 1);
         // http://rosettacode.org/wiki/Least_common_multiple#JavaScript
         let n = arr.length, a = Math.abs(arr[0]);
         for (let i = 1; i < n; i++) {
@@ -464,10 +475,18 @@ const MathFunctions = {
     },
 
     SUM: (...params) => {
+        // parse string to number only when it is a literal. (not a reference)
         let result = 0;
-        H.flattenParams(params, Types.NUMBER, item => {
-            result += item;
-        }, true);
+        H.flattenParams(params, Types.NUMBER, true,
+            (item, info) => {
+                // literal will be parsed to given type (Type.NUMBER)
+                if (info.isLiteral) {
+                    result += item;
+                } else {
+                    if (typeof item === "number")
+                        result += item;
+                }
+            });
         return result
     },
 
