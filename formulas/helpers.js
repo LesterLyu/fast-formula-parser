@@ -83,8 +83,9 @@ class FormulaHelpers {
         if (typeof obj === 'number')
             number = obj;
         // TRUE -> 1, FALSE -> 0
-        else if (allowBoolean && typeof obj === 'boolean')
-            number = Number(obj);
+        else if (typeof obj === 'boolean') {
+            if (allowBoolean) number = Number(obj);
+        }
         // "123" -> 123
         else if (typeof obj === 'string') {
             number = Number(obj);
@@ -264,7 +265,7 @@ class FormulaHelpers {
             param = this.acceptNumber(param, false);
         } else if (type === Types.NUMBER_NO_BOOLEAN) {
             param = this.acceptNumber(param, false, false);
-        }  else {
+        } else {
             throw FormulaError.VALUE;
         }
         return param;
