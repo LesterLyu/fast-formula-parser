@@ -45,22 +45,34 @@ function initParser() {
         onCell: ref => {
             const val = wb.sheet(ref.sheet).row(ref.row).cell(ref.col).value();
             // console.log(`Get cell ${val}`);
-            return val;
+            return val == null ? null : val;
         },
         onRange: ref => {
+            const arr = [];
             const sheet = wb.sheet(ref.sheet);
+            // whole column
             if (ref.to.row === MAX_ROW) {
                 sheet._rows.forEach((row, rowNumber) => {
-
+                    const cellValue = row.cell(ref.from.row)._value;
+                    arr[rowNumber] = [cellValue == null ? null : cellValue];
                 })
             }
-            const arr = [];
-            for (let row = ref.from.row - 1; row < ref.to.row; row++) {
-                const innerArr = [];
-                for (let col = ref.from.col - 1; col < ref.to.col; col++) {
-                    innerArr.push(wb.sheet(ref.sheet).row(ref.row + 1).cell(ref.col + 1).value())
+            // whole row
+            else if (ref.to.col === MAX_COLUMN) {
+                arr.push([]);
+                sheet._rows[ref.from.row].forEach(cell => {
+                    arr[0].push(cell._value == null ? null : cell._value)
+                })
+
+            } else {
+                for (let row = ref.from.row - 1; row < ref.to.row; row++) {
+                    const innerArr = [];
+                    for (let col = ref.from.col - 1; col < ref.to.col; col++) {
+                        const cellValue = wb.sheet(ref.sheet).row(ref.row + 1).cell(ref.col + 1)._value;
+                        innerArr.push(cellValue == null ? null : cellValue)
+                    }
+                    arr.push(innerArr);
                 }
-                arr.push(innerArr);
             }
             // console.log(`Get cell ${arr}`);
             return arr;
@@ -95,7 +107,12 @@ function something(workbook) {
                     }
                     formulas.push(formula);
                     console.log(formula, `sheet: ${name}, row: ${rowNumber}, col: ${colNumber}`);
-                    cell._value = parser.parse(formula, {sheet: name, row: rowNumber, col: colNumber})
+                    const res = parser.parse(formula, {sheet: name, row: rowNumber, col: colNumber});
+                    if (res != null && res.result)
+                        cell._value = res.result;
+                    else
+                        cell._value = res;
+
                 }
             });
         });
@@ -106,3 +123,6 @@ function something(workbook) {
 
 
 XlsxPopulate.fromFileAsync("./xlsx/test.xlsx").then(something);
+// 2019/4/9 20:00
+// open workbook uses 1235ms
+// process formulas uses 315450ms, with 26283 formulas.

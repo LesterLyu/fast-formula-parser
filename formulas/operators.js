@@ -3,6 +3,7 @@ const {FormulaHelpers} = require('../formulas/helpers');
 
 const Prefix = {
     unaryOp: (prefixes, value, isArray) => {
+        if (value == null) value = 0;
         try {
             value = FormulaHelpers.acceptNumber(value, isArray);
         } catch (e) {
@@ -48,6 +49,8 @@ const type2Number = {'boolean': 3, 'string': 2, 'number': 1};
 
 const Infix = {
     compareOp: (value1, infix, value2, isArray1, isArray2) => {
+        if (value1 == null) value1 = 0;
+        if (value2 == null) value2 = 0;
         // for array: {1,2,3}, get the first element to compare
         if (isArray1) {
             value1 = value1[0][0];
@@ -100,6 +103,8 @@ const Infix = {
     },
 
     concatOp: (value1, infix, value2, isArray1, isArray2) => {
+        if (value1 == null) value1 = '';
+        if (value2 == null) value2 = '';
         // for array: {1,2,3}, get the first element to concat
         if (isArray1) {
             value1 = value1[0][0];
@@ -123,6 +128,9 @@ const Infix = {
     },
 
     mathOp: (value1, infix, value2, isArray1, isArray2) => {
+        if (value1 == null) value1 = 0;
+        if (value2 == null) value2 = 0;
+
         try {
             value1 = FormulaHelpers.acceptNumber(value1, isArray1);
             value2 = FormulaHelpers.acceptNumber(value2, isArray2);
