@@ -150,6 +150,28 @@ const ReferenceFunctions = {
             return tableArray[rowIndexNum - 1][index];
         }
     },
+    // Special
+    INDEX: (context, ranges, rowNum, colNum, areaNum) => {
+
+        ranges = H.accept(ranges);
+        rowNum = H.accept(rowNum, Types.NUMBER);
+        colNum = H.accept(colNum, Types.NUMBER, 1);
+        areaNum = H.accept(areaNum, Types.NUMBER, 1);
+        // single range (Array form)
+        let range = ranges;
+        // many ranges (Reference form)
+        if (ranges.collections) {
+            range = ranges.collections[areaNum - 1];
+        }
+        if (range.length < rowNum || range[0].length < colNum)
+            throw FormulaError.REF;
+        return {ref: {row: rowNum - 1, col: colNum - 1}};
+        // return range[rowNum - 1][colNum - 1];
+    },
+
+    MATCH: () => {
+
+    },
 
     // Special
     ROW: (context, obj) => {

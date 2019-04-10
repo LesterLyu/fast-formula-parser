@@ -44,7 +44,7 @@ class FormulaParser {
             .concat(Object.keys(StatisticalFunctions));
 
         // functions need context and don't need to retrieve references
-        this.funsNeedContextAndNoDataRetrieve = ['ROW', 'ROWS', 'COLUMN', 'COLUMNS', 'SUMIF'];
+        this.funsNeedContextAndNoDataRetrieve = ['ROW', 'ROWS', 'COLUMN', 'COLUMNS', 'SUMIF', 'INDEX'];
         this.funsNeedContext = [];
         this.funsPreserveRef = Object.keys(InformationFunctions);
 
@@ -123,13 +123,13 @@ class FormulaParser {
                 }
                 if (res === undefined) {
                     if (!this.logs.includes(name)) this.logs.push(name);
-                    // console.log(`Function ${name} may be not implemented.`);
+                    console.log(`Function ${name} may be not implemented.`);
                     return {value: 0, ref: {}};
                 }
                 return FormulaHelpers.checkFunctionResult(res);
             } else {
                 if (!this.logs.includes(name)) this.logs.push(name);
-                // console.log(`Function ${name} is not implemented`)
+                console.log(`Function ${name} is not implemented`);
                 return {value: 0, ref: {}};
             }
         };

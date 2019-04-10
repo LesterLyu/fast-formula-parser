@@ -171,7 +171,7 @@ class FormulaHelpers {
      *           BOOLEAN: Expect a single boolean,
      *           STRING: Expect a single string,
      *           COLLECTIONS: Expect an Array of the above types
-     *           undefined: Do not parse the value, return it directly.
+     *           null: Do not parse the value, return it directly.
      *              e.g. [NUMBER, ARRAY, STRING]. The collection is not a flatted array.
      * @param {*} defValue - Default value if the param is not given.
      *               if null, this param is required, a Error will throw if not given.
