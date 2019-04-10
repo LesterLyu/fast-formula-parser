@@ -11,6 +11,7 @@ const Types = {
     ARRAY_OR_STRING: 7,
     ARRAY_OR_NUMBER: 8,
     ARRAY_OR_ANYTHING: 9,
+    NUMBER_NO_BOOLEAN: 10,
 };
 
 const ParamsTypes = {
@@ -70,9 +71,10 @@ class FormulaHelpers {
      *
      * @param obj
      * @param isArray - if it is an array: {1,2,3}, will extract the first element
+     * @param allowBoolean - Allow parse boolean into number
      * @returns {number|FormulaError}
      */
-    acceptNumber(obj, isArray = true) {
+    acceptNumber(obj, isArray = true, allowBoolean = true) {
         // check error
         if (obj instanceof FormulaError)
             return obj;
@@ -81,7 +83,7 @@ class FormulaHelpers {
         if (typeof obj === 'number')
             number = obj;
         // TRUE -> 1, FALSE -> 0
-        else if (typeof obj === 'boolean')
+        else if (allowBoolean && typeof obj === 'boolean')
             number = Number(obj);
         // "123" -> 123
         else if (typeof obj === 'string') {
@@ -260,7 +262,9 @@ class FormulaHelpers {
                 param = Boolean(param);
         } else if (type === Types.NUMBER) {
             param = this.acceptNumber(param, false);
-        } else {
+        } else if (type === Types.NUMBER_NO_BOOLEAN) {
+            param = this.acceptNumber(param, false, false);
+        }  else {
             throw FormulaError.VALUE;
         }
         return param;

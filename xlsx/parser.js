@@ -1,7 +1,4 @@
-const FormulaError = require('../formulas/error');
 const {FormulaHelpers, Address} = require('../formulas/helpers');
-const lexer = require('../grammar/lexing');
-const Utils = require('../grammar/utils');
 const FormulaParser = require('../index');
 const XlsxPopulate = require('xlsx-populate');
 const MAX_ROW = 1048576, MAX_COLUMN = 16384;
@@ -40,14 +37,23 @@ function getSharedFormula(cell, refCell) {
     return formula;
 }
 
+let tGetter = 0;
+
 function initParser() {
     parser = new FormulaParser({
         onCell: ref => {
-            const val = wb.sheet(ref.sheet).row(ref.row).cell(ref.col).value();
+            let t = Date.now();
+            let val = null;
+            const sheet = wb.sheet(ref.sheet);
+            if (sheet._rows[ref.row] != null && sheet._rows[ref.row]._cells[ref.col] !== null) {
+                val =  sheet._rows[ref.row]._cells[ref.col]._value;
+            }
             // console.log(`Get cell ${val}`);
+            tGetter += Date.now() - t;
             return val == null ? null : val;
         },
         onRange: ref => {
+            let t = Date.now();
             const arr = [];
             const sheet = wb.sheet(ref.sheet);
             // whole column
@@ -65,16 +71,25 @@ function initParser() {
                 })
 
             } else {
-                for (let row = ref.from.row - 1; row < ref.to.row; row++) {
+                const sheet = wb.sheet(ref.sheet);
+
+                for (let row = ref.from.row; row <= ref.to.row; row++) {
                     const innerArr = [];
-                    for (let col = ref.from.col - 1; col < ref.to.col; col++) {
-                        const cellValue = wb.sheet(ref.sheet).row(ref.row + 1).cell(ref.col + 1)._value;
-                        innerArr.push(cellValue == null ? null : cellValue)
+                    // row exists
+                    if (sheet._rows[row] != null) {
+                        for (let col = ref.from.col; col <= ref.to.col; col++) {
+                            const cell = sheet._rows[row]._cells[col];
+                            if (cell != null) {
+                                innerArr[col - 1] = cell._value;
+                            }
+                        }
                     }
                     arr.push(innerArr);
                 }
             }
             // console.log(`Get cell ${arr}`);
+
+            tGetter += Date.now() - t;
             return arr;
         }
     });
@@ -86,7 +101,7 @@ function something(workbook) {
     console.log(`open workbook uses ${Date.now() - t}ms`);
     t = Date.now();
     const formulas = [];
-    workbook.sheets().forEach(sheet => {
+    workbook.sheets().forEach((sheet, sheetNo) => {
         const name = sheet.name();
         const sharedFormulas = [];
         sheet._rows.forEach((row, rowNumber) => {
@@ -106,7 +121,7 @@ function something(workbook) {
                         cell.formula(formula)._value = oldValue;
                     }
                     formulas.push(formula);
-                    console.log(formula, `sheet: ${name}, row: ${rowNumber}, col: ${colNumber}`);
+                    // console.log(formula, `sheet: ${name}, row: ${rowNumber}, col: ${colNumber}`);
                     const res = parser.parse(formula, {sheet: name, row: rowNumber, col: colNumber});
                     if (res != null && res.result)
                         cell._value = res.result;
@@ -117,8 +132,14 @@ function something(workbook) {
             });
         });
     });
-    console.log(`process formulas uses ${Date.now() - t}ms, with ${formulas.length} formulas.`);
+    console.log(`process formulas uses ${Date.now() - t}ms, with ${formulas.length} formulas, query data uses ${tGetter}ms`);
+    t = Date.now();
 
+    // get data
+    // const res = parser.parse('IFERROR(Mandatories!$B$1:$I$3012)',
+    //     {sheet: 'Act_Summary'});
+    // console.log(res);
+    // console.log(`process formulas uses ${Date.now() - t}ms, query data uses ${tGetter}ms`);
 }
 
 
@@ -126,3 +147,8 @@ XlsxPopulate.fromFileAsync("./xlsx/test.xlsx").then(something);
 // 2019/4/9 20:00
 // open workbook uses 1235ms
 // process formulas uses 315450ms, with 26283 formulas.
+// 2019/4/10 11:30
+// process formulas uses 40779ms, with 26283 formulas, query data uses 38068ms
+// process formulas uses 25822ms, with 26283 formulas, query data uses 23634ms
+// process formulas uses 16857ms, with 26283 formulas, query data uses 15269ms
+// process formulas uses 2358ms, with 26283 formulas, query data uses 1175ms
