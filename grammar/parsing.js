@@ -382,7 +382,7 @@ class Parser extends chevrotain.Parser {
                     // console.log('refFunctionName', refFunctionName);
                     const args = $.SUBRULE($.arguments);
                     $.CONSUME2(CloseParen);
-                    return context.callFunction(refFunctionName, args);
+                    return context.callRefFunction(refFunctionName, args);
                 }
             }
         ]));

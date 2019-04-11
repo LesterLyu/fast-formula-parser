@@ -16,8 +16,7 @@ const Utils = require('./utils');
 class FormulaParser {
 
     /**
-     *
-     * @param {{functions: {}, variables: {}, onCell: function, onRange: function}} [config]
+     * @param {{[functions]: {}, [variables]: {}, onCell: function, onRange: function}} [config]
      */
     constructor(config) {
         this.logs = [];
@@ -55,6 +54,11 @@ class FormulaParser {
         return allTokens;
     }
 
+    /**
+     * Get value from the cell reference
+     * @param ref
+     * @return {*}
+     */
     getCell(ref){
         // console.log('get cell', JSON.stringify(ref));
         if (ref.sheet == null)
@@ -62,13 +66,24 @@ class FormulaParser {
         return this.onCell(ref);
     }
 
-    getRange (ref) {
+    /**
+     * Get values from the range reference.
+     * @param ref
+     * @return {*}
+     */
+    getRange(ref) {
         // console.log('get range', JSON.stringify(ref));
         if (ref.sheet == null)
             ref.sheet = this.position ? this.position.sheet : undefined;
         return this.onRange(ref)
     }
 
+    /**
+     * TODO:
+     * Get references or values from a user defined variable.
+     * @param name
+     * @return {*}
+     */
     getVariable(name) {
         // console.log('get variable', name);
         const val = this.variables[name];
@@ -77,16 +92,38 @@ class FormulaParser {
         return val;
     }
 
-    retrieveRef(value) {
-        if (FormulaHelpers.isRangeRef(value)) {
-            return this.getRange(value.ref);
+    /**
+     * Retrieve values from the given reference.
+     * @param valueOrRef
+     * @return {*}
+     */
+    retrieveRef(valueOrRef) {
+        if (FormulaHelpers.isRangeRef(valueOrRef)) {
+            return this.getRange(valueOrRef.ref);
         }
-        if (FormulaHelpers.isCellRef(value)) {
-            return this.getCell(value.ref)
+        if (FormulaHelpers.isCellRef(valueOrRef)) {
+            return this.getCell(valueOrRef.ref)
         }
-        return value;
+        return valueOrRef;
     }
 
+    /**
+     * The functions that can return a reference instead of a value as normal functions.
+     * Note: Not all functions from "Lookup and reference" category can return a reference.
+     * {@link https://support.office.com/en-ie/article/lookup-and-reference-functions-reference-8aa21a3a-b56a-4055-8257-3ec89df2b23e}
+     * @param name - Reference function name.
+     * @param args - Arguments that pass to the function.
+     */
+    callRefFunction(name, args) {
+        this.callFunction(name, args);
+    }
+
+    /**
+     * Call an excel function.
+     * @param name - Function name.
+     * @param args - Arguments that pass to the function.
+     * @return {*}
+     */
     callFunction(name, args) {
         name = name.toUpperCase();
         // if one arg is null, it means 0 or "" depends on the function it calls
@@ -140,6 +177,10 @@ class FormulaParser {
         }
     }
 
+    /**
+     * Return currently supported functions.
+     * @return {this}
+     */
     supportedFunctions() {
         const supported = [];
         const functions = Object.keys(this.functions);
@@ -159,6 +200,11 @@ class FormulaParser {
         return supported.sort();
     }
 
+    /**
+     * Check and return the appropriate formula result.
+     * @param result
+     * @return {*}
+     */
     checkFormulaResult(result) {
         const type = typeof result;
         // number
@@ -195,7 +241,7 @@ class FormulaParser {
     }
 
     /**
-     *
+     * Parse a excel formula.
      * @param inputText
      * @param {{row: number, col: number}} [position] - The position of the parsed formula
      *              e.g. {row: 1, col: 1}
