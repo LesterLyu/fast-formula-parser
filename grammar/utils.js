@@ -1,6 +1,7 @@
 const FormulaError = require('../formulas/error');
 const {FormulaHelpers, Types, Address} = require('../formulas/helpers');
 const {Prefix, Postfix, Infix, Operators} = require('../formulas/operators');
+const Collection = require('./type/collection');
 const MAX_ROW = 1048576, MAX_COLUMN = 16384;
 
 class Utils {
@@ -217,16 +218,15 @@ class Utils {
     }
 
     applyUnion(refs) {
-        const unions = [];
-        // a union won't keep references
-        refs.forEach(ref => {
-            if (this.isFormulaError(ref))
-                return ref;
-            unions.push(this.extractRefValue(ref).val);
-        });
+        const collection = new Collection();
+        for (let i = 0; i < refs.length; i++) {
+            if (this.isFormulaError(refs[i]))
+                return refs[i];
+            collection.add(this.extractRefValue(refs[i]).val, refs[i]);
+        }
 
         // console.log('applyUnion', unions);
-        return {collections: unions};
+        return collection;
     }
 
     /**

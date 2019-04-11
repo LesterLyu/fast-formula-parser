@@ -70,9 +70,12 @@ module.exports = {
         'INDEX({1,2;3,4},1,2)': 2,
         'INDEX(A2:C6, 2, 3)': 38,
         'INDEX((A1:C6, A8:C11), 2, 2, 2)': 1.25,
-        // TODO: fix this.
-        // 'SUM(INDEX(A1:C11, 0, 3, 1))': 216,
-        'SUM(B2:INDEX(A2:C6, 5, 2))': 2.42
+
+        'SUM(INDEX(A1:C11, 0, 3, 1))': 216,
+        'SUM(INDEX(A1:E11, 1, 0, 1))': 9,
+        'SUM(INDEX(A1:E11, 1, 0, 2))': '#REF!',
+        'SUM(B2:INDEX(A2:C6, 5, 2))': 2.42,
+        'SUM(INDEX(D1:E2, 0, 0, 1))': 20,
     },
 
     ROW: {

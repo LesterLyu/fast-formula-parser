@@ -1,4 +1,5 @@
 const FormulaError = require('./error');
+const Collection = require('../grammar/type/collection');
 
 const Types = {
     NUMBER: 0,
@@ -20,7 +21,7 @@ const ParamsTypes = {
      */
     ALLOW_RANGE_REF_AND_UNION: 1, // allow unions, range reference, extract array.
     /**
-     * Skip unions (collections)
+     * Skip unions (collection)
      */
     ALLOW_RANGE_REF: 2, // allow range reference and extract array.
 };
@@ -128,7 +129,7 @@ class FormulaHelpers {
         }
         params.forEach(param => {
             const {isCellRef, isRangeRef, isArray} = param;
-            const isUnion = !!param.value.collections;
+            const isUnion = param.value instanceof Collection;
             const isLiteral = !isCellRef && !isRangeRef && !isArray && !isUnion;
             const info = {isLiteral, isCellRef, isRangeRef, isArray, isUnion};
 
@@ -147,7 +148,7 @@ class FormulaHelpers {
             // union
             else if (isUnion) {
                 if (!allowUnion) throw FormulaError.VALUE;
-                param = param.value.collections;
+                param = param.value.data;
                 param = this.flattenDeep(param);
                 param.forEach(item => {
                     hook(item, info);
@@ -207,8 +208,8 @@ class FormulaHelpers {
         // return a flatten array
         if (flat && type === Types.ARRAY && (Array.isArray(param) || param.collections)) {
             // flatten the array
-            if (param.collections)
-                param = param.collections;
+            if (param instanceof Collection)
+                param = param.data;
             return this.flattenDeep(param);
         } else if (!flat && type === Types.ARRAY) {
             // disallow collections (unions) and do not flatten the array
@@ -219,24 +220,24 @@ class FormulaHelpers {
         } else if (type === Types.COLLECTIONS) {
             return param;
         } else if (type === Types.ARRAY_OR_NUMBER) {
-            if (param.collections)
-                param = param.collections;
+            if (param instanceof Collection)
+                param = param.data;
             if (Array.isArray(param)) {
                 return this.flattenDeep(param);
             } else {
                 type = Types.NUMBER;
             }
         } else if (type === Types.ARRAY_OR_STRING) {
-            if (param.collections)
-                param = param.collections;
+            if (param instanceof Collection)
+                param = param.data;
             if (Array.isArray(param)) {
                 return this.flattenDeep(param);
             } else {
                 type = Types.STRING;
             }
         } else if (type === Types.ARRAY_OR_ANYTHING) {
-            if (param.collections)
-                param = param.collections;
+            if (param instanceof Collection)
+                param = param.data;
             if (Array.isArray(param)) {
                 return this.flattenDeep(param);
             } else {
@@ -282,7 +283,7 @@ class FormulaHelpers {
                 } else {
                     type = Types.CELL_REF;
                 }
-            } else if (variable.collections)
+            } else if (variable instanceof Collection)
                 type = Types.COLLECTIONS;
         }
         return type;

@@ -1,5 +1,6 @@
 const FormulaError = require('../error');
 const {FormulaHelpers, Types, WildCard, Address} = require('../helpers');
+const Collection = require('../../grammar/type/collection');
 const H = FormulaHelpers;
 
 const ReferenceFunctions = {
@@ -40,8 +41,8 @@ const ReferenceFunctions = {
 
     AREAS: refs => {
         refs = H.accept(refs);
-        if (refs.collections) {
-            return refs.collections.length;
+        if (refs instanceof Collection) {
+            return refs.length;
         }
         return 1;
     },
@@ -150,23 +151,96 @@ const ReferenceFunctions = {
             return tableArray[rowIndexNum - 1][index];
         }
     },
+
     // Special
     INDEX: (context, ranges, rowNum, colNum, areaNum) => {
-
-        ranges = H.accept(ranges);
+        // retrieve values
+        rowNum = context.utils.extractRefValue(rowNum);
+        rowNum = {value: rowNum.val, isArray: rowNum.isArray};
         rowNum = H.accept(rowNum, Types.NUMBER);
-        colNum = H.accept(colNum, Types.NUMBER, 1);
-        areaNum = H.accept(areaNum, Types.NUMBER, 1);
-        // single range (Array form)
+        rowNum = Math.trunc(rowNum);
+
+        if (colNum == null) {
+            colNum = 1;
+        } else {
+            colNum = context.utils.extractRefValue(colNum);
+            colNum = {value: colNum.val, isArray: colNum.isArray};
+            colNum = H.accept(colNum, Types.NUMBER, 1);
+            colNum = Math.trunc(colNum);
+        }
+
+        if (areaNum == null) {
+            areaNum = 1;
+        } else {
+            areaNum = context.utils.extractRefValue(areaNum);
+            areaNum = {value: areaNum.val, isArray: areaNum.isArray};
+            areaNum = H.accept(areaNum, Types.NUMBER, 1);
+            areaNum = Math.trunc(areaNum);
+        }
+
+        // get the range area that we want to index
+        // ranges can be cell ref, range ref or array constant
         let range = ranges;
         // many ranges (Reference form)
-        if (ranges.collections) {
-            range = ranges.collections[areaNum - 1];
-        }
-        if (range.length < rowNum || range[0].length < colNum)
+        if (ranges instanceof Collection) {
+            range = ranges.refs[areaNum - 1];
+        } else if (areaNum > 1) {
             throw FormulaError.REF;
-        return {ref: {row: rowNum - 1, col: colNum - 1}};
-        // return range[rowNum - 1][colNum - 1];
+        }
+
+        if (rowNum === 0 && colNum === 0) {
+            return range;
+        }
+
+        // query the whole column
+        if (rowNum === 0) {
+            if (H.isRangeRef(range)) {
+                if (range.ref.to.col - range.ref.from.col < colNum - 1)
+                    throw FormulaError.REF;
+                range.ref.from.col += colNum - 1;
+                range.ref.to.col = range.ref.from.col;
+                return range;
+            } else if (Array.isArray(range)) {
+                const res = [];
+                range.forEach(row => res.push([row[colNum - 1]]));
+                return res;
+            }
+        }
+        // query the whole row
+        if (colNum === 0) {
+            if (H.isRangeRef(range)) {
+                if (range.ref.to.row - range.ref.from.row < rowNum - 1)
+                    throw FormulaError.REF;
+                range.ref.from.row += rowNum - 1;
+                range.ref.to.row =  range.ref.from.row;
+                return range;
+            } else if (Array.isArray(range)) {
+                return range[colNum - 1];
+            }
+        }
+        // query single cell
+        if (rowNum !== 0 && colNum !== 0) {
+            // range reference
+            if (H.isRangeRef(range)) {
+                range = range.ref;
+                if (range.to.row - range.from.row < rowNum - 1 || range.to.col - range.from.col < colNum - 1)
+                    throw FormulaError.REF;
+                return {ref: {row: range.from.row + rowNum - 1, col: range.from.col + colNum - 1}};
+            }
+            // cell reference
+            else if (H.isCellRef(range)) {
+                range = range.ref;
+                if (rowNum > 1 || colNum > 1)
+                    throw FormulaError.REF;
+                return {ref: {row: range.row + rowNum - 1, col: range.col + colNum - 1}};
+            }
+            // array constant
+            else if (Array.isArray(range)) {
+                if (range.length < rowNum || range[0].length < colNum)
+                    throw FormulaError.REF;
+                return range[rowNum - 1][colNum - 1];
+            }
+        }
     },
 
     MATCH: () => {
