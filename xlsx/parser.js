@@ -143,7 +143,7 @@ function something(workbook) {
 }
 
 
-XlsxPopulate.fromFileAsync("./xlsx/test.xlsx").then(something);
+XlsxPopulate.fromFileAsync("./xlsx/test3.xlsm").then(something);
 // 2019/4/9 20:00
 // open workbook uses 1235ms
 // process formulas uses 315450ms, with 26283 formulas.
