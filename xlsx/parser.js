@@ -1,10 +1,11 @@
 const {FormulaHelpers, Address} = require('../formulas/helpers');
 const FormulaParser = require('../index');
+const {DepParser} = require('../grammar/dependency/hooks');
 const XlsxPopulate = require('xlsx-populate');
 const MAX_ROW = 1048576, MAX_COLUMN = 16384;
 
 let t = Date.now();
-let parser, wb;
+let parser, depParser, wb, rt;
 
 function getSharedFormula(cell, refCell) {
 
@@ -50,14 +51,17 @@ class ReferenceTable {
      * @param {number} col
      * @param {{sheet: string, row: number, col: number}} ref
      */
-    add(sheet, row, col, ref) {
+    add(sheet, row, col, refs) {
         if (!this._data[sheet])
             this._data[sheet] = {};
         if (!this._data[sheet][row])
             this._data[sheet][row] = {};
         if (!this._data[sheet][row][col])
             this._data[sheet][row][col] = [];
-        this._data[sheet][row][col].push(ref);
+        if (Array.isArray(refs))
+            this._data[sheet][row][col].concat(refs);
+        else
+            this._data[sheet][row][col] = refs;
     }
 }
 
@@ -65,6 +69,8 @@ class ReferenceTable {
 let tGetter = 0;
 
 function initParser() {
+    depParser = new DepParser({});
+
     parser = new FormulaParser({
         onCell: ref => {
             let t = Date.now();
@@ -147,12 +153,9 @@ function something(workbook) {
                     }
                     formulas.push(formula);
                     // console.log(formula, `sheet: ${name}, row: ${rowNumber}, col: ${colNumber}`);
-                    const res = parser.parseDep(formula, {sheet: name, row: rowNumber, col: colNumber});
-
-                    // if (res != null && res.result)
-                    //     cell._value = res.result;
-                    // else
-                    //     cell._value = res;
+                    const res = depParser.parse(formula, {sheet: name, row: rowNumber, col: colNumber});
+                    if (res.length > 0)
+                        rt.add(name, rowNumber, colNumber, res);
 
                 }
             });
@@ -160,16 +163,14 @@ function something(workbook) {
     });
     console.log(`process formulas uses ${Date.now() - t}ms, with ${formulas.length} formulas, query data uses ${tGetter}ms`);
     t = Date.now();
-
     // get data
-    const res = parser.parseDep('IFERROR(Mandatories!$B$1:$I$3012)',
-        {sheet: 'Act_Summary', row: 1, col: 1});
-    // console.log(res);
-    console.log(`process formulas uses ${Date.now() - t}ms`);
+    console.log(JSON.stringify(rt._data))
+    // console.log(`process formulas uses ${Date.now() - t}ms`);
 }
 
 
 XlsxPopulate.fromFileAsync("./xlsx/test.xlsx").then(something);
+rt = new ReferenceTable();
 // 2019/4/9 20:00
 // open workbook uses 1235ms
 // process formulas uses 315450ms, with 26283 formulas.

@@ -299,24 +299,6 @@ class FormulaParser {
         }
         return res;
     }
-
-    parseDep(inputText, position) {
-        if (inputText.length === 0) throw Error('Input must not be empty.');
-        this.position = position;
-        const lexResult = lexer.lex(inputText);
-        this.depParser.input = lexResult.tokens;
-        let res;
-        res = this.depParser.formulaWithCompareOp();
-        if (this.parser.errors.length > 0) {
-            const error = this.depParser.errors[0];
-            const line = error.previousToken.startLine, column = error.previousToken.startColumn + 1;
-            let msg = '\n' + inputText.split('\n')[line - 1] + '\n';
-            msg += Array(column - 1).fill(' ').join('') + '^\n';
-            error.message = msg + `Error at position ${line}:${column}\n` + error.message;
-            console.error(error.toString())
-        }
-        return this.depUtils.depData;
-    }
 }
 
 module.exports = {
