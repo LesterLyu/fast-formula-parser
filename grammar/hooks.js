@@ -12,7 +12,6 @@ const {Parser, allTokens} = require('./parsing');
 const lexer = require('./lexing');
 const Utils = require('./utils');
 
-
 class FormulaParser {
 
     /**
@@ -48,8 +47,14 @@ class FormulaParser {
         this.funsPreserveRef = Object.keys(InformationFunctions);
 
         this.parser = new Parser(this, this.utils);
+        // dependency parser
+        this.depParser = new Parser(this, this.depUtils);
     }
 
+    /**
+     * Webpack needs this.
+     * @return {Array.<string>} - All token names that should not be minimized.
+     */
     static get allTokens() {
         return allTokens;
     }
@@ -59,7 +64,7 @@ class FormulaParser {
      * @param ref
      * @return {*}
      */
-    getCell(ref){
+    getCell(ref) {
         // console.log('get cell', JSON.stringify(ref));
         if (ref.sheet == null)
             ref.sheet = this.position ? this.position.sheet : undefined;
@@ -115,7 +120,28 @@ class FormulaParser {
      * @param args - Arguments that pass to the function.
      */
     callRefFunction(name, args) {
-        this.callFunction(name, args);
+        name = name.toUpperCase();
+        if (this.functions[name]) {
+            let res;
+            try {
+                res = (this.functions[name](this, ...args));
+            } catch (e) {
+                // allow functions throw FormulaError, this make functions easier to implement!
+                if (e instanceof FormulaError) {
+                    return e;
+                } else {
+                    throw e;
+                }
+            }
+            if (res === undefined) {
+                return {value: 0, ref: {}};
+            }
+            return FormulaHelpers.checkFunctionResult(res);
+        } else {
+            if (!this.logs.includes(name)) this.logs.push(name);
+            // console.log(`Function ${name} is not implemented`);
+            return {value: 0, ref: {}};
+        }
     }
 
     /**
@@ -272,6 +298,24 @@ class FormulaParser {
             throw error
         }
         return res;
+    }
+
+    parseDep(inputText, position) {
+        if (inputText.length === 0) throw Error('Input must not be empty.');
+        this.position = position;
+        const lexResult = lexer.lex(inputText);
+        this.depParser.input = lexResult.tokens;
+        let res;
+        res = this.depParser.formulaWithCompareOp();
+        if (this.parser.errors.length > 0) {
+            const error = this.depParser.errors[0];
+            const line = error.previousToken.startLine, column = error.previousToken.startColumn + 1;
+            let msg = '\n' + inputText.split('\n')[line - 1] + '\n';
+            msg += Array(column - 1).fill(' ').join('') + '^\n';
+            error.message = msg + `Error at position ${line}:${column}\n` + error.message;
+            console.error(error.toString())
+        }
+        return this.depUtils.depData;
     }
 }
 

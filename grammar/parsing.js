@@ -2,8 +2,6 @@ const lexer = require('./lexing');
 const chevrotain = require("chevrotain");
 const tokenVocabulary = lexer.tokenVocabulary;
 
-const Utils = require('./utils');
-
 const {
     // IntersectOp,
     WhiteSpace,
@@ -55,7 +53,7 @@ const {
 } = tokenVocabulary;
 
 class Parser extends chevrotain.Parser {
-    constructor(context) {
+    constructor(context, utils) {
         super(tokenVocabulary, {
             outputCst: false,
             maxLookahead: 1,
@@ -65,7 +63,7 @@ class Parser extends chevrotain.Parser {
                 // paren: {OR9: true}
             }
         });
-        this.utils = context.utils;
+        this.utils = utils;
         const $ = this;
 
         // Adopted from https://github.com/spreadsheetlab/XLParser/blob/master/src/XLParser/ExcelFormulaGrammar.cs
@@ -321,6 +319,7 @@ class Parser extends chevrotain.Parser {
                     // console.log('functionName', functionName);
                     const args = $.SUBRULE($.arguments);
                     $.CONSUME(CloseParen);
+                    // dependency parser won't call function.
                     return context.callFunction(functionName, args);
                 }
             }

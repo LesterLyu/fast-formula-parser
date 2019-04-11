@@ -75,6 +75,7 @@ module.exports = {
         'SUM(INDEX(A1:E11, 1, 0, 1))': 9,
         'SUM(INDEX(A1:E11, 1, 0, 2))': '#REF!',
         'SUM(B2:INDEX(A2:C6, 5, 2))': 2.42,
+        'SUM(B2:IF(TRUE, INDEX(A2:C6, 5, 2)))': 2.42,
         'SUM(INDEX(D1:E2, 0, 0, 1))': 20,
     },
 

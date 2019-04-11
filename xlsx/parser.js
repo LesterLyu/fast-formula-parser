@@ -37,6 +37,31 @@ function getSharedFormula(cell, refCell) {
     return formula;
 }
 
+
+class ReferenceTable {
+    constructor() {
+        this._data = {};
+    }
+
+    /**
+     *
+     * @param {string} sheet
+     * @param {number} row
+     * @param {number} col
+     * @param {{sheet: string, row: number, col: number}} ref
+     */
+    add(sheet, row, col, ref) {
+        if (!this._data[sheet])
+            this._data[sheet] = {};
+        if (!this._data[sheet][row])
+            this._data[sheet][row] = {};
+        if (!this._data[sheet][row][col])
+            this._data[sheet][row][col] = [];
+        this._data[sheet][row][col].push(ref);
+    }
+}
+
+
 let tGetter = 0;
 
 function initParser() {
@@ -46,7 +71,7 @@ function initParser() {
             let val = null;
             const sheet = wb.sheet(ref.sheet);
             if (sheet._rows[ref.row] != null && sheet._rows[ref.row]._cells[ref.col] !== null) {
-                val =  sheet._rows[ref.row]._cells[ref.col]._value;
+                val = sheet._rows[ref.row]._cells[ref.col]._value;
             }
             // console.log(`Get cell ${val}`);
             tGetter += Date.now() - t;
@@ -122,11 +147,12 @@ function something(workbook) {
                     }
                     formulas.push(formula);
                     // console.log(formula, `sheet: ${name}, row: ${rowNumber}, col: ${colNumber}`);
-                    const res = parser.parse(formula, {sheet: name, row: rowNumber, col: colNumber});
-                    if (res != null && res.result)
-                        cell._value = res.result;
-                    else
-                        cell._value = res;
+                    const res = parser.parseDep(formula, {sheet: name, row: rowNumber, col: colNumber});
+
+                    // if (res != null && res.result)
+                    //     cell._value = res.result;
+                    // else
+                    //     cell._value = res;
 
                 }
             });
@@ -136,14 +162,14 @@ function something(workbook) {
     t = Date.now();
 
     // get data
-    // const res = parser.parse('IFERROR(Mandatories!$B$1:$I$3012)',
-    //     {sheet: 'Act_Summary'});
+    const res = parser.parseDep('IFERROR(Mandatories!$B$1:$I$3012)',
+        {sheet: 'Act_Summary', row: 1, col: 1});
     // console.log(res);
-    // console.log(`process formulas uses ${Date.now() - t}ms, query data uses ${tGetter}ms`);
+    console.log(`process formulas uses ${Date.now() - t}ms`);
 }
 
 
-XlsxPopulate.fromFileAsync("./xlsx/test3.xlsm").then(something);
+XlsxPopulate.fromFileAsync("./xlsx/test.xlsx").then(something);
 // 2019/4/9 20:00
 // open workbook uses 1235ms
 // process formulas uses 315450ms, with 26283 formulas.
