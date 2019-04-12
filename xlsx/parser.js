@@ -112,7 +112,7 @@ class ReferenceTable {
 let tGetter = 0;
 
 function initParser() {
-    depParser = new DepParser({});
+    depParser = new DepParser();
 
     parser = new FormulaParser({
         onCell: ref => {

@@ -320,7 +320,7 @@ const MathFunctions = {
     },
 
     MDETERM: (array) => {
-        array = H.accept(array, Types.ARRAY, null, false, true);
+        array = H.accept(array, Types.ARRAY, undefined, false, true);
         if (array[0].length !== array.length)
             throw FormulaError.VALUE;
         // adopted from https://github.com/numbers/numbers.js/blob/master/lib/numbers/matrix.js#L261
@@ -357,8 +357,8 @@ const MathFunctions = {
     },
 
     MMULT: (array1, array2) => {
-        array1 = H.accept(array1, Types.ARRAY, null, false, true);
-        array2 = H.accept(array2, Types.ARRAY, null, false, true);
+        array1 = H.accept(array1, Types.ARRAY, undefined, false, true);
+        array2 = H.accept(array2, Types.ARRAY, undefined, false, true);
         if (array1[0].length !== array1.length)
             throw FormulaError.VALUE;
         // https://github.com/numbers/numbers.js/blob/master/lib/numbers/matrix.js#L233
@@ -500,9 +500,7 @@ const MathFunctions = {
      */
     SUMIF: (context, range, criteria, sumRange) => {
         // process args
-        if (sumRange == null) {
-            sumRange = range;
-        } else {
+        if (sumRange != null) {
             let rowOffset, colOffset;
             if (H.isCellRef(range)) {
                 rowOffset = 0;
@@ -530,11 +528,15 @@ const MathFunctions = {
         // retrieve values
         range = context.utils.extractRefValue(range);
         range = {value: range.val, isArray: range.isArray};
-        range = H.accept(range, Types.ARRAY, null, false, true);
+        range = H.accept(range, Types.ARRAY, undefined, false, true);
 
-        sumRange = context.utils.extractRefValue(sumRange);
-        sumRange = {value: sumRange.val, isArray: sumRange.isArray};
-        sumRange = H.accept(sumRange, Types.ARRAY, null, false, true);
+        if (sumRange == null) {
+            sumRange = range;
+        } else {
+            sumRange = context.utils.extractRefValue(sumRange);
+            sumRange = {value: sumRange.val, isArray: sumRange.isArray};
+            sumRange = H.accept(sumRange, Types.ARRAY, undefined, false, true);
+        }
 
         criteria = context.utils.extractRefValue(criteria);
         const isCriteriaArray = criteria.isArray;
@@ -566,9 +568,9 @@ const MathFunctions = {
 
 
     SUMPRODUCT: (array1, ...arrays) => {
-        array1 = H.accept(array1, Types.ARRAY, null, false, true);
+        array1 = H.accept(array1, Types.ARRAY, undefined, false, true);
         arrays.forEach(array => {
-            array = H.accept(array, Types.ARRAY, null, false, true);
+            array = H.accept(array, Types.ARRAY, undefined, false, true);
             if (array1[0].length !== array[0].length || array1.length !== array.length)
                 throw FormulaError.VALUE;
             for (let i = 0; i < array1.length; i++) {

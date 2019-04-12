@@ -21,7 +21,7 @@ const StatisticalFunctions = {
 
     COUNTIF: (range, criteria) => {
         // do not flatten the array
-        range = H.accept(range, Types.ARRAY, null, false, true);
+        range = H.accept(range, Types.ARRAY, undefined, false, true);
         const isCriteriaArray = criteria.isArray;
         criteria = H.accept(criteria);
 

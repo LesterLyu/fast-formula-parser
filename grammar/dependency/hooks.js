@@ -16,7 +16,7 @@ class DepParser {
 
     /**
      *
-     * @param {{onVariable: Function}} config
+     * @param {{onVariable: Function}} [config]
      */
     constructor(config) {
         this.logs = [];
