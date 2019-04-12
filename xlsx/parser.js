@@ -76,6 +76,14 @@ class ReferenceTable {
 
         this._data.get(sheet).get(from).get(to).get(refB.sheet).push(refB.row * 100000 + refB.col);
     }
+
+    /**
+     * Called when a cell's value is cleared.
+     * @param refB
+     */
+    remove(refB) {
+
+    }
 }
 
 
@@ -152,7 +160,7 @@ function something(workbook) {
             // const rowStyle = styles[rowNumber - 1] = {};
             row._cells.forEach((cell, colNumber) => {
                 // process cell data
-                let formula = cell.formula();
+                let formula = (cell._formulaType === "shared" && !cell._formulaRef) ? "SHARED" : cell._formula;
                 if (typeof formula === 'string') {
                     // this is the parent shared formula
                     if (formula !== 'SHARED' && cell._sharedFormulaId !== undefined) {
@@ -161,7 +169,7 @@ function something(workbook) {
                         // convert this cell to normal formula
                         const refCell = sharedFormulas[cell._sharedFormulaId];
                         formula = getSharedFormula(cell, refCell);
-                        const oldValue = cell.value();
+                        const oldValue = cell._value;
                         cell.formula(formula)._value = oldValue;
                     }
                     formulas.push(formula);
@@ -191,7 +199,7 @@ rt = new ReferenceTable();
 setTimeout(() => {
     t = Date.now();
     XlsxPopulate.fromFileAsync("./xlsx/test.xlsx").then(something)
-}, 3000);
+}, 0);
 
 
 // 2019/4/9 20:00

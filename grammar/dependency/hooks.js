@@ -10,7 +10,7 @@ const FormulaError = require('../../formulas/error');
 const {FormulaHelpers} = require('../../formulas/helpers');
 const {Parser, allTokens} = require('../parsing');
 const lexer = require('../lexing');
-const Utils = require('../utils');
+const Utils = require('./utils');
 
 class DepParser {
 
