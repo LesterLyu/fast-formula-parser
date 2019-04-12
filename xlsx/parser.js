@@ -5,7 +5,7 @@ const XlsxPopulate = require('xlsx-populate');
 const MAX_ROW = 1048576, MAX_COLUMN = 16384;
 
 let t = Date.now();
-let parser, depParser, wb, rt;
+let parser, depParser, wb, rt, sheetNames = [];
 
 function getSharedFormula(cell, refCell) {
 
@@ -41,27 +41,40 @@ function getSharedFormula(cell, refCell) {
 
 class ReferenceTable {
     constructor() {
-        this._data = {};
+        this._data = new Map();
     }
 
     /**
-     *
-     * @param {string} sheet
-     * @param {number} row
-     * @param {number} col
-     * @param {{sheet: string, row: number, col: number}} ref
+     * refB depends on refA, which means changes on refA will trigger
+     * re-calculation on refB.
+     * @param refA - Dependency of refB
+     * @param refB
      */
-    add(sheet, row, col, refs) {
-        if (!this._data[sheet])
-            this._data[sheet] = {};
-        if (!this._data[sheet][row])
-            this._data[sheet][row] = {};
-        if (!this._data[sheet][row][col])
-            this._data[sheet][row][col] = [];
-        if (Array.isArray(refs))
-            this._data[sheet][row][col].concat(refs);
-        else
-            this._data[sheet][row][col] = refs;
+    add(refA, refB) {
+        let sheet = refA.sheet;
+        if (typeof refA.sheet === "string")
+            sheet = sheetNames.indexOf(refA.sheet);
+        if (sheet === -1)
+            throw Error('ReferenceTable.add: Sheet name does not exist: ' + refA.sheet);
+        if (!this._data.get(sheet))
+            this._data.set(sheet, new Map());
+        let from, to;
+        if (refA.from) {
+            from = refA.from.row * 100000 + refA.from.col;
+            to = refA.to.row * 100000 + refA.to.col;
+        } else {
+            from = refA.row * 100000 + refA.col;
+            to = from;
+        }
+        if (!this._data.get(sheet).get(from))
+            this._data.get(sheet).set(from, new Map());
+        if (!this._data.get(sheet).get(from).get(to))
+            this._data.get(sheet).get(from).set(to, new Map());
+
+        if (!this._data.get(sheet).get(from).get(to).get(refB.sheet))
+            this._data.get(sheet).get(from).get(to).set(refB.sheet, []);
+
+        this._data.get(sheet).get(from).get(to).get(refB.sheet).push(refB.row * 100000 + refB.col);
     }
 }
 
@@ -132,8 +145,8 @@ function something(workbook) {
     console.log(`open workbook uses ${Date.now() - t}ms`);
     t = Date.now();
     const formulas = [];
+    workbook.sheets().forEach(sheet => sheetNames.push(sheet.name()));
     workbook.sheets().forEach((sheet, sheetNo) => {
-        const name = sheet.name();
         const sharedFormulas = [];
         sheet._rows.forEach((row, rowNumber) => {
             // const rowStyle = styles[rowNumber - 1] = {};
@@ -153,9 +166,13 @@ function something(workbook) {
                     }
                     formulas.push(formula);
                     // console.log(formula, `sheet: ${name}, row: ${rowNumber}, col: ${colNumber}`);
-                    const res = depParser.parse(formula, {sheet: name, row: rowNumber, col: colNumber});
-                    if (res.length > 0)
-                        rt.add(name, rowNumber, colNumber, res);
+                    const position = {sheet: sheetNo, row: rowNumber, col: colNumber};
+                    const res = depParser.parse(formula, position);
+                    if (res.length > 0) {
+                        res.forEach(refA => {
+                            rt.add(refA, position);
+                        })
+                    }
 
                 }
             });
@@ -164,13 +181,19 @@ function something(workbook) {
     console.log(`process formulas uses ${Date.now() - t}ms, with ${formulas.length} formulas, query data uses ${tGetter}ms`);
     t = Date.now();
     // get data
-    console.log(JSON.stringify(rt._data))
-    // console.log(`process formulas uses ${Date.now() - t}ms`);
+    // console.log(JSON.stringify(rt._data).length)
+    const res = depParser.parse('SUM(B2:IF(TRUE, INDEX(A2:C6, 5, 2)))', {});
+    console.log(res);
+    console.log(`process formulas uses ${Date.now() - t}ms`);
 }
 
-
-XlsxPopulate.fromFileAsync("./xlsx/test.xlsx").then(something);
 rt = new ReferenceTable();
+setTimeout(() => {
+    t = Date.now();
+    XlsxPopulate.fromFileAsync("./xlsx/test.xlsx").then(something)
+}, 3000);
+
+
 // 2019/4/9 20:00
 // open workbook uses 1235ms
 // process formulas uses 315450ms, with 26283 formulas.

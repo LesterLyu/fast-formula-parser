@@ -46,10 +46,12 @@ class DepParser {
             if (ref.sheet == null)
                 ref.sheet = this.position ? this.position.sheet : undefined;
             const idx = this.data.findIndex(element => {
-                return element.row === ref.row && element.col === ref.col && element.sheet === ref.sheet
+                return (element.from && element.from.row <= ref.row && element.to.row >= ref.row
+                    && element.from.col <= ref.col && element.to.col >= ref.col)
+                    || (element.row === ref.row && element.col === ref.col && element.sheet === ref.sheet)
             });
             if (idx === -1)
-                this.data.push({sheet: ref.sheet, row: ref.row, col: ref.col});
+                this.data.push(ref);
         }
         return 0;
     }
@@ -61,18 +63,16 @@ class DepParser {
      */
     getRange(ref) {
         // console.log('get range', JSON.stringify(ref));
-        if (ref.row != null) {
+        if (ref.from.row != null) {
             if (ref.sheet == null)
                 ref.sheet = this.position ? this.position.sheet : undefined;
-            for (let row = ref.from.row; row <= ref.to.row; row++) {
-                for (let col = ref.from.col; col <= ref.to.col; col++) {
-                    const idx = this.data.findIndex(element => {
-                        return element.row === row && element.col === col && element.sheet === ref.sheet
-                    });
-                    if (idx === -1)
-                        this.data.push({sheet: ref.sheet, row, col});
-                }
-            }
+
+            const idx = this.data.findIndex(element => {
+                return element.from && element.from.row === ref.from.row && element.from.col === ref.from.col
+                    && element.to.row === ref.to.row && element.to.col === ref.to.col;
+            });
+            if (idx === -1)
+                this.data.push(ref);
         }
         return [[0]]
     }
@@ -114,6 +114,9 @@ class DepParser {
      * @param args - Arguments that pass to the function.
      */
     callRefFunction(name, args) {
+        args.forEach(arg => {
+            this.retrieveRef(arg);
+        });
         name = name.toUpperCase();
         if (this.functions[name]) {
             let res;
