@@ -16,19 +16,19 @@ const Utils = require('./utils');
 class FormulaParser {
 
     /**
-     * @param {{[functions]: {}, [variables]: {}, onCell: function, onRange: function}} [config]
+     * @param {{[functions]: {}, onVariable: function, onCell: function, onRange: function}} [config]
      */
     constructor(config) {
         this.logs = [];
         this.utils = new Utils(this);
         config = Object.assign({
             functions: {},
-            variables: {},
+            onVariable: () => 0,
             onCell: () => 0,
             onRange: () => [[0]],
         }, config);
 
-        this.variables = config.variables;
+        this.onVariable = config.onVariable;
         this.functions = Object.assign({}, DateFunctions, StatisticalFunctions, InformationFunctions, ReferenceFunctions,
             EngFunctions, LogicalFunctions, TextFunctions, MathFunctions, TrigFunctions, config.functions);
         this.onRange = config.onRange;
@@ -49,8 +49,6 @@ class FormulaParser {
         this.funsPreserveRef = Object.keys(InformationFunctions);
 
         this.parser = new Parser(this, this.utils);
-        // dependency parser
-        this.depParser = new Parser(this, this.depUtils);
     }
 
     /**
@@ -93,7 +91,7 @@ class FormulaParser {
      */
     getVariable(name) {
         // console.log('get variable', name);
-        const val = this.variables[name];
+        const val = this.onVariable(name, this.position.sheet);
         if (val === undefined || val === null)
             return FormulaError.NAME;
         return val;
