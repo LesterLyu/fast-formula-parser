@@ -23,13 +23,11 @@ class DepParser {
         this.data = [];
         this.utils = new Utils(this);
         config = Object.assign({
-            onVariable: () => {
-                return {value: 0, ref: {}}
-            },
+            onVariable: () => null,
         }, config);
         this.utils = new Utils(this);
 
-        this.variables = config.onVariable;
+        this.onVariable = config.onVariable;
         this.functions = Object.assign({}, ReferenceFunctions, LogicalFunctions);
 
         this.parser = new Parser(this, this.utils);
@@ -85,10 +83,15 @@ class DepParser {
      */
     getVariable(name) {
         // console.log('get variable', name);
-        const val = this.variables[name];
-        if (val === undefined || val === null)
+        const ref = this.onVariable(name, this.position.sheet);
+        if (ref == null)
             return FormulaError.NAME;
-        return val;
+        if (FormulaHelpers.isCellRef(ref))
+            this.getCell(ref);
+        else {
+            this.getRange(ref);
+        }
+        return ref;
     }
 
     /**

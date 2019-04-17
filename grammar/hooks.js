@@ -23,7 +23,7 @@ class FormulaParser {
         this.utils = new Utils(this);
         config = Object.assign({
             functions: {},
-            onVariable: () => 0,
+            onVariable: () => null,
             onCell: () => 0,
             onRange: () => [[0]],
         }, config);
@@ -91,10 +91,15 @@ class FormulaParser {
      */
     getVariable(name) {
         // console.log('get variable', name);
-        const val = this.onVariable(name, this.position.sheet);
-        if (val === undefined || val === null)
+        const ref = this.onVariable(name, this.position.sheet);
+        if (ref == null)
             return FormulaError.NAME;
-        return val;
+        if (FormulaHelpers.isCellRef(ref))
+            this.getCell(ref);
+        else {
+            this.getRange(ref);
+        }
+        return ref;
     }
 
     /**
