@@ -52,9 +52,9 @@ const parser = new FormulaParser({
     // }
 });
 
-// const funs = parser.supportedFunctions();
-// console.log('Supported:', funs.join(', '),
-//     `\nTotal: ${funs.length}/477, ${funs.length/477*100}% implemented.`);
+const funs = parser.supportedFunctions();
+console.log('Supported:', funs.join(', '),
+    `\nTotal: ${funs.length}/477, ${funs.length/477*100}% implemented.`);
 
 
 // input = '';

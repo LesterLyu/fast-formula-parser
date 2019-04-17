@@ -384,7 +384,12 @@ const MathFunctions = {
         return result;
     },
 
-    MOD: () => {
+    MOD: (number, divisor) => {
+        number = H.accept(number, Types.NUMBER);
+        divisor = H.accept(divisor, Types.NUMBER);
+        if (divisor === 0)
+            throw FormulaError.DIV0;
+        return number - divisor * MathFunctions.INT(number / divisor);
 
     },
 

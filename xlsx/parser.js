@@ -94,43 +94,41 @@ function initParser() {
 
     parser = new FormulaParser({
         onCell: ref => {
-            let t = Date.now();
             let val = null;
             const sheet = wb.sheet(ref.sheet);
-            if (sheet._rows[ref.row] != null && sheet._rows[ref.row]._cells[ref.col] !== null) {
-                val = sheet._rows[ref.row]._cells[ref.col]._value;
+            if (sheet.hasCell(ref.row, ref.col)) {
+                val = sheet.getCell(ref.row, ref.col).getValue();
             }
+
             // console.log(`Get cell ${val}`);
-            tGetter += Date.now() - t;
-            return val == null ? null : val;
+            return val == null ? undefined : val;
         },
         onRange: ref => {
-            let t = Date.now();
             const arr = [];
             const sheet = wb.sheet(ref.sheet);
+
             // whole column
             if (ref.to.row === MAX_ROW) {
                 sheet._rows.forEach((row, rowNumber) => {
                     const cellValue = row.cell(ref.from.row)._value;
                     arr[rowNumber] = [cellValue == null ? null : cellValue];
-                })
-            }
-            // whole row
-            else if (ref.to.col === MAX_COLUMN) {
+                });
+            } else if (ref.to.col === MAX_COLUMN) {
+                // whole row
                 arr.push([]);
-                sheet._rows[ref.from.row].forEach(cell => {
-                    arr[0].push(cell._value == null ? null : cell._value)
-                })
-
+                sheet._rows.get(ref.from.row).forEach(cell => {
+                    arr[0].push(cell._value == null ? null : cell._value);
+                });
             } else {
                 const sheet = wb.sheet(ref.sheet);
 
                 for (let row = ref.from.row; row <= ref.to.row; row++) {
                     const innerArr = [];
+
                     // row exists
-                    if (sheet._rows[row] != null) {
+                    if (sheet._rows.has(row)) {
                         for (let col = ref.from.col; col <= ref.to.col; col++) {
-                            const cell = sheet._rows[row]._cells[col];
+                            const cell = sheet._rows.get(row)._cells.get(col);
                             if (cell != null) {
                                 innerArr[col - 1] = cell._value;
                             }
@@ -139,9 +137,6 @@ function initParser() {
                     arr.push(innerArr);
                 }
             }
-            // console.log(`Get cell ${arr}`);
-
-            tGetter += Date.now() - t;
             return arr;
         }
     });
@@ -175,12 +170,12 @@ function something(workbook) {
                     formulas.push(formula);
                     // console.log(formula, `sheet: ${name}, row: ${rowNumber}, col: ${colNumber}`);
                     const position = {sheet: sheetNo, row: rowNumber, col: colNumber};
-                    const res = depParser.parse(formula, position);
-                    if (res.length > 0) {
-                        res.forEach(refA => {
-                            rt.add(refA, position);
-                        })
-                    }
+                    const res = parser.parse(formula, position);
+                    // if (res.length > 0) {
+                    //     res.forEach(refA => {
+                    //         rt.add(refA, position);
+                    //     })
+                    // }
 
                 }
             });
@@ -198,7 +193,7 @@ function something(workbook) {
 rt = new ReferenceTable();
 setTimeout(() => {
     t = Date.now();
-    XlsxPopulate.fromFileAsync("./xlsx/test.xlsx").then(something)
+    XlsxPopulate.fromFileAsync("./xlsx/test2.xlsx").then(something)
 }, 0);
 
 

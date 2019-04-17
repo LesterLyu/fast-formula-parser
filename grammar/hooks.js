@@ -6,6 +6,7 @@ const EngFunctions = require('../formulas/functions/engineering');
 const ReferenceFunctions = require('../formulas/functions/reference');
 const InformationFunctions = require('../formulas/functions/information');
 const StatisticalFunctions = require('../formulas/functions/statistical');
+const DateFunctions = require('../formulas/functions/date');
 const FormulaError = require('../formulas/error');
 const {FormulaHelpers} = require('../formulas/helpers');
 const {Parser, allTokens} = require('./parsing');
@@ -28,7 +29,7 @@ class FormulaParser {
         }, config);
 
         this.variables = config.variables;
-        this.functions = Object.assign({}, StatisticalFunctions, InformationFunctions, ReferenceFunctions,
+        this.functions = Object.assign({}, DateFunctions, StatisticalFunctions, InformationFunctions, ReferenceFunctions,
             EngFunctions, LogicalFunctions, TextFunctions, MathFunctions, TrigFunctions, config.functions);
         this.onRange = config.onRange;
         this.onCell = config.onCell;
@@ -39,7 +40,8 @@ class FormulaParser {
             .concat(Object.keys(LogicalFunctions))
             .concat(Object.keys(EngFunctions))
             .concat(Object.keys(ReferenceFunctions))
-            .concat(Object.keys(StatisticalFunctions));
+            .concat(Object.keys(StatisticalFunctions))
+            .concat(Object.keys(DateFunctions));
 
         // functions need context and don't need to retrieve references
         this.funsNeedContextAndNoDataRetrieve = ['ROW', 'ROWS', 'COLUMN', 'COLUMNS', 'SUMIF', 'INDEX'];
@@ -192,13 +194,13 @@ class FormulaParser {
             }
             if (res === undefined) {
                 if (!this.logs.includes(name)) this.logs.push(name);
-                // console.log(`Function ${name} may be not implemented.`);
+                console.log(`Function ${name} may be not implemented.`);
                 return {value: 0, ref: {}};
             }
             return FormulaHelpers.checkFunctionResult(res);
         } else {
             if (!this.logs.includes(name)) this.logs.push(name);
-            // console.log(`Function ${name} is not implemented`);
+            console.log(`Function ${name} is not implemented`);
             return {value: 0, ref: {}};
         }
     }
