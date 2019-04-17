@@ -125,7 +125,7 @@ class FormulaHelpers {
         if (params.length < minSize)
             throw FormulaError.ARG_MISSING([valueType]);
         if (defValue == null) {
-            defValue = valueType === Types.NUMBER ? 0 : valueType == null ? undefined : '';
+            defValue = valueType === Types.NUMBER ? 0 : valueType == null ? null : '';
         }
         params.forEach(param => {
             const {isCellRef, isRangeRef, isArray} = param;
@@ -174,8 +174,9 @@ class FormulaHelpers {
      *           COLLECTIONS: Expect an Array of the above types
      *           null: Do not parse the value, return it directly.
      *              e.g. [NUMBER, ARRAY, STRING]. The collection is not a flatted array.
-     * @param {*} defValue - Default value if the param is not given.
-     *               if null, this param is required, a Error will throw if not given.
+     * @param {*} [defValue] - Default value if the param is not given.
+     *               if undefined, this param is required, a Error will throw if not given.
+     *               if null, and param is undefined, null will be returned.
      * @param {boolean} [flat=true] - If the array should be flattened,
      *                      only applicable when type is ARRAY.
      *                      If false, collection is disallowed.
@@ -183,11 +184,11 @@ class FormulaHelpers {
      *                     only applicable when type is ARRAY.
      * @return {string|number|boolean|{}|Array}
      */
-    accept(param, type = null, defValue = null, flat = true, allowSingleValue = false) {
+    accept(param, type = null, defValue, flat = true, allowSingleValue = false) {
         // TODO: remove this array check
         if (Array.isArray(type))
             type = type[0];
-        if (param == null && defValue == null) {
+        if (param == null && defValue === undefined) {
             throw FormulaError.ARG_MISSING([type]);
         } else if (param == null)
             return defValue;

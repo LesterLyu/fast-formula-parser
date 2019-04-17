@@ -91,7 +91,7 @@ const ReferenceFunctions = {
         // preserve type of lookupValue
         lookupValue = H.accept(lookupValue);
         try {
-            tableArray = H.accept(tableArray, Types.ARRAY, null, false);
+            tableArray = H.accept(tableArray, Types.ARRAY, undefined, false);
         } catch (e) {
             // catch #VALUE! and throw #N/A
             if (e instanceof FormulaError)
@@ -284,7 +284,7 @@ const ReferenceFunctions = {
     },
 
     TRANSPOSE: (array) => {
-        array = H.accept(array, Types.ARRAY, null, false);
+        array = H.accept(array, Types.ARRAY, undefined, false);
         // https://github.com/numbers/numbers.js/blob/master/lib/numbers/matrix.js#L171
         const result = [];
 
@@ -303,7 +303,7 @@ const ReferenceFunctions = {
         // preserve type of lookupValue
         lookupValue = H.accept(lookupValue);
         try {
-            tableArray = H.accept(tableArray, Types.ARRAY, null, false);
+            tableArray = H.accept(tableArray, Types.ARRAY, undefined, false);
         } catch (e) {
             // catch #VALUE! and throw #N/A
             if (e instanceof FormulaError)
