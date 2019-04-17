@@ -91,15 +91,15 @@ class FormulaParser {
      */
     getVariable(name) {
         // console.log('get variable', name);
-        const ref = this.onVariable(name, this.position.sheet);
-        if (ref == null)
+        const res = {ref: this.onVariable(name, this.position.sheet)};
+        if (res.ref == null)
             return FormulaError.NAME;
-        if (FormulaHelpers.isCellRef(ref))
-            this.getCell(ref);
+        if (FormulaHelpers.isCellRef(res))
+            this.getCell(res);
         else {
-            this.getRange(ref);
+            this.getRange(res);
         }
-        return ref;
+        return res;
     }
 
     /**
