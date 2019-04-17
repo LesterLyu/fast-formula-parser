@@ -1,4 +1,4 @@
-const moment = require('../../node_modules/moment/min/moment.min');
+const moment = require('moment');
 const FormulaError = require('../error');
 const {FormulaHelpers, Types} = require('../helpers');
 const H = FormulaHelpers;
