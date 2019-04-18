@@ -47,22 +47,59 @@ const WEEKEND_TYPES = [
     [6, 6]
 ];
 
-const dateFormates = ['MM/DD/YYYY', 'dddd, MMMM, DD, YYYY', 'YYYY-MM-DD', 'M/DD', 'M/DD/YY', 'MM/DD/YY', 'DD-MMM',
-    'DD-MMM-YY', 'D-MMM-YY', 'MMM-YY', 'MMMM-YY', 'MMMM DD, YYYY', 'M/DD/YY h:m A',
-    'M/DD/YY HH:m', 'M/DD/YYYY', 'DD-MMM-YYYY', 'h:mm A', 'h:mm:ss A', 'H:mm', 'H:mm:ss', 'M/DD/YYYY h:mm A',
-    'M/DD/YYYY h:mm:ss A', 'M/DD/YYYY H:mm:ss', 'YYYY-MM-DD H:mm:ss', 'YYYY-MM-DD h:mm:ss A', 'YY-MM-DD H:mm:ss',
-    'YY-MM-DD h:mm:ss A'];
+// Formats: h:mm:ss A, h:mm A, H:mm, H:mm:ss, H A
+const timeRegex = /^\s*(\d\d?)\s*(:\s*\d\d?)?\s*(:\s*\d\d?)?\s*(pm|am)?\s*$/i;
+// 12-3, 12/3
+const dateRegex1 = /^\s*((\d\d?)\s*([-\/])\s*(\d\d?))([\d:.apm\s]*)$/i;
+// 3-Dec, 3/Dec
+const dateRegex2 = /^\s*((\d\d?)\s*([-/])\s*(jan\w*|feb\w*|mar\w*|apr\w*|may\w*|jun\w*|jul\w*|aug\w*|sep\w*|oct\w*|nov\w*|dec\w*))([\d:.apm\s]*)$/i;
+// Dec-3, Dec/3
+const dateRegex3 = /^\s*((jan\w*|feb\w*|mar\w*|apr\w*|may\w*|jun\w*|jul\w*|aug\w*|sep\w*|oct\w*|nov\w*|dec\w*)\s*([-/])\s*(\d\d?))([\d:.apm\s]*)$/i;
 
-const timeRegex = /^\s*(\d\d?)(:\d\d?)?(:\d\d?)?\s*(pm|am)\s*$/i;
+function parseSimplifiedDate(text) {
+    const fmt1 = text.match(dateRegex1);
+    const fmt2 = text.match(dateRegex2);
+    const fmt3 = text.match(dateRegex3);
+    if (fmt1) {
+        text = fmt1[1] + fmt1[3] + new Date().getFullYear() + fmt1[5];
+    } else if (fmt2) {
+        text = fmt2[1] + fmt2[3] + new Date().getFullYear() + fmt2[5];
+    } else if (fmt3) {
+        text = fmt3[1] + fmt3[3] + new Date().getFullYear() + fmt3[5];
+    }
+    return new Date(Date.parse(`${text} UTC`));
+}
+
+/**
+ * Parse time string to date in UTC.
+ * @param {string} text
+ */
+function parseTime(text) {
+    const res = text.match(timeRegex);
+    if (!res) return;
+
+    //  ["4:50:55 pm", "4", ":50", ":55", "pm", ...]
+    const minutes = res[2] ? res[2] : ':00';
+    const seconds = res[3] ? res[3] : ':00';
+    const ampm = res[4] ? ' ' + res[4] : '';
+
+    const date = new Date(Date.parse(`1/1/1900 ${res[1] + minutes + seconds + ampm} UTC`));
+    let now = new Date();
+    now = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(),
+        now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()));
+
+    return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),
+        date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds(), date.getUTCMilliseconds()));
+}
 
 /**
  * Parse a UTC date to excel serial number.
- * @param date
+ * @param {Date|number} date - A UTC date.
  * @returns {number}
  */
 function toSerial(date) {
     const addOn = (date > -2203891200000) ? 2 : 1;
-    return Math.ceil((date - d1900) / 86400000) + addOn;
+    return Math.floor((date - d1900) / 86400000) + addOn;
 }
 
 /**
@@ -80,25 +117,27 @@ function toDate(serial) {
     return new Date(d1900.getTime() + (serial - 2) * 86400000);
 }
 
-function parseDate(serialOrString) {
+function parseDateWithExtra(serialOrString) {
     serialOrString = H.accept(serialOrString);
+    let isDateGiven = true, date;
     if (!isNaN(serialOrString)) {
         serialOrString = Number(serialOrString);
-        return toDate(serialOrString);
+        date = toDate(serialOrString);
     } else {
         // support time without date
-        if (timeRegex.test(serialOrString)) {
-            const date = new Date(Date.parse(`1/1/2000 ${serialOrString} UTC`));
-            let now = new Date();
-            now = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(),
-                now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()));
+        date = parseTime(serialOrString);
 
-            return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(),
-                date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds(), date.getUTCMilliseconds()));
+        if (!date) {
+           date = parseSimplifiedDate(serialOrString);
         } else {
-            return new Date(Date.parse(`${serialOrString} UTC`));
+            isDateGiven = false;
         }
     }
+    return {date, isDateGiven};
+}
+
+function parseDate(serialOrString) {
+    return parseDateWithExtra(serialOrString).date;
 }
 
 const DateFunctions = {
@@ -169,11 +208,12 @@ const DateFunctions = {
      */
     DATEVALUE: (dateText) => {
         dateText = H.accept(dateText, Types.STRING);
-        const date = Date.parse(`${dateText} UTC`);
+        const {date, isDateGiven} = parseDateWithExtra(dateText);
+        if (!isDateGiven) return 0;
         const serial = toSerial(date);
         if (serial < 0 || serial > 2958465)
             throw FormulaError.VALUE;
-        return toSerial(date);
+        return serial;
     },
 
     DAY: serialOrString => {
@@ -188,12 +228,41 @@ const DateFunctions = {
         return Math.floor(endDate - startDate) / MS_PER_DAY;
     },
 
-    DAYS360: serialeNumber => {
+    DAYS360: (startDate, endDate, method) => {
+        startDate = parseDate(startDate);
+        endDate = parseDate(endDate);
+        // default is US method
+        method = H.accept(method, Types.BOOLEAN, false);
 
+        if (startDate.getUTCDate() === 31) {
+            startDate.setUTCDate(30);
+        }
+        if (!method && startDate.getUTCDate() < 30 && endDate.getUTCDate() > 30) {
+            // if endDate is last day of the month
+            const copy = new Date(endDate);
+            copy.setUTCMonth(copy.getUTCMonth() + 1, 0);
+            if (copy.getUTCDate() === endDate.getUTCDate()) {
+                endDate.setUTCMonth(endDate.getUTCMonth() + 1, 1);
+            }
+        } else {
+            // European method
+            if (endDate.getUTCDate() === 31) {
+                endDate.setUTCDate(30);
+            }
+        }
+
+        const yearDiff = endDate.getUTCFullYear() - startDate.getUTCFullYear();
+        const monthDiff = endDate.getUTCMonth() - startDate.getUTCMonth();
+        const dayDiff = endDate.getUTCDate() - startDate.getUTCDate();
+
+        return (monthDiff) * 30 + dayDiff + yearDiff * 12 * 30;
     },
 
-    EDATE: serialeNumber => {
-
+    EDATE: (startDate, months) => {
+        startDate = parseDate(startDate);
+        months = H.accept(months, Types.NUMBER);
+        startDate.setUTCMonth(startDate.getUTCMonth() + months);
+        return toSerial(startDate);
     },
 
     EOMONTH: serialeNumber => {

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "nyc mocha",
-    "test:f": "nyc mocha test/formulas",
+    "test:f": "nyc -n \"formulas/functions/**\" -n \"formulas/operators.js\" mocha test/formulas",
     "build": "webpack"
   },
   "author": "Lester(Dishu) Lyu",

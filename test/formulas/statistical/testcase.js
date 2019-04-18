@@ -1,6 +1,7 @@
 module.exports = {
 
     COUNT: {
+        'COUNT(A2:A5, 123)': 1,
         'COUNT(A2:A5)': 0,
         'COUNT(A1:E1)': 1,
         'COUNT(A2:E2)': 3,

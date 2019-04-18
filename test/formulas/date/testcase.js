@@ -48,8 +48,28 @@ module.exports = {
         'DATEVALUE("2011/02/23")': 40597,
         'DATEVALUE("December 31, 9999")': 2958465,
         'DATEVALUE("11" & "/" & "3" & "/" & "2011")': 40850,
-        // not supported
-        // 'DATEVALUE("5-JUL")': 40729,
+
+        // all formats
+        // TODO: Update results every year :(
+        'DATEVALUE("12/3/2014")': 41976,
+        'DATEVALUE("Wednesday, December 3, 2014")': 41976,
+        'DATEVALUE("2014-12-3")': 41976,
+        'DATEVALUE("12/3")': 43802, // *special
+        'DATEVALUE("12/3/14")': 41976,
+        'DATEVALUE("12/03/14")': 41976,
+        'DATEVALUE("3-Dec")': 43802, // *special
+        'DATEVALUE("3-Dec-14")': 41976,
+        'DATEVALUE("03-Dec-14")': 41976,
+        'DATEVALUE("Dec-3")': 43802, // *special
+        'DATEVALUE("December-3")': 43802, // *special
+        'DATEVALUE("December 3, 2014")': 41976,
+        'DATEVALUE("12/3/14 12:00 AM")': 41976,
+        'DATEVALUE("12/3/14 0:00")': 41976,
+        'DATEVALUE("12/03/2014")': 41976,
+        'DATEVALUE("3-Dec-2014")': 41976,
+        'DATEVALUE("Dec-3 11:11")': 43802, // *special
+
+        'DATEVALUE("4:48:18 PM")': 0,
     },
 
     DAY: {
@@ -64,10 +84,30 @@ module.exports = {
         'DAYS(DATEVALUE("12/31/2011"),DATEVALUE("1/1/2011"))': 364,
     },
 
+    DAYS360: {
+        'DAYS360("2/1/2019", "2/28/2019")': 27,
+        'DAYS360("2/1/2019", "3/1/2019")': 30,
+        'DAYS360("1/31/2019", "3/31/2019")': 60,
+        'DAYS360("2/1/2019", "3/31/2019")': 60,
+        'DAYS360("2/1/2019", "3/31/2019", TRUE)': 59,
+        'DAYS360("3/31/2019", "3/31/2019")': 0,
+        'DAYS360("3/31/2019", "3/31/2019", TRUE)': 0,
+        'DAYS360("1/31/2019", 3/31/2019)': -42870,
+        'DAYS360("3/15/2019", "3/31/2019")': 16,
+        'DAYS360("3/15/2019", "3/31/2020")': 376,
+        'DAYS360("12/31/2019", "1/1/2020")': 1,
+    },
+
+    EDATE: {
+        'EDATE("15-Jan-11",1)': 40589,
+
+    },
+
     HOUR: {
         'HOUR(0.75)': 18,
         'HOUR("7/18/2011 7:45")': 7,
         'HOUR("4/21/2012")': 0,
+        'HOUR("4 PM")': 16,
     },
 
     SECOND: {
