@@ -197,13 +197,13 @@ class FormulaParser {
             }
             if (res === undefined) {
                 if (!this.logs.includes(name)) this.logs.push(name);
-                console.log(`Function ${name} may be not implemented.`);
+                // console.log(`Function ${name} may be not implemented.`);
                 return {value: 0, ref: {}};
             }
             return FormulaHelpers.checkFunctionResult(res);
         } else {
             if (!this.logs.includes(name)) this.logs.push(name);
-            console.log(`Function ${name} is not implemented`);
+            // console.log(`Function ${name} is not implemented`);
             return {value: 0, ref: {}};
         }
     }

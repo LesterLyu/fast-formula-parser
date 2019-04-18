@@ -91,10 +91,4 @@ describe('Parsing Formulas 2', () => {
 
 });
 
-require('./operators/operators');
-require('./formulas/math/math');
-require('./formulas/text/text');
-require('./formulas/reference/reference');
-require('./formulas/information/information');
-require('./formulas/statistical/statistical');
-require('./formulas/date/date');
+require('./formulas');
