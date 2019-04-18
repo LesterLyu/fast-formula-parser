@@ -1,6 +1,8 @@
 const path = require("path");
 const TerserPlugin = require("terser-webpack-plugin");
 const { allTokens } = require("./grammar/parsing");
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
 
 // extract the names of the TokenTypes to avoid name mangling them.
 const allTokenNames = allTokens.map(tokenType => tokenType.name);
@@ -27,5 +29,8 @@ module.exports = {
                 }
             })
         ]
-    }
-}
+    },
+    plugins: [
+        new BundleAnalyzerPlugin(),
+    ],
+};
