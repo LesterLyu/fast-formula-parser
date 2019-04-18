@@ -1,12 +1,8 @@
 const lexer = require('./lexing');
-const chevrotain = require("chevrotain");
+const {Parser} = require("chevrotain");
 const tokenVocabulary = lexer.tokenVocabulary;
-
 const {
-    // IntersectOp,
-    WhiteSpace,
     String,
-    SingleQuotedString,
     SheetQuoted,
     ExcelRefFunction,
     ExcelConditionalRefFunction,
@@ -14,35 +10,30 @@ const {
     FormulaError,
     RefError,
     Cell,
-    // RangeColumn,
-    // RangeRow,
     Sheet,
     ReservedName,
     Name,
     Number,
     Boolean,
     Column,
-    // Array,
 
-    At,
+    // At,
     Comma,
     Colon,
     Semicolon,
     OpenParen,
     CloseParen,
-    OpenSquareParen,
-    CloseSquareParen,
+    // OpenSquareParen,
+    // CloseSquareParen,
     // ExclamationMark,
     OpenCurlyParen,
     CloseCurlyParen,
-    QuoteS,
     MulOp,
     PlusOp,
     DivOp,
     MinOp,
-    ConcateOp,
+    ConcatOp,
     ExOp,
-    // IntersectOp,
     PercentOp,
     NeqOp,
     GteOp,
@@ -50,9 +41,9 @@ const {
     GtOp,
     EqOp,
     LtOp
-} = tokenVocabulary;
+} = lexer.tokenVocabulary;
 
-class Parser extends chevrotain.Parser {
+class Parsing extends Parser {
     constructor(context, utils) {
         super(tokenVocabulary, {
             outputCst: false,
@@ -91,7 +82,7 @@ class Parser extends chevrotain.Parser {
         $.RULE('formulaWithConcatOp', () => {
             let value = $.SUBRULE($.formulaWithBinaryOp);
             $.MANY(() => {
-                const infix = $.CONSUME(ConcateOp).image;
+                const infix = $.CONSUME(ConcatOp).image;
                 const formula2 = $.SUBRULE2($.formulaWithBinaryOp);
                 value = this.utils.applyInfix(value, infix, formula2);
             });
@@ -414,5 +405,5 @@ class Parser extends chevrotain.Parser {
 
 module.exports = {
     allTokens: Object.values(tokenVocabulary),
-    Parser: Parser,
+    Parser: Parsing,
 };

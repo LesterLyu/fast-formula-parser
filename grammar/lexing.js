@@ -1,6 +1,4 @@
-const chevrotain = require("chevrotain");
-const Lexer = chevrotain.Lexer;
-const createToken = chevrotain.createToken;
+const {Lexer, createToken} = require("chevrotain");
 
 // the vocabulary will be exported and used in the Parser definition.
 const tokenVocabulary = {};
@@ -9,12 +7,6 @@ const WhiteSpace = createToken({
     name: 'WhiteSpace',
     pattern: /\s+/,
     group: Lexer.SKIPPED,
-});
-
-const IntersectOp = createToken({
-    name: 'IntersectOp',
-    pattern: / +/,
-    longer_alt: WhiteSpace,
 });
 
 const String = createToken({
@@ -57,17 +49,6 @@ const RefError = createToken({
     pattern: /#REF!/
 });
 
-// max column: XFD
-const RangeColumn = createToken({
-    name: 'RangeColumn',
-    pattern: /[$]?[A-Za-z]{1,3}:[$]?[A-Za-z]{1,4}/
-});
-
-const RangeRow = createToken({
-    name: 'RangeRow',
-    pattern: /[$]?[1-9][0-9]*:[$]?[1-9][0-9]*/
-});
-
 const Name = createToken({
     name: 'Name',
     pattern: /[a-zA-Z_][a-zA-Z0-9_.?]*/,
@@ -98,12 +79,6 @@ const Number = createToken({
 const Boolean = createToken({
     name: 'Boolean',
     pattern: /TRUE|FALSE/i
-});
-
-const Row = createToken({
-    name: 'Row',
-    pattern: /[$]?[1-9][0-9]*/,
-    longer_alt: Number
 });
 
 const Column = createToken({
@@ -197,8 +172,8 @@ const MinOp = createToken({
     pattern: /-/
 });
 
-const ConcateOp = createToken({
-    name: 'ConcateOp',
+const ConcatOp = createToken({
+    name: 'ConcatOp',
     pattern: /&/
 });
 
@@ -245,7 +220,6 @@ const LteOp = createToken({
 // The order of tokens is important
 const allTokens = [
 
-    // IntersectOp,
     WhiteSpace,
     String,
     SheetQuoted,
@@ -260,11 +234,8 @@ const allTokens = [
     Boolean,
     Column,
     Name,
-    // RangeColumn,
-    // RangeRow,
     ReservedName,
     Number,
-    // Array,
 
     At,
     Comma,
@@ -282,7 +253,7 @@ const allTokens = [
     PlusOp,
     DivOp,
     MinOp,
-    ConcateOp,
+    ConcatOp,
     ExOp,
     MulOp,
     PercentOp,
