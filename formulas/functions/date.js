@@ -155,15 +155,13 @@ function isLeapYear(year) {
     return new Date(year, 1, 29).getMonth() === 1;
 }
 
+// leap year feb29 in between
 function feb29Between(date1, date2) {
-    const year1 = date1.getUTCFullYear();
-    const mar1year1 = new Date(year1, 1, 1);
-    if (isLeapYear(year1) && date1 < mar1year1 && date2 >= mar1year1) {
-        return true;
-    }
-    const year2 = date2.getUTCFullYear();
-    const mar1year2 = new Date(year2, 2, 1);
-    return (isLeapYear(year2) && date2 >= mar1year2 && date1 < mar1year2);
+    const feb29Year1 = new Date(Date.UTC(date1.getUTCFullYear(), 1, 0));
+    const feb29Year2 = new Date(Date.UTC(date2.getUTCFullYear(), 1, 0));
+
+    return isLeapYear(date1.getUTCFullYear()) && date1 < feb29Year1 && feb29Year1 < date2
+        || isLeapYear(date2.getUTCFullYear()) && date1 < feb29Year2 && feb29Year2 < date2;
 }
 
 const DateFunctions = {
@@ -250,8 +248,11 @@ const DateFunctions = {
     DAYS: (endDate, startDate) => {
         endDate = parseDate(endDate);
         startDate = parseDate(startDate);
-
-        return Math.floor(endDate - startDate) / MS_PER_DAY;
+        let offset = 0;
+        if (startDate < -2203891200000 && -2203891200000 < endDate) {
+            offset = 1;
+        }
+        return Math.floor(endDate - startDate) / MS_PER_DAY + offset;
     },
 
     DAYS360: (startDate, endDate, method) => {
@@ -494,7 +495,8 @@ const DateFunctions = {
 
         // using weekend string, i.e, 0000011
         if (typeof weekend === "string" && Number(weekend).toString() !== weekend) {
-            if (weekend.length !== 7) throw FormulaError.VALUE;
+            if (weekend.length !== 7)
+                throw FormulaError.VALUE;
             weekend = weekend.charAt(6) + weekend.slice(0, 6);
             const weekendArr = [];
             for (let i = 0; i < weekend.length; i++) {
@@ -548,9 +550,15 @@ const DateFunctions = {
         return date.getUTCFullYear();
     },
 
+    // Warning: may have bugs
     YEARFRAC: (startDate, endDate, basis) => {
         startDate = parseDate(startDate);
         endDate = parseDate(endDate);
+        if (startDate > endDate) {
+            const temp = startDate;
+            startDate = endDate;
+            endDate = temp;
+        }
         basis = H.accept(basis, Types.NUMBER, 0);
         basis = Math.trunc(basis);
 
@@ -579,28 +587,22 @@ const DateFunctions = {
                 return Math.abs((ed + em * 30 + ey * 360) - (sd + sm * 30 + sy * 360)) / 360;
             case 1:
                 // Actual/actual
-                let yLength = 365, addon = 0;
-                if (sy === ey || ((sy + 1) === ey) && ((sm > em) || ((sm === em) && (sd >= ed)))) {
-                    if ((sy === ey && isLeapYear(sy)) ||
-                        feb29Between(startDate, endDate) ||
-                        (em === 1 && ed === 29)) {
-                        if (sy === 1900)
-                            addon = 1;
-                        else
-                            yLength = 366;
-                    }
-                    return (addon + Math.abs((DateFunctions.DAYS(startDate, endDate)))) / yLength;
+                if (ey - sy < 2) {
+                    const yLength = isLeapYear(sy) && sy !== 1900 ? 366 : 365;
+                    const days = DateFunctions.DAYS(endDate, startDate);
+                    return days / yLength;
+                } else {
+                    const years = (ey - sy) + 1;
+                    const days = (new Date(ey + 1, 0, 1) - new Date(sy, 0, 1)) / 1000 / 60 / 60 / 24;
+                    const average = days / years;
+                    return DateFunctions.DAYS(endDate, startDate) / average;
                 }
-                const years = (ey - sy) + 1;
-                const days = (new Date(ey + 1, 0, 1) - new Date(sy, 0, 1)) / 1000 / 60 / 60 / 24;
-                const average = days / years;
-                return Math.abs(DateFunctions.DAYS(startDate, endDate) / average);
             case 2:
                 // Actual/360
-                return Math.abs(DateFunctions.DAYS(startDate, endDate) / 360);
+                return Math.abs(DateFunctions.DAYS(endDate, startDate) / 360);
             case 3:
                 // Actual/365
-                return Math.abs(DateFunctions.DAYS(startDate, endDate) / 365);
+                return Math.abs(DateFunctions.DAYS(endDate, startDate) / 365);
             case 4:
                 // European 30/360
                 return Math.abs((ed + em * 30 + ey * 360) - (sd + sm * 30 + sy * 360)) / 360;
