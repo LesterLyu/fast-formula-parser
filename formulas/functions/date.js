@@ -155,15 +155,6 @@ function isLeapYear(year) {
     return new Date(year, 1, 29).getMonth() === 1;
 }
 
-// leap year feb29 in between
-function feb29Between(date1, date2) {
-    const feb29Year1 = new Date(Date.UTC(date1.getUTCFullYear(), 1, 0));
-    const feb29Year2 = new Date(Date.UTC(date2.getUTCFullYear(), 1, 0));
-
-    return isLeapYear(date1.getUTCFullYear()) && date1 < feb29Year1 && feb29Year1 < date2
-        || isLeapYear(date2.getUTCFullYear()) && date1 < feb29Year2 && feb29Year2 < date2;
-}
-
 const DateFunctions = {
     DATE: (year, month, day) => {
         year = H.accept(year, Types.NUMBER);
