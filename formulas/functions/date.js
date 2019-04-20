@@ -8,17 +8,17 @@ const WEEK_STARTS = [
     undefined, 0, 1, undefined, undefined, undefined, undefined, undefined, undefined,
     undefined, undefined, undefined, 1, 2, 3, 4, 5, 6, 0];
 const WEEK_TYPES = [
-    [],
+    undefined,
     [1, 2, 3, 4, 5, 6, 7],
     [7, 1, 2, 3, 4, 5, 6],
     [6, 0, 1, 2, 3, 4, 5],
-    [],
-    [],
-    [],
-    [],
-    [],
-    [],
-    [],
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
     [7, 1, 2, 3, 4, 5, 6],
     [6, 7, 1, 2, 3, 4, 5],
     [5, 6, 7, 1, 2, 3, 4],
@@ -28,7 +28,7 @@ const WEEK_TYPES = [
     [1, 2, 3, 4, 5, 6, 7]
 ];
 const WEEKEND_TYPES = [
-    [],
+    undefined,
     [6, 0],
     [0, 1],
     [1, 2],
@@ -38,13 +38,14 @@ const WEEKEND_TYPES = [
     [5, 6],
     undefined,
     undefined,
-    undefined, [0, 0],
-    [1, 1],
-    [2, 2],
-    [3, 3],
-    [4, 4],
-    [5, 5],
-    [6, 6]
+    undefined,
+    [0],
+    [1],
+    [2],
+    [3],
+    [4],
+    [5],
+    [6]
 ];
 
 // Formats: h:mm:ss A, h:mm A, H:mm, H:mm:ss, H A
@@ -118,6 +119,7 @@ function toDate(serial) {
 }
 
 function parseDateWithExtra(serialOrString) {
+    if (serialOrString instanceof Date) return {date: serialOrString};
     serialOrString = H.accept(serialOrString);
     let isDateGiven = true, date;
     if (!isNaN(serialOrString)) {
@@ -128,7 +130,7 @@ function parseDateWithExtra(serialOrString) {
         date = parseTime(serialOrString);
 
         if (!date) {
-           date = parseSimplifiedDate(serialOrString);
+            date = parseSimplifiedDate(serialOrString);
         } else {
             isDateGiven = false;
         }
@@ -138,6 +140,30 @@ function parseDateWithExtra(serialOrString) {
 
 function parseDate(serialOrString) {
     return parseDateWithExtra(serialOrString).date;
+}
+
+function compareDateIgnoreTime(date1, date2) {
+    return date1.getUTCFullYear() === date2.getUTCFullYear() &&
+        date1.getUTCMonth() === date2.getUTCMonth() &&
+        date1.getUTCDate() === date2.getUTCDate();
+}
+
+function isLeapYear(year) {
+    if (year === 1900) {
+        return true;
+    }
+    return new Date(year, 1, 29).getMonth() === 1;
+}
+
+function feb29Between(date1, date2) {
+    const year1 = date1.getUTCFullYear();
+    const mar1year1 = new Date(year1, 1, 1);
+    if (isLeapYear(year1) && date1 < mar1year1 && date2 >= mar1year1) {
+        return true;
+    }
+    const year2 = date2.getUTCFullYear();
+    const mar1year2 = new Date(year2, 2, 1);
+    return (isLeapYear(year2) && date2 >= mar1year2 && date1 < mar1year2);
 }
 
 const DateFunctions = {
@@ -265,8 +291,11 @@ const DateFunctions = {
         return toSerial(startDate);
     },
 
-    EOMONTH: serialeNumber => {
-
+    EOMONTH: (startDate, months) => {
+        startDate = parseDate(startDate);
+        months = H.accept(months, Types.NUMBER);
+        startDate.setUTCMonth(startDate.getUTCMonth() + months + 1, 0);
+        return toSerial(startDate);
     },
 
     HOUR: serialOrString => {
@@ -274,8 +303,15 @@ const DateFunctions = {
         return date.getUTCHours();
     },
 
-    ISOWEEKNUM: () => {
+    ISOWEEKNUM: (serialOrString) => {
+        const date = parseDate(serialOrString);
 
+        // https://stackoverflow.com/questions/6117814/get-week-of-year-in-javascript-like-in-php
+        const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+        const dayNum = d.getUTCDay() || 7;
+        d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+        const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+        return Math.ceil((((d - yearStart) / 86400000) + 1) / 7)
     },
 
     MINUTE: serialOrString => {
@@ -283,23 +319,115 @@ const DateFunctions = {
         return date.getUTCMinutes();
     },
 
-    MONTH: (serialOrString) => {
+    MONTH: serialOrString => {
         const date = parseDate(serialOrString);
         return date.getUTCMonth() + 1;
     },
 
-    NETWORKDAYS: () => {
+    NETWORKDAYS: (startDate, endDate, holidays) => {
+        startDate = parseDate(startDate);
+        endDate = parseDate(endDate);
+        let sign = 1;
+        if (startDate > endDate) {
+            sign = -1;
+            const temp = startDate;
+            startDate = endDate;
+            endDate = temp;
+        }
+        const holidaysArr = [];
+        if (holidays != null) {
+            H.flattenParams([holidays], Types.NUMBER, false, item => {
+                holidaysArr.push(parseDate(item));
+            });
+        }
+        let numWorkDays = 0;
+        while (startDate <= endDate) {
+            // Skips Sunday and Saturday
+            if (startDate.getUTCDay() !== 0 && startDate.getUTCDay() !== 6) {
+                let found = false;
+                for (let i = 0; i < holidaysArr.length; i++) {
+                    if (compareDateIgnoreTime(startDate, holidaysArr[i])) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) numWorkDays++;
+            }
+            startDate.setUTCDate(startDate.getUTCDate() + 1);
+        }
+        return sign * numWorkDays;
 
     },
 
-    'NETWORKDAYS.INTL': () => {
+    'NETWORKDAYS.INTL': (startDate, endDate, weekend, holidays) => {
+        startDate = parseDate(startDate);
+        endDate = parseDate(endDate);
+        let sign = 1;
+        if (startDate > endDate) {
+            sign = -1;
+            const temp = startDate;
+            startDate = endDate;
+            endDate = temp;
+        }
+        weekend = H.accept(weekend, null, 1);
+        // Using 1111111 will always return 0.
+        if (weekend === '1111111')
+            return 0;
+
+        // using weekend string, i.e, 0000011
+        if (typeof weekend === "string" && Number(weekend).toString() !== weekend) {
+            if (weekend.length !== 7) throw FormulaError.VALUE;
+            weekend = weekend.charAt(6) + weekend.slice(0, 6);
+            const weekendArr = [];
+            for (let i = 0; i < weekend.length; i++) {
+                if (weekend.charAt(i) === '1')
+                    weekendArr.push(i);
+            }
+            weekend = weekendArr;
+        } else {
+            // using weekend number
+            if (typeof weekend !== "number")
+                throw FormulaError.VALUE;
+            weekend = WEEKEND_TYPES[weekend];
+        }
+
+        const holidaysArr = [];
+        if (holidays != null) {
+            H.flattenParams([holidays], Types.NUMBER, false, item => {
+                holidaysArr.push(parseDate(item));
+            });
+        }
+        let numWorkDays = 0;
+        while (startDate <= endDate) {
+            let skip = false;
+            for (let i = 0; i < weekend.length; i++) {
+                if (weekend[i] === startDate.getUTCDay()) {
+                    skip = true;
+                    break;
+                }
+            }
+
+            if (!skip) {
+                let found = false;
+                for (let i = 0; i < holidaysArr.length; i++) {
+                    if (compareDateIgnoreTime(startDate, holidaysArr[i])) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) numWorkDays++;
+            }
+            startDate.setUTCDate(startDate.getUTCDate() + 1);
+        }
+        return sign * numWorkDays;
 
     },
 
     NOW: () => {
         const now = new Date();
         return toSerial(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(),
-            now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()));
+            now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()))
+            + (3600 * now.getHours() + 60 * now.getMinutes() + now.getSeconds()) / 86400;
     },
 
     SECOND: (serialOrString) => {
@@ -307,12 +435,19 @@ const DateFunctions = {
         return date.getUTCSeconds();
     },
 
-    TIME: () => {
+    TIME: (hour, minute, second) => {
+        hour = H.accept(hour, Types.NUMBER);
+        minute = H.accept(minute, Types.NUMBER);
+        second = H.accept(second, Types.NUMBER);
 
+        if (hour < 0 || hour > 32767 || minute < 0 || minute > 32767 || second < 0 || second > 32767)
+            throw FormulaError.NUM;
+        return (3600 * hour + 60 * minute + second) / 86400;
     },
 
-    TIMEVALUE: () => {
-
+    TIMEVALUE: (timeText) => {
+        timeText = parseDate(timeText);
+        return (3600 * timeText.getUTCHours() + 60 * timeText.getUTCMinutes() + timeText.getUTCSeconds()) / 86400;
     },
 
     TODAY: () => {
@@ -320,37 +455,156 @@ const DateFunctions = {
         return toSerial(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
     },
 
-    WEEKDAY: (serialNumber, returnType) => {
-        serialNumber = H.accept(serialNumber, Types.NUMBER);
-        returnType = H.accept(returnType, Types.NUMBER, null);
-        if (returnType == null)
-            returnType = 1;
+    WEEKDAY: (serialOrString, returnType) => {
+        const date = parseDate(serialOrString);
+        returnType = H.accept(returnType, Types.NUMBER, 1);
 
-        const day = toDate(serialNumber).getUTCDay();
-        return WEEK_TYPES[returnType][day];
-
-    },
-
-    WEEKNUM: () => {
+        const day = date.getUTCDay();
+        const weekTypes = WEEK_TYPES[returnType];
+        if (!weekTypes)
+            throw FormulaError.NUM;
+        return weekTypes[day];
 
     },
 
-    WORKDAY: () => {
-
+    WEEKNUM: (serialOrString, returnType) => {
+        const date = parseDate(serialOrString);
+        returnType = H.accept(returnType, Types.NUMBER, 1);
+        if (returnType === 21) {
+            return DateFunctions.ISOWEEKNUM(serialOrString);
+        }
+        const weekStart = WEEK_STARTS[returnType];
+        const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+        const offset = yearStart.getUTCDay() < weekStart ? 1 : 0;
+        return Math.ceil((((date - yearStart) / 86400000) + 1) / 7) + offset;
     },
 
-    'WORKDAY.INTL': () => {
-
+    WORKDAY: (startDate, days, holidays) => {
+        return DateFunctions["WORKDAY.INTL"](startDate, days, 1, holidays);
     },
 
-    YEAR: (serialNumber) => {
-        serialNumber = H.accept(serialNumber, Types.NUMBER);
-        const date = toDate(serialNumber);
+    'WORKDAY.INTL': (startDate, days, weekend, holidays) => {
+        startDate = parseDate(startDate);
+        days = H.accept(days, Types.NUMBER);
+
+        weekend = H.accept(weekend, null, 1);
+        // Using 1111111 will always return value error.
+        if (weekend === '1111111')
+            throw FormulaError.VALUE;
+
+        // using weekend string, i.e, 0000011
+        if (typeof weekend === "string" && Number(weekend).toString() !== weekend) {
+            if (weekend.length !== 7) throw FormulaError.VALUE;
+            weekend = weekend.charAt(6) + weekend.slice(0, 6);
+            const weekendArr = [];
+            for (let i = 0; i < weekend.length; i++) {
+                if (weekend.charAt(i) === '1')
+                    weekendArr.push(i);
+            }
+            weekend = weekendArr;
+        } else {
+            // using weekend number
+            if (typeof weekend !== "number")
+                throw FormulaError.VALUE;
+            weekend = WEEKEND_TYPES[weekend];
+            if (weekend == null)
+                throw FormulaError.NUM;
+        }
+
+        const holidaysArr = [];
+        if (holidays != null) {
+            H.flattenParams([holidays], Types.NUMBER, false, item => {
+                holidaysArr.push(parseDate(item));
+            });
+        }
+        startDate.setUTCDate(startDate.getUTCDate() + 1);
+        let cnt = 0;
+        while (cnt < days) {
+            let skip = false;
+            for (let i = 0; i < weekend.length; i++) {
+                if (weekend[i] === startDate.getUTCDay()) {
+                    skip = true;
+                    break;
+                }
+            }
+
+            if (!skip) {
+                let found = false;
+                for (let i = 0; i < holidaysArr.length; i++) {
+                    if (compareDateIgnoreTime(startDate, holidaysArr[i])) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) cnt++;
+            }
+            startDate.setUTCDate(startDate.getUTCDate() + 1);
+        }
+        return toSerial(startDate) - 1;
+    },
+
+    YEAR: (serialOrString) => {
+        const date = parseDate(serialOrString);
         return date.getUTCFullYear();
     },
 
-    YEARFRAC: () => {
+    YEARFRAC: (startDate, endDate, basis) => {
+        startDate = parseDate(startDate);
+        endDate = parseDate(endDate);
+        basis = H.accept(basis, Types.NUMBER, 0);
+        basis = Math.trunc(basis);
 
+        if (basis < 0 || basis > 4)
+            throw FormulaError.VALUE;
+
+        // https://github.com/LesterLyu/formula.js/blob/develop/lib/date-time.js#L508
+        let sd = startDate.getUTCDate();
+        const sm = startDate.getUTCMonth() + 1;
+        const sy = startDate.getUTCFullYear();
+        let ed = endDate.getUTCDate();
+        const em = endDate.getUTCMonth() + 1;
+        const ey = endDate.getUTCFullYear();
+
+        switch (basis) {
+            case 0:
+                // US (NASD) 30/360
+                if (sd === 31 && ed === 31) {
+                    sd = 30;
+                    ed = 30;
+                } else if (sd === 31) {
+                    sd = 30;
+                } else if (sd === 30 && ed === 31) {
+                    ed = 30;
+                }
+                return Math.abs((ed + em * 30 + ey * 360) - (sd + sm * 30 + sy * 360)) / 360;
+            case 1:
+                // Actual/actual
+                let yLength = 365, addon = 0;
+                if (sy === ey || ((sy + 1) === ey) && ((sm > em) || ((sm === em) && (sd >= ed)))) {
+                    if ((sy === ey && isLeapYear(sy)) ||
+                        feb29Between(startDate, endDate) ||
+                        (em === 1 && ed === 29)) {
+                        if (sy === 1900)
+                            addon = 1;
+                        else
+                            yLength = 366;
+                    }
+                    return (addon + Math.abs((DateFunctions.DAYS(startDate, endDate)))) / yLength;
+                }
+                const years = (ey - sy) + 1;
+                const days = (new Date(ey + 1, 0, 1) - new Date(sy, 0, 1)) / 1000 / 60 / 60 / 24;
+                const average = days / years;
+                return Math.abs(DateFunctions.DAYS(startDate, endDate) / average);
+            case 2:
+                // Actual/360
+                return Math.abs(DateFunctions.DAYS(startDate, endDate) / 360);
+            case 3:
+                // Actual/365
+                return Math.abs(DateFunctions.DAYS(startDate, endDate) / 365);
+            case 4:
+                // European 30/360
+                return Math.abs((ed + em * 30 + ey * 360) - (sd + sm * 30 + sy * 360)) / 360;
+        }
     },
 };
 

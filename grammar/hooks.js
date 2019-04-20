@@ -251,10 +251,10 @@ class FormulaParser {
         else if (type === 'object') {
             if (result instanceof FormulaError)
                 return result;
-            if (result.ref && !result.ref.from) {
+            if (result.ref && result.ref.row && !result.ref.from) {
                 // single cell reference
                 result = this.retrieveRef(result);
-            } else if (result.ref && result.ref.from.col === result.ref.to.col) {
+            } else if (result.ref && result.ref.from && result.ref.from.col === result.ref.to.col) {
                 // single Column reference
                 result = this.retrieveRef({
                     ref: {

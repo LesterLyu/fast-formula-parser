@@ -112,14 +112,14 @@ class FormulaHelpers {
     /**
      * Flatten parameters to 1D array.
      * @see {@link FormulaHelpers.accept}
-     * @param {Array} params
-     * @param {Types|null} valueType
-     * @param {boolean} allowUnion
+     * @param {Array} params - Parameter that needs to flatten.
+     * @param {Types|null} valueType - The type each item should be,
+     *                          ull if allows any type.
+     * @param {boolean} allowUnion - Allow union, e.g. (A1:C1, E4:F3)
      * @param {function} hook - Invoked after parsing each item.
      *                         of the array.
-     * @param {*} [defValue] - The value if an param is omitted. i.e. SUM(1,2,,,,,)
-     * @param {number} [minSize]
-     * @return {Array}
+     * @param {*} [defValue=null] - The value if an param is omitted. i.e. SUM(1,2,,,,,)
+     * @param {number} [minSize=1] - The minimum size of the parameters
      */
     flattenParams(params, valueType, allowUnion, hook, defValue = null, minSize = 1) {
         if (params.length < minSize)
