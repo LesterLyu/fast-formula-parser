@@ -45,6 +45,7 @@ module.exports = {
         'BIN2DEC(TRUE)' : "#VALUE!",
         'BIN2DEC(FALSE)' : "#VALUE!",
         'BIN2DEC({1100100})' : 100,
+        'BIN2DEC(1010101010)': -342,
     },
 
     BIN2HEX:{
@@ -66,9 +67,9 @@ module.exports = {
     },
 
     BIN2OCT:{
-        // 'BIN2OCT(1001,3)' : "011",
-        // 'BIN2OCT("1001",3)' : "011",
-        // 'BIN2OCT(1001,"3")' : "011",
+        'BIN2OCT(1001,3)' : "011",
+        'BIN2OCT("1001",3)' : "011",
+        'BIN2OCT(1001,"3")' : "011",
         'BIN2OCT(1100100)' : "144",
         'BIN2OCT({1100100})' : "144",
         'BIN2OCT(TRUE)' : "#VALUE!",
@@ -95,11 +96,12 @@ module.exports = {
 
     BITLSHIFT:{
         'BITLSHIFT(4,2)' : 16,
+        'BITLSHIFT(13,-2)': 3,
         'BITLSHIFT(-4,2)' : "#NUM!",
         'BITLSHIFT(4,-2)' : 1,
         'BITLSHIFT(9,-3)' : 1,
         'BITLSHIFT(4.1,2)' : "#NUM!",
-        'BITLSHIFT(4,2.4)' : "#NUM!",
+        'BITLSHIFT(4,2.4)' : 16,
         'BITLSHIFT(281494976710655,2)' : "#NUM!",
         'BITLSHIFT(7,-54)' : "#NUM!",
         'BITLSHIFT(3,58)' : "#NUM!",
@@ -119,18 +121,18 @@ module.exports = {
     },
 
     BITRSHIFT:{
-        // 'BITRSHIFT(13,2)' : 3,
-        // 'BITRSHIFT(13.9,2)' : "#NUM!",
-        // 'BITRSHIFT(13,2.7)' : "#NUM!",
-        // 'BITRSHIFT(281474976720655,2)' : "#NUM!",
-        // //'BITRSHIFT(13,-42)' : 5.71746E+13,
-        // 'BITRSHIFT(13,-62)' : "#NUM!",
-        // 'BITRSHIFT(24,3)' : 3,
+        'BITRSHIFT(13,2)' : 3,
+        'BITRSHIFT(13.9,2)' : "#NUM!",
+        'BITRSHIFT(13,2.7)' : 3,
+        'BITRSHIFT(281474976720655,2)' : "#NUM!",
+        'BITRSHIFT(13,-42)' : 57174604644352,
+        'BITRSHIFT(13,-62)' : "#NUM!",
+        'BITRSHIFT(24,3)' : 3,
         'BITRSHIFT(9999999999,31)' : 4,
         'BITRSHIFT(9999999999,22.5)' : 2384,
         'BITRSHIFT(999999999,31)' : 0,
-        'BITRSHIFT(9999999999,-50)' : 0,
-        'BITRSHIFT(13,-44)' : 52
+        'BITRSHIFT(9999999999,-50)' : '#NUM!',
+        'BITRSHIFT(13,-44)' : 228698418577408
     },
 
     BITXOR:{
@@ -180,6 +182,7 @@ module.exports = {
     DEC2OCT:{
         'DEC2OCT(58,3)' : "072",
         'DEC2OCT(-100)' : "7777777634",
+        'DEC2OCT(-256)' : "7777777400",
     },
 
     DELTA:{
@@ -220,18 +223,23 @@ module.exports = {
         'HEX2BIN("F",8)' : "00001111",
         'HEX2BIN("B7")' : "10110111",
         'HEX2BIN("FFFFFFFFFF")' : "1111111111",
+        'HEX2BIN("F0FFFFFFFF")': '#NUM!'
     },
 
     HEX2DEC:{
         'HEX2DEC("A5")' : 165,
         'HEX2DEC("FFFFFFFF5B")' : -165,
-        'HEX2DEC("3DA408B9")' : 1.034E+09,
+        'HEX2DEC("FFFFFFFF00")': -256,
+        'HEX2DEC("F000000000")': -68719476736,
+        'HEX2DEC("A000000000")': -412316860416,
+        'HEX2DEC("7fffffffff")': 549755813887, // max positive number
+        'HEX2DEC("3DA408B9")' : 1034160313,
     },
 
     HEX2OCT:{
         'HEX2OCT("F",3)' : "017",
         'HEX2OCT("3B4E")' : "35516",
-        'HEX2OCT("FFFFFFFF00")' : 7777777400,
+        'HEX2OCT("FFFFFFFF00")' : '7777777400',
     },
 
     IMABS:{

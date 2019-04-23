@@ -5,7 +5,7 @@ const SSF = require('./ssf/ssf');
 // const parser = new FormulaParser();
 
 
-let input = '-1 + 2 * (5 + 10) ^ 3 / 2% + (A1 +A2)';
+// let input = '-1 + 2 * (5 + 10) ^ 3 / 2% + (A1 +A2)';
 // input = 'SUM((\'Exercises 4, 5 and 6\'!$H$2:$H$11-B2:B11)/B2:B11)'
 // input = "'sheet 45'!A1:A2";
 // input = '_xlnm.ewrew';
@@ -63,7 +63,7 @@ console.log('Supported:', funs.join(', '),
 // input = 'TEXT(-12, """$""#,##0_);[RED](""$""#,##0)")'
 
 // console.log(JSON.stringify(lexing.lex(input), null, 1));
-console.log(parser.parse(input, {row: 1, col: 1}));
+// console.log(parser.parse(input, {row: 1, col: 1}));
 //
 // for (let i = 0; i < 3000; i++) {
 //     parser.parse(input)

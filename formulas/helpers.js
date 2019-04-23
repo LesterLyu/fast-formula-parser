@@ -85,7 +85,10 @@ class FormulaHelpers {
             number = obj;
         // TRUE -> 1, FALSE -> 0
         else if (typeof obj === 'boolean') {
-            if (allowBoolean) number = Number(obj);
+            if (allowBoolean)
+                number = Number(obj);
+            else
+                throw FormulaError.VALUE;
         }
         // "123" -> 123
         else if (typeof obj === 'string') {

@@ -248,8 +248,8 @@ const TextFunctions = {
     },
 
     REPT: (text, number_times) => {
-        text = H.accept(text, [Types.STRING]);
-        number_times = H.accept(number_times, [Types.NUMBER]);
+        text = H.accept(text, Types.STRING);
+        number_times = H.accept(number_times, Types.NUMBER);
         let str = "";
 
         for (let i = 0; i < number_times; i++) {
