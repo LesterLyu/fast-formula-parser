@@ -256,12 +256,7 @@ const DateFunctions = {
             startDate.setUTCDate(30);
         }
         if (!method && startDate.getUTCDate() < 30 && endDate.getUTCDate() > 30) {
-            // if endDate is last day of the month
-            const copy = new Date(endDate);
-            copy.setUTCMonth(copy.getUTCMonth() + 1, 0);
-            if (copy.getUTCDate() === endDate.getUTCDate()) {
-                endDate.setUTCMonth(endDate.getUTCMonth() + 1, 1);
-            }
+            endDate.setUTCMonth(endDate.getUTCMonth() + 1, 1);
         } else {
             // European method
             if (endDate.getUTCDate() === 31) {
@@ -300,7 +295,7 @@ const DateFunctions = {
 
         // https://stackoverflow.com/questions/6117814/get-week-of-year-in-javascript-like-in-php
         const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-        const dayNum = d.getUTCDay() || 7;
+        const dayNum = d.getUTCDay();
         d.setUTCDate(d.getUTCDate() + 4 - dayNum);
         const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
         return Math.ceil((((d - yearStart) / 86400000) + 1) / 7)

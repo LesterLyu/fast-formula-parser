@@ -71,6 +71,7 @@ module.exports = {
         'DATEVALUE("3-Dec-2014")': 41976,
         'DATEVALUE("Dec-3 11:11")': 43802, // *special
 
+        'DATEVALUE("1900/1/1")': 1,
         'DATEVALUE("4:48:18 PM")': 0,
         'DATEVALUE("10000/12/1")': '#VALUE!',
     },
@@ -100,7 +101,7 @@ module.exports = {
         'DAYS360("1/31/2019", 3/31/2019)': -42870,
         'DAYS360("3/15/2019", "3/31/2019")': 16,
         'DAYS360("3/15/2019", "3/31/2020")': 376,
-        'DAYS360("12/31/2019", "1/1/2020")': 1,
+        'DAYS360("12/31/2019", "1/9/2020")': 9,
     },
 
     EDATE: {
@@ -117,6 +118,8 @@ module.exports = {
         'HOUR("7/18/2011 7:45")': 7,
         'HOUR("4/21/2012")': 0,
         'HOUR("4 PM")': 16,
+        'HOUR("4")': 0,
+        'HOUR("16:00")': 16,
     },
 
     ISOWEEKNUM: {
@@ -148,6 +151,7 @@ module.exports = {
         'NETWORKDAYS.INTL(DATE(2006,1,1),DATE(2006,2,1),7,{"2006/1/2","2006/1/16"})': 22,
         'NETWORKDAYS.INTL(DATE(2006,1,1),DATE(2006,2,1),"0010001",{"2006/1/2","2006/1/16"})': 20,
         'NETWORKDAYS.INTL(DATE(2006,1,1),DATE(2006,1,31), "1")': '#VALUE!',
+        'NETWORKDAYS.INTL(DATE(2006,2,28),DATE(2006,1,31), "01111111")': '#VALUE!',
     },
 
     NOW: {
