@@ -4,6 +4,8 @@ const {FormulaHelpers, Types, Factorials, Criteria} = require('../helpers');
 const {Infix} = require('../operators');
 const H = FormulaHelpers;
 
+// Max number in excel is 2^1024-1, same as javascript, thus I will not check if number is valid in some functions.
+
 // factorials
 const f = [], fd = [];
 
@@ -33,8 +35,8 @@ const MathFunctions = {
     },
 
     AGGREGATE: (functionNum, options, ref1, ...refs) => {
-        functionNum = H.accept(functionNum, Types.NUMBER);
-        throw FormulaError.NOT_IMPLEMENTED('AGGREGATE');
+        // functionNum = H.accept(functionNum, Types.NUMBER);
+        // throw FormulaError.NOT_IMPLEMENTED('AGGREGATE');
     },
 
     ARABIC: text => {
@@ -64,26 +66,24 @@ const MathFunctions = {
         return r;
     },
 
-    BASE: (number, radix, minLength = 0) => {
+    BASE: (number, radix, minLength) => {
         number = H.accept(number, Types.NUMBER);
-        if (number < 0 || number > 2 ** 53)
+        if (number < 0 || number >= 2 ** 53)
             throw FormulaError.NUM;
         radix = H.accept(radix, Types.NUMBER);
         if (radix < 2 || radix > 36)
             throw FormulaError.NUM;
-        minLength = H.accept(minLength, Types.NUMBER);
-        if (!minLength && minLength < 0) {
+        minLength = H.accept(minLength, Types.NUMBER, 0);
+        if (minLength < 0) {
             throw FormulaError.NUM;
         }
 
-        const result = number.toString(radix);
+        const result = number.toString(radix).toUpperCase();
         return new Array(Math.max(minLength + 1 - result.length, 0)).join('0') + result;
     },
 
     CEILING: (number, significance) => {
         number = H.accept(number, Types.NUMBER);
-        if (number >= 9.99E+307 || number <= -2.229E+308)
-            throw FormulaError.NUM;
         significance = H.accept(significance, Types.NUMBER);
         if (significance === 0)
             return 0;
@@ -102,8 +102,6 @@ const MathFunctions = {
 
     'CEILING.MATH': (number, significance, mode) => {
         number = H.accept(number, Types.NUMBER);
-        if (number >= 9.99E+307 || number <= -2.229E+308)
-            throw FormulaError.NUM;
         significance = H.accept(significance, Types.NUMBER, number > 0 ? 1 : -1);
         // mode can be any number
         mode = H.accept(mode, Types.NUMBER, 0);
@@ -149,7 +147,10 @@ const MathFunctions = {
         radix = Math.trunc(radix);
         if (radix < 2 || radix > 36)
             throw FormulaError.NUM;
-        return parseInt(text, radix);
+        const res = parseInt(text, radix);
+        if (isNaN(res))
+            throw FormulaError.NUM;
+        return res;
     },
 
     DEGREES: (radians) => {
@@ -168,30 +169,28 @@ const MathFunctions = {
 
     FACT: (number) => {
         number = H.accept(number, Types.NUMBER);
+        number = Math.trunc(number);
         // max number = 170
         if (number > 170 || number < 0)
             throw FormulaError.NUM;
         if (number <= 100)
             return Factorials[number];
-        number = Math.trunc(number);
         return factorial(number);
     },
 
     FACTDOUBLE: (number) => {
         number = H.accept(number, Types.NUMBER);
+        number = Math.trunc(number);
         // max number = 170
         if (number < -1)
             throw FormulaError.NUM;
         if (number === -1)
             return 1;
-        number = Math.trunc(number);
         return factorialDouble(number);
     },
 
     FLOOR: (number, significance) => {
         number = H.accept(number, Types.NUMBER);
-        if (number >= 9.99E+307 || number <= -2.229E+308)
-            throw FormulaError.NUM;
         significance = H.accept(significance, Types.NUMBER);
         if (significance === 0)
             return 0;
@@ -213,8 +212,6 @@ const MathFunctions = {
 
     'FLOOR.MATH': (number, significance, mode) => {
         number = H.accept(number, Types.NUMBER);
-        if (number >= 9.99E+307 || number <= -2.229E+308)
-            throw FormulaError.NUM;
         significance = H.accept(significance, Types.NUMBER, number > 0 ? 1 : -1);
 
         // mode can be 0 or any other number, 0 means away from zero
@@ -225,9 +222,8 @@ const MathFunctions = {
             // away from zero
             return MathFunctions.FLOOR(number, Math.abs(significance));
         }
-        // if away from zero, add a significance
-        const offset = mode ? significance : 0;
-        return MathFunctions.FLOOR(number, significance) + offset;
+        // towards zero, add a significance
+        return MathFunctions.FLOOR(number, significance) + significance;
     },
 
     'FLOOR.PRECISE': (number, significance) => {
@@ -272,7 +268,7 @@ const MathFunctions = {
     },
 
     'ISO.CEILING': (...params) => {
-        return MathFunctions['CEILING.PRECISE'](params);
+        return MathFunctions['CEILING.PRECISE'](...params);
     },
 
     LCM: (...params) => {

@@ -1,5 +1,6 @@
 require('../operators/operators');
 require('./math/math');
+require('./trigonometry/trigonometry');
 require('./text/text');
 require('./reference/reference');
 require('./information/information');

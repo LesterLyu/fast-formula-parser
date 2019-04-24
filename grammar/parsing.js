@@ -1,5 +1,5 @@
 const lexer = require('./lexing');
-const {Parser} = require("chevrotain");
+const {Parser} = require("chevrotain/lib/src/parse/parser/parser");
 const tokenVocabulary = lexer.tokenVocabulary;
 const {
     String,
@@ -7,7 +7,7 @@ const {
     ExcelRefFunction,
     ExcelConditionalRefFunction,
     Function,
-    FormulaError,
+    FormulaErrorT,
     RefError,
     Cell,
     Sheet,
@@ -269,7 +269,7 @@ class Parsing extends Parser {
                 }
             }, {
                 ALT: () => {
-                    return this.utils.toError($.CONSUME(FormulaError).image);
+                    return this.utils.toError($.CONSUME(FormulaErrorT).image);
                 }
             }, {
                 ALT: () => {
@@ -298,7 +298,7 @@ class Parsing extends Parser {
                 }
             }, {
                 ALT: () => {
-                    return this.utils.toError($.CONSUME(FormulaError).image);
+                    return this.utils.toError($.CONSUME(FormulaErrorT).image);
                 }
             },
         ]));

@@ -4,7 +4,7 @@
   "description": "fast excel formula parser",
   "main": "index.js",
   "scripts": {
-    "test": "nyc mocha",
+    "test": "nyc --reporter=html --reporter=text mocha",
     "test:f": "nyc -n \"formulas/functions/**\" -n \"formulas/operators.js\" --reporter=html --reporter=text mocha test/formulas",
     "build": "webpack"
   },

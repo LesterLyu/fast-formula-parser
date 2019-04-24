@@ -3,7 +3,7 @@ const TextFunctions = require('./text');
 const {FormulaHelpers, Types} = require('../helpers');
 const H = FormulaHelpers;
 const bessel = require("bessel");
-const jStat = require("jstat");
+const jStat = require('../../jstat');
 const MAX_OCT = 536870911, // OCT2DEC(3777777777)
     MIN_OCT = -536870912, // OCT2DEC4000000000)
     MAX_BIN = 511, // BIN2DEC(111111111)
@@ -393,7 +393,7 @@ const EngineeringFunctions = {
     HEX2OCT: (number, places) => {
         // convert HEX to DEC
         let toDecimal = EngineeringFunctions.HEX2DEC(number);
-        if (toDecimal > MAX_OCT && toDecimal < MIN_OCT) {
+        if (toDecimal > MAX_OCT || toDecimal < MIN_OCT) {
             throw FormulaError.NUM;
         }
         return EngineeringFunctions.DEC2OCT(toDecimal, places);
