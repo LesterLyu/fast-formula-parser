@@ -1,5 +1,4 @@
-const {createToken} = require('chevrotain/lib/src/scan/tokens_public');
-const {Lexer} = require("chevrotain/lib/src/scan/lexer_public");
+const {createToken, Lexer} = require('chevrotain');
 
 // the vocabulary will be exported and used in the Parser definition.
 const tokenVocabulary = {};

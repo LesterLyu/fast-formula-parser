@@ -6,8 +6,6 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 // extract the names of the TokenTypes to avoid name mangling them.
 const allTokenNames = allTokens.map(tokenType => tokenType.name);
 
-console.log(allTokenNames)
-
 module.exports = {
     mode: "production",
     entry: "./index.js",

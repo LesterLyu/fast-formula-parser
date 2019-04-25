@@ -1,5 +1,5 @@
 const lexer = require('./lexing');
-const {Parser} = require("chevrotain/lib/src/parse/parser/parser");
+const {Parser} = require("chevrotain");
 const tokenVocabulary = lexer.tokenVocabulary;
 const {
     String,
