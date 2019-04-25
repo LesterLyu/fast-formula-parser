@@ -389,21 +389,52 @@ const MathFunctions = {
 
     },
 
-    // TODO: Start from here.
-    MROUND: () => {
-
+    MROUND: (number, multiple) => {
+        number = H.accept(number, Types.NUMBER);
+        multiple = H.accept(multiple, Types.NUMBER);
+        if (multiple === 0)
+            return 0;
+        if (number > 0 && multiple < 0 || number < 0 && multiple > 0)
+            throw FormulaError.NUM;
+        if (number / multiple % 1 === 0)
+            return number;
+        return Math.round(number / multiple) * multiple;
     },
 
-    MULTINOMIAL: () => {
-
+    MULTINOMIAL: (...numbers) => {
+        let numerator = 0, denominator = 1;
+        H.flattenParams(numbers, Types.NUMBER, false, number => {
+            if (number < 0)
+                throw FormulaError.NUM;
+            numerator += number;
+            denominator *= factorial(number);
+        });
+        return factorial(numerator) / denominator;
     },
 
-    MUNIT: () => {
-
+    MUNIT: (dimension) => {
+        dimension = H.accept(dimension, Types.NUMBER);
+        const matrix = [];
+        for (let row = 0; row < dimension; row++) {
+            const rowArr = [];
+            for (let col = 0; col < dimension; col++) {
+                if (row === col)
+                    rowArr.push(1);
+                else
+                    rowArr.push(0);
+            }
+            matrix.push(rowArr);
+        }
+        return matrix;
     },
 
-    ODD: () => {
-
+    ODD: (number) => {
+        number = H.accept(number, Types.NUMBER);
+        if (number === 0)
+            return 1;
+        let temp = Math.ceil(Math.abs(number));
+        temp = (temp & 1) ? temp : temp + 1;
+        return (number > 0) ? temp : -temp;
     },
 
     PI: () => {
@@ -416,17 +447,55 @@ const MathFunctions = {
         return number ** power;
     },
 
-    PRODUCT: () => {
-
+    PRODUCT: (...numbers) => {
+        let product = 1;
+        H.flattenParams(numbers, null, true, (number, info) => {
+            const parsedNumber = Number(number);
+            if (info.isLiteral && !isNaN(parsedNumber)) {
+                product *= parsedNumber;
+            } else {
+                if (typeof number === "number")
+                    product *= number;
+            }
+        }, 1);
+        return product;
     },
 
-    QUOTIENT: () => {
-
+    QUOTIENT: (numerator, denominator) => {
+        numerator = H.accept(numerator, Types.NUMBER);
+        denominator = H.accept(denominator, Types.NUMBER);
+        return Math.trunc(numerator / denominator);
     },
 
     RADIANS: (degrees) => {
         degrees = H.accept(degrees, Types.NUMBER);
         return degrees / 180 * Math.PI;
+    },
+
+    RAND: () => {
+        return Math.random();
+    },
+
+    RANDBETWEEN: (bottom, top) => {
+        bottom = H.accept(bottom, Types.NUMBER);
+        top = H.accept(top, Types.NUMBER);
+        return Math.floor(Math.random() * (top - bottom + 1) + bottom);
+    },
+
+    ROMAN: (number, form) => {
+        number = H.accept(number, Types.NUMBER);
+        form = H.accept(form, Types.NUMBER, 0);
+        if (form !== 0)
+            throw Error('ROMAN: only allows form=0 (classic form).');
+        // The MIT License
+        // Copyright (c) 2008 Steven Levithan
+        const digits = String(number).split('');
+        const key = ['', 'C', 'CC', 'CCC', 'CD', 'D', 'DC', 'DCC', 'DCCC', 'CM', '', 'X', 'XX', 'XXX', 'XL', 'L', 'LX', 'LXX', 'LXXX', 'XC', '', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'];
+        let roman = '', i = 3;
+        while (i--) {
+            roman = (key[+digits.pop() + (i * 10)] || '') + roman;
+        }
+        return new Array(+digits.join('') + 1).join('M') + roman;
     },
 
     ROUND: (number, digits) => {
@@ -478,6 +547,48 @@ const MathFunctions = {
             const offset = multiplier * 0.5;
             return sign * Math.round((Math.abs(number) + offset) / multiplier) * multiplier;
         }
+    },
+
+    SERIESSUM: (x, n, m, coefficients) => {
+        x = H.accept(x, Types.NUMBER);
+        n = H.accept(n, Types.NUMBER);
+        m = H.accept(m, Types.NUMBER);
+        let i = 0, result;
+        H.flattenParams([coefficients], Types.NUMBER, false, (coefficient) => {
+            if (typeof coefficient !== "number") {
+                throw FormulaError.VALUE;
+            }
+            if (i === 0) {
+                result = coefficient * Math.pow(x, n);
+            } else {
+                result += coefficient * Math.pow(x, n + i * m);
+            }
+            i++;
+        });
+        return result;
+    },
+
+    SIGN: number => {
+        number = H.accept(number, Types.NUMBER);
+        return number > 0 ? 1 : number === 0 ? 0 : -1;
+    },
+
+    SQRT: number => {
+        number = H.accept(number, Types.NUMBER);
+        if (number < 0)
+            throw FormulaError.NUM;
+        return Math.sqrt(number);
+    },
+
+    SQRTPI: number => {
+        number = H.accept(number, Types.NUMBER);
+        if (number < 0)
+            throw FormulaError.NUM;
+        return Math.sqrt(number * Math.PI);
+    },
+
+    SUBTOTAL: () => {
+        // TODO: Finish this after statistical functions are implemented.
     },
 
     SUM: (...params) => {
@@ -567,6 +678,9 @@ const MathFunctions = {
         return sum;
     },
 
+    SUMIFS: () => {
+
+    },
 
     SUMPRODUCT: (array1, ...arrays) => {
         array1 = H.accept(array1, Types.ARRAY, undefined, false, true);
@@ -593,6 +707,39 @@ const MathFunctions = {
         });
 
         return result;
+    },
+
+    SUMSQ: (...params) => {
+        // parse string to number only when it is a literal. (not a reference)
+        let result = 0;
+        H.flattenParams(params, Types.NUMBER, true,
+            (item, info) => {
+                // literal will be parsed to given type (Type.NUMBER)
+                if (info.isLiteral) {
+                    result += item ** 2;
+                } else {
+                    if (typeof item === "number")
+                        result += item ** 2;
+                }
+            });
+        return result
+    },
+
+    SUMX2MY2: () => {
+
+    },
+
+    SUMX2PY2: () => {
+
+    },
+
+    SUMXMY2: () => {
+
+    },
+
+    TRUNC: (number) => {
+        number = H.accept(number, Types.NUMBER);
+        return Math.trunc(number);
     },
 };
 

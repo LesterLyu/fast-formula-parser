@@ -244,6 +244,130 @@ module.exports = {
         'MOD(-3, -2)': -1,
         'MOD(-3, 0)': '#DIV/0!'
     },
+
+    MROUND: {
+        'MROUND(10, 1)': 10,
+        'MROUND(10, 3)': 9,
+        'MROUND(10, 0)': 0,
+        'MROUND(-10, -3)': -9,
+        'MROUND(1.3, 0.2)': 1.4,
+        'MROUND(5, -2)': '#NUM!',
+        'MROUND(6.05,0.1)': 6.0, // same as excel, differ from google sheets
+        'MROUND(7.05,0.1)': 7.1,
+    },
+
+    MULTINOMIAL: {
+        'MULTINOMIAL({1,2}, E1, A1:D1)': 92626934400,
+        'MULTINOMIAL(2, 3, 4)': 1260,
+        'MULTINOMIAL(2, 3, -4)': '#NUM!',
+    },
+
+    MUNIT: {
+        'MUNIT(1)': 1,
+        'MUNIT(10)': 1,
+    },
+
+    ODD: {
+        'ODD(0)': 1,
+        'ODD(1.5)': 3,
+        'ODD(3)': 3,
+        'ODD(2)': 3,
+        'ODD(-1)': -1,
+        'ODD(-2)': -3,
+    },
+
+    PI: {
+        'PI()': 3.14159265357989
+    },
+
+    POWER: {
+        'POWER(5,2)': 25,
+        'POWER(98.6,3.2)': 2401077.22206958000,
+        'POWER(4,5/4)': 5.656854249,
+    },
+
+    PRODUCT: {
+        'PRODUCT(1,2,3,4,5)': 120,
+        'PRODUCT(1,2,3,4,5, "2")': 240,
+        'PRODUCT(1,2,3,4,5, "2c")': 120,
+        'PRODUCT(A1:E1)': 120,
+        'PRODUCT((A1, B1:E1))': 120,
+        'PRODUCT(1,2,3,4,5, A1, {1,2})': 240,
+    },
+
+    QUOTIENT: {
+        'QUOTIENT(5, 2)': 2,
+        'QUOTIENT(4.5, 3.1)': 1,
+        'QUOTIENT(-10, 3)' : -3,
+        'QUOTIENT(-10, -3)': 3,
+    },
+
+    RADIANS: {
+        'RADIANS(270)': 4.71238898,
+        'RADIANS(0)': 0,
+    },
+
+    RAND: {
+        'RAND() > 0': 'TRUE',
+    },
+
+    RANDBETWEEN: {
+        'RANDBETWEEN(-1,1) >= -1': 'TRUE',
+    },
+
+    ROMAN: {
+        'ROMAN(499,0)': 'CDXCIX',
+    },
+
+    ROUND: {
+        'ROUND(2.15, 0)': 2,
+        'ROUND(2.15, 1)': 2.2,
+        'ROUND(2.149, 1)': 2.1,
+        'ROUND(-1.475, 2)': -1.48,
+        'ROUND(21.5, -1)': 20,
+        'ROUND(626.3,-3)': 1000,
+        'ROUND(1.98, -1)': 0,
+        'ROUND(-50.55,-2)': -100,
+    },
+
+    ROUNDDOWN: {
+        'ROUNDDOWN(3.2, 0)': 3,
+        'ROUNDDOWN(76.9,0)': 76,
+        'ROUNDDOWN(3.14159, 3)': 3.141,
+        'ROUNDDOWN(-3.14159, 1)': -3.1,
+        'ROUNDDOWN(31415.92654, -2)': 31400
+    },
+
+    ROUNDUP: {
+        'ROUNDUP(3.2,0)': 4,
+        'ROUNDUP(76.9,0)': 77,
+        'ROUNDUP(3.14159, 3)': 3.142,
+        'ROUNDUP(-3.14159, 1)': -3.2,
+        'ROUNDUP(31415.92654, -2)': 31500,
+    },
+
+    SERIESSUM: {
+        'SERIESSUM(PI()/4,0,2,{1, -0.5, 0.041666667, -0.001388889})': 0.707103215,
+        'SERIESSUM(PI()/4,0,2,{1, -0.5, 0.041666667, "12"})': '#VALUE!',
+    },
+
+    SIGN: {
+        'SIGN(10)': 1,
+        'SIGN(4-4)': 0,
+        'SIGN(-0.00001)': -1,
+    },
+
+    SQRT: {
+        'SQRT(16)': 4,
+        'SQRT(-16)': '#NUM!',
+        'SQRT(ABS(-16))': 4,
+    },
+
+    SQRTPI: {
+        'SQRTPI(1)': 1.772453851,
+        'SQRTPI(2)': 2.506628275,
+        'SQRTPI(-1)': '#NUM!',
+    },
     // TODO: Start from here.
 
 
@@ -252,6 +376,7 @@ module.exports = {
         'SUM(A1:C1, C1:E1)': 18,
         'SUM((A1:C1, C1:E1))': 18,
         'SUM((A1:C1, C1:E1), A1)': 19,
+        'SUM((A1:C1, C1:E1), A13)': 18,
         'SUM("1", {1})': 2,
         'SUM("1", {"1"})': 1,
         'SUM("1", {"1"},)': 1,
@@ -279,4 +404,16 @@ module.exports = {
         'SUMPRODUCT({1,"12";7,2}, {2,1;5,2})': 41,
         'SUMPRODUCT({1,12;7,2}, {2,1;5,2})': 53,
     },
+
+    SUMSQ: {
+        'SUMSQ(3, 4)': 25,
+        'SUMSQ(3, 4, A1)': 26,
+        'SUMSQ(3, 4, A1, A13)': 26,
+    },
+
+    TRUNC: {
+        'TRUNC(8.9)': 8,
+        'TRUNC(-8.9)': -8,
+        'TRUNC(0.45)': 0,
+    }
 };

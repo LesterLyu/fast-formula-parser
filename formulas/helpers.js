@@ -117,7 +117,7 @@ class FormulaHelpers {
      * @see {@link FormulaHelpers.accept}
      * @param {Array} params - Parameter that needs to flatten.
      * @param {Types|null} valueType - The type each item should be,
-     *                          ull if allows any type.
+     *                          null if allows any type.
      * @param {boolean} allowUnion - Allow union, e.g. (A1:C1, E4:F3)
      * @param {function} hook - Invoked after parsing each item.
      *                         of the array.

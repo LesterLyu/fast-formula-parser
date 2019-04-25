@@ -17,6 +17,7 @@ const data = [
     ['', 'Butter', 400, 5, 6], // row 10
     ['Vegetables', 'Carrots',4200, 5, 6], // row 11
     ['Fruits', 'Apples', 1200, 5, 6], // row 12
+    ['1']
 ];
 const parser = new FormulaParser({
     onCell: ref => {
