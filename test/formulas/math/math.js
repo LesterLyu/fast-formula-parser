@@ -15,9 +15,11 @@ const data = [
     ['Vegetables', 'Celery', 5500, 5, 6], // row 8
     ['Fruits', 'Oranges', 800, 5, 6], // row 9
     ['', 'Butter', 400, 5, 6], // row 10
-    ['Vegetables', 'Carrots',4200, 5, 6], // row 11
+    ['Vegetables', 'Carrots', 4200, 5, 6], // row 11
     ['Fruits', 'Apples', 1200, 5, 6], // row 12
-    ['1']
+    ['1'],
+    [2, 3, 9, 1, 8, 7, 5],
+    [6, 5, 11, 7, 5, 4, 4],
 ];
 const parser = new FormulaParser({
     onCell: ref => {

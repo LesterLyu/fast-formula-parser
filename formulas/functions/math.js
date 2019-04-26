@@ -725,16 +725,58 @@ const MathFunctions = {
         return result
     },
 
-    SUMX2MY2: () => {
-
+    SUMX2MY2: (arrayX, arrayY) => {
+        const x = [], y = [];
+        let sum = 0;
+        H.flattenParams([arrayX], null, false, (item, info) => {
+            x.push(item);
+        });
+        H.flattenParams([arrayY], null, false, (item, info) => {
+            y.push(item);
+        });
+        if (x.length !== y.length)
+            throw FormulaError.NA;
+        for (let i = 0; i < x.length; i++) {
+            if (typeof x[i] === "number" && typeof y[i] === "number")
+                sum += x[i] ** 2 - y[i] ** 2
+        }
+        return sum;
     },
 
-    SUMX2PY2: () => {
-
+    SUMX2PY2: (arrayX, arrayY) => {
+        const x = [], y = [];
+        let sum = 0;
+        H.flattenParams([arrayX], null, false, (item, info) => {
+            x.push(item);
+        });
+        H.flattenParams([arrayY], null, false, (item, info) => {
+            y.push(item);
+        });
+        if (x.length !== y.length)
+            throw FormulaError.NA;
+        for (let i = 0; i < x.length; i++) {
+            if (typeof x[i] === "number" && typeof y[i] === "number")
+                sum += x[i] ** 2 + y[i] ** 2
+        }
+        return sum;
     },
 
-    SUMXMY2: () => {
-
+    SUMXMY2: (arrayX, arrayY) => {
+        const x = [], y = [];
+        let sum = 0;
+        H.flattenParams([arrayX], null, false, (item, info) => {
+            x.push(item);
+        });
+        H.flattenParams([arrayY], null, false, (item, info) => {
+            y.push(item);
+        });
+        if (x.length !== y.length)
+            throw FormulaError.NA;
+        for (let i = 0; i < x.length; i++) {
+            if (typeof x[i] === "number" && typeof y[i] === "number")
+                sum += (x[i] - y[i]) ** 2;
+        }
+        return sum;
     },
 
     TRUNC: (number) => {
