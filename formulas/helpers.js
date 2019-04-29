@@ -92,6 +92,8 @@ class FormulaHelpers {
         }
         // "123" -> 123
         else if (typeof obj === 'string') {
+            if (obj.length === 0)
+                throw FormulaError.VALUE;
             number = Number(obj);
             if (isNaN(number))
                 throw FormulaError.VALUE;

@@ -1,5 +1,28 @@
 module.exports = {
 
+    AVEDEV: {
+        'AVEDEV({4,1,6,7,5,4,3})': 1.469387755,
+        'AVEDEV({4,1,6,7,5,4,3},(A7,B7),"1")': 1.8,
+        'AVEDEV({4,1,6,7,5,4,3,TRUE},(A7,B7),"1")': 1.8,
+        'AVEDEV({4,1,6,7,5,4,3,TRUE},(A7,B7),"1",1)': 1.83471074380165,
+    },
+
+    AVERAGE: {
+        'AVERAGE({TRUE,1,2,"12"}, 3)': 2,
+        'AVERAGE((A7, B7), 3)': 2,
+        'AVERAGE(TRUE, "3")': 2,
+        'AVERAGE(TRUE, "3a")': '#VALUE!',
+    },
+
+    AVERAGEA: {
+        'AVERAGEA({TRUE,1,2,"12"}, 3)': 1.5,
+        'AVERAGEA((A7, B7), 3)': 2,
+        'AVERAGEA(TRUE, "3")': 2,
+        'AVERAGEA(TRUE, "3a")': '#VALUE!',
+        'AVERAGEA({TRUE,1,2,"3",""}, 3, TRUE, "1", 0)': 1,
+        'AVERAGEA("", 1)': '#VALUE!'
+    },
+
     COUNT: {
         'COUNT(A2:A5, 123)': 1,
         'COUNT(A2:A5)': 0,

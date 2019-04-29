@@ -9,6 +9,7 @@ const data = [
     ['peaches', 75, 4, 5, 6],
     ['apples', 86, 4, 5, 6],
     ['string', 3, 4, 5, 6],
+    [1,2,3,4,5,6,7], // row 7
 
 ];
 const parser = new FormulaParser({
@@ -38,8 +39,11 @@ describe('Statistical Functions', function () {
                 const expected = TestCase[fun][formula];
                 let result = parser.parse(formula, {row: 1, col: 1});
                 if (result.result) result = result.result;
-                // console.log(`Testing ${formula}`);
-                expect(result, `${formula} should equal ${expected}\n`).to.equal(expected);
+                if (typeof result === "number" && typeof expected === "number") {
+                    expect(result, `${formula} should equal ${expected}\n`).to.closeTo(expected, 0.00000001);
+                } else {
+                    expect(result, `${formula} should equal ${expected}\n`).to.equal(expected);
+                }
             })
         });
     });
