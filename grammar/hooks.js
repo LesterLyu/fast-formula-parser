@@ -44,7 +44,7 @@ class FormulaParser {
             .concat(Object.keys(DateFunctions));
 
         // functions need context and don't need to retrieve references
-        this.funsNeedContextAndNoDataRetrieve = ['ROW', 'ROWS', 'COLUMN', 'COLUMNS', 'SUMIF', 'INDEX'];
+        this.funsNeedContextAndNoDataRetrieve = ['ROW', 'ROWS', 'COLUMN', 'COLUMNS', 'SUMIF', 'INDEX', 'AVERAGEIF'];
         this.funsNeedContext = [];
         this.funsPreserveRef = Object.keys(InformationFunctions);
 

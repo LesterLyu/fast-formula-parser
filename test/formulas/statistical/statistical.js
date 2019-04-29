@@ -10,6 +10,18 @@ const data = [
     ['apples', 86, 4, 5, 6],
     ['string', 3, 4, 5, 6],
     [1,2,3,4,5,6,7], // row 7
+    [100000, 7000], //row 8
+    [200000, 14000], //row 9
+    [300000, 21000], //row 10
+    [400000, 28000], //row 11
+
+    ['East', 45678], //row 12
+    ['West', 23789], //row 13
+    ['North', -4789], //row 14
+    ['South (New Office)', 0], //row 15
+    ['MidWest', 9678], //row 16
+
+    [undefined, true, 1, 2]
 
 ];
 const parser = new FormulaParser({

@@ -1,7 +1,8 @@
 const FormulaError = require('../error');
-const {FormulaHelpers, Types, WildCard, Criteria} = require('../helpers');
+const {FormulaHelpers, Types, Criteria, Address} = require('../helpers');
 const {Infix} = require('../operators');
 const H = FormulaHelpers;
+const {DistributionFunctions} = require('./distribution');
 
 const StatisticalFunctions = {
     AVEDEV: (...numbers) => {
@@ -49,13 +50,49 @@ const StatisticalFunctions = {
         return sum / cnt;
     },
 
+    // special
+    AVERAGEIF: (context, range, criteria, averageRange) => {
+        const ranges = H.retrieveRanges(context, range, averageRange);
+        range = ranges[0];
+        averageRange = ranges[1];
+
+        criteria = H.retrieveArg(context, criteria);
+        const isCriteriaArray = criteria.isArray;
+        criteria = Criteria.parse(H.accept(criteria));
+
+        let sum = 0, cnt = 0;
+        range.forEach((row, rowNum) => {
+            row.forEach((value, colNum) => {
+                const valueToAdd = averageRange[rowNum][colNum];
+                if (typeof valueToAdd !== "number")
+                    return;
+                // wildcard
+                if (criteria.op === 'wc') {
+                    if (criteria.match === criteria.value.test(value)) {
+                        sum += valueToAdd;
+                        cnt++;
+                    }
+                } else if (Infix.compareOp(value, criteria.op, criteria.value, Array.isArray(value), isCriteriaArray)) {
+                    sum += valueToAdd;
+                    cnt++;
+                }
+            })
+        });
+        if (cnt === 0) throw FormulaError.DIV0;
+        return sum / cnt;
+    },
+
+    AVERAGEIFS: () => {
+
+    },
+
     COUNT: (...ranges) => {
         let cnt = 0;
         H.flattenParams(ranges, null, true,
             (item, info) => {
                 // literal will be parsed to Type.NUMBER
                 if (info.isLiteral && !isNaN(item)) {
-                   cnt++;
+                    cnt++;
                 } else {
                     if (typeof item === "number")
                         cnt++;
@@ -78,7 +115,7 @@ const StatisticalFunctions = {
             row.forEach(value => {
                 // wildcard
                 if (criteria.op === 'wc') {
-                    if (criteria.value.test(value))
+                    if (criteria.match === criteria.value.test(value))
                         cnt++;
                 } else if (Infix.compareOp(value, criteria.op, criteria.value, Array.isArray(value), isCriteriaArray)) {
                     cnt++;
@@ -90,4 +127,5 @@ const StatisticalFunctions = {
 
 };
 
-module.exports = StatisticalFunctions;
+
+module.exports = Object.assign(StatisticalFunctions, DistributionFunctions);

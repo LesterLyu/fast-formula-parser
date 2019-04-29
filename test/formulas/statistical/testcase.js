@@ -1,4 +1,4 @@
-module.exports = {
+const tests = {
 
     AVEDEV: {
         'AVEDEV({4,1,6,7,5,4,3})': 1.469387755,
@@ -21,6 +21,19 @@ module.exports = {
         'AVERAGEA(TRUE, "3a")': '#VALUE!',
         'AVERAGEA({TRUE,1,2,"3",""}, 3, TRUE, "1", 0)': 1,
         'AVERAGEA("", 1)': '#VALUE!'
+    },
+
+    AVERAGEIF: {
+        // Example 1
+        'AVERAGEIF(B8:B11,"<23000")': 14000,
+        'AVERAGEIF(A8:A11,"<250000")': 150000,
+        'AVERAGEIF(A8:A11,"<95000")': '#DIV/0!',
+        'AVERAGEIF(A8:A11,">250000",B8:B11)': 24500,
+        // Example 2
+        'AVERAGEIF(A12:A16,"=*West",B12:B16)': 16733.5,
+        'AVERAGEIF(A12:A16,"<>*(New Office)",B12:B16)': 18589,
+
+        'AVERAGEIF(A17:D17,">0")': 1.5,
     },
 
     COUNT: {
@@ -53,3 +66,64 @@ module.exports = {
     },
 
 };
+
+const distributions = {
+    'BETA.DIST': {
+        'BETA.DIST(2,8,10,TRUE,1,3)': 0.6854705810547,
+        'BETA.DIST(2,8,10,FALSE,1,3)': 1.4837646484375,
+        'BETA.DIST(6,8,10,FALSE,1,7)': 0.0008976224783,
+    },
+
+    'BETA.INV': {
+        'BETA.INV(0.6854705810547,8,10,1,3)': 2,
+    },
+
+    'BINOM.DIST': {
+        'BINOM.DIST(6,10,0.5,FALSE)': 0.2050781250000,
+        'BINOM.DIST(6,10,0.5,TRUE)': 0.8281250000000,
+    },
+
+    'BINOM.DIST.RANGE': {
+        'BINOM.DIST.RANGE(60,0.75,48)': 0.0839749674290,
+        'BINOM.DIST.RANGE(60,0.75,45,50)': 0.5236297934719,
+    },
+
+    'BINOM.INV': {
+        'BINOM.INV(6, 0.6, 0.75)': 4,
+    },
+
+    'CHISQ.DIST': {
+        'CHISQ.DIST(0.5,1,TRUE)': 0.5204998778130,
+        'CHISQ.DIST(2,3,FALSE)': 0.2075537487103,
+    },
+
+    'CHISQ.DIST.RT': {
+        'CHISQ.DIST.RT(18.307,10)': 0.0500005890914,
+    },
+
+    'CHISQ.INV': {
+        'CHISQ.INV(0.93,1)': 3.2830202867595,
+        'CHISQ.INV(0.6,2)': 1.8325814637483,
+    },
+
+    'CHISQ.INV.RT': {
+        'CHISQ.INV.RT(0.050001,10)': 18.3069734569611,
+        'CHISQ.INV.RT(0.6,2)': 1.0216512475320,
+    },
+
+    'CHISQ.TEST': {
+        // 'CHISQ.TEST({58,35;11,25;10,23},{43.35,47.65;17.56,18.44;16.09,16.91})': 0.0001513457663,
+    },
+
+    'CONFIDENCE.NORM': {
+        'CONFIDENCE.NORM(0.05,2.5,50)': 0.6929519121748,
+    },
+
+    'CONFIDENCE.T': {
+        'CONFIDENCE.T(0.05,1,50)': 0.2841968554957,
+    }
+
+
+};
+
+module.exports = Object.assign(distributions, tests);
