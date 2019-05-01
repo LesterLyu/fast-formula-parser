@@ -2,7 +2,8 @@ const FormulaError = require('../error');
 const {FormulaHelpers, Types, Criteria, Address} = require('../helpers');
 const {Infix} = require('../operators');
 const H = FormulaHelpers;
-const jStat = require("../../jstat");
+var utils = require('../lib/utils');
+const jStat = require('jstat');
 const MathFunctions = require('./math');
 
 const DistributionFunctions = {
@@ -194,7 +195,18 @@ const DistributionFunctions = {
         return jStat.corrcoeff(array1, array2);
     },
 
+    'F.DIST': (x, d1, d2, cumulative) => {
+        x = H.accept(x, Types.NUMBER);
+        d1 = H.accept(x, Types.NUMBER);
+        d2 = H.accept(x, Types.NUMBER);
+        if (utils.anyIsError(x, d1, d2)) {
+            return error.value;
+        }
+        return (cumulative) ? jStat.centralF.cdf(x, d1, d2) : jStat.centralF.pdf(x, d1, d2);
+    },
+
 };
+
 
 
 module.exports = {

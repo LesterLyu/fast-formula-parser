@@ -121,6 +121,10 @@ const distributions = {
 
     'CONFIDENCE.T': {
         'CONFIDENCE.T(0.05,1,50)': 0.2841968554957,
+    },
+
+    'F.DIST':{
+        'F.DIST(15.2069,6,4,TRUE)': 0.99,
     }
 
 
