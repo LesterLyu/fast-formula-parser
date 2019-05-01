@@ -3,7 +3,7 @@ const TextFunctions = require('./text');
 const {FormulaHelpers, Types} = require('../helpers');
 const H = FormulaHelpers;
 const bessel = require("bessel");
-const jStat = require("../../jstat");
+const jStat = require("jstat");
 const log = console.log;
 const MAX_OCT = 536870911, // OCT2DEC(3777777777)
     MIN_OCT = -536870912, // OCT2DEC4000000000)
@@ -651,33 +651,37 @@ const EngineeringFunctions = {
     OCT2BIN: (number, places) => {
         number = H.accept(number, Types.STRING);
         places = H.accept(places, Types.NUMBER, null);
-        // if places is not an integer, it is truncated
-        places = Math.trunc(places);
-        if (places < 0) {
-            throw FormulaError.NUM;
-        }
+
         if (number.length > 10) {
             throw FormulaError.NUM
         }
         // to check if the Oct number is negative
         let isNegative = (number.length === 10 && number.substring(0, 1) === '7');
         // convert OCT to DEC
-        let toDecimal = isNegative ? parseInt(number, 8) - 1073741824 : parseInt(number, 8);
+        let toDecimal = EngineeringFunctions.OCT2DEC(number);
         if (toDecimal < MIN_BIN || toDecimal > MAX_BIN) {
             return FormulaError.NUM;
         }
-
         // if number is negative, ignores places and return a 10-character binary number
         if (isNegative) {
             return '1' + TextFunctions.REPT('0', 9 - (512 + toDecimal).toString(2).length) + (512 + toDecimal).toString(2);
         }
         // convert DEC to BIN
         let result = toDecimal.toString(2);
+
         if (places === null) {
             return result;
         }
 
-        return (places >= result.length) ? TextFunctions.REPT('0', places - result.length) + result : FormulaError.NUM;
+        // if places is not an integer, it is truncated
+        places = Math.trunc(places);
+        if (places < 0) {
+            throw FormulaError.NUM;
+        }
+        if (places < result.length) {
+            throw FormulaError.NUM;
+        }
+        return TextFunctions.REPT('0', places - result.length) + result;
     },
 
     OCT2DEC: (number) => {
@@ -696,9 +700,10 @@ const EngineeringFunctions = {
         // convert OCT to DEC
         let toDecimal = EngineeringFunctions.OCT2DEC(number);
 
+        // TODO: check error
         // if number is negative, ignores places and return a 10-character octal number.
         if (toDecimal >= 536870912) {
-            return 'ff' + (toDecimal + 3221225472).toString(16);
+            return 'FF' + (toDecimal + 3221225472).toString(16);
         }
 
         // convert DEC to HEX
@@ -706,22 +711,16 @@ const EngineeringFunctions = {
 
         if (places === null) {
             return toHex;
+        }
+        if (places < 0) {
+            throw FormulaError.NUM;
+        }
+        // if places is not an integer, it is truncated
+        places = Math.trunc(places);
+        if (places < toHex.length) {
+            throw FormulaError.NUM;
         } else {
-            // if places is not an integer, it is truncated
-            places = Math.trunc(places);
-
-            if (isNaN(places)) {
-                throw FormulaError.VALUE;
-            }
-            if (places < 0) {
-                throw FormulaError.NUM;
-            }
-
-            if (places < toHex.length) {
-                throw FormulaError.NUM;
-            } else {
-                return TextFunctions.REPT('0', places - toHex.length) + toHex;
-            }
+            return TextFunctions.REPT('0', places - toHex.length) + toHex;
         }
     },
 };
