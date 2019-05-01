@@ -2,8 +2,7 @@ const FormulaError = require('../error');
 const {FormulaHelpers, Types, Criteria, Address} = require('../helpers');
 const {Infix} = require('../operators');
 const H = FormulaHelpers;
-var utils = require('../lib/utils');
-const jStat = require('jstat');
+const jStat = require("jstat");
 const MathFunctions = require('./math');
 
 const DistributionFunctions = {
@@ -117,31 +116,28 @@ const DistributionFunctions = {
     },
 
     'CHISQ.TEST': (actualRange, expectedRange) => {
-        // TODO
-        const actual = [], expected = [];
-        H.flattenParams(actualRange, null, false, (item, info) => {
-            if (info.isLiteral) throw FormulaError.VALUE;
-            if (typeof item === "number") {
-                actual.push(item);
-            }
-        });
-        H.flattenParams(expectedRange, null, false, (item, info) => {
-            if (info.isLiteral) throw FormulaError.VALUE;
-            if (typeof item === "number") {
-                expected.push(item);
-            }
-        });
+        const actual = H.accept(actualRange, Types.ARRAY, undefined, false, false);
+        const expected = H.accept(expectedRange, Types.ARRAY, undefined, false, false);
 
-        if (actual.length !== expected.length)
+        if (actual.length !== expected.length || actual[0].length !== expected[0].length
+            || actual.length === 1 && actual[0].length === 1)
             throw FormulaError.NA;
 
         const row = actual.length;
         const col = actual[0].length;
-        const dof = (col === 1) ? row - 1 : (row - 1) * (col - 1);
+        let dof = (row - 1) * (col - 1);
+        if (row === 1)
+            dof = col - 1;
+        else
+            dof = row - 1;
         let xsqr = 0;
 
         for (let i = 0; i < row; i++) {
-            xsqr += Math.pow((actual[i] - expected[i]), 2) / expected[i];
+            for (let j = 0; j < col; j++) {
+                if (typeof actual[i][j] !== "number" || typeof expected[i][j] !== "number")
+                    continue;
+                xsqr += Math.pow((actual[i][j] - expected[i][j]), 2) / expected[i][j];
+            }
         }
 
         // Get independent by X square and its degree of freedom
@@ -185,14 +181,88 @@ const DistributionFunctions = {
         return jStat.tci(1, alpha, std, size)[1] - 1;
     },
 
-    'CORREL': (array1, array2) => {
-        // TODO
+    CORREL: (array1, array2) => {
         array1 = H.accept(array1, Types.ARRAY, undefined, true, true);
         array2 = H.accept(array2, Types.ARRAY, undefined, true, true);
         if (array1.length !== array2.length)
             throw FormulaError.NA;
 
-        return jStat.corrcoeff(array1, array2);
+        // filter out values that are not number
+        const filterArr1 = [], filterArr2 = [];
+        for (let i = 0; i < array1.length; i++) {
+            if (typeof array1[i] !== "number" || typeof array2[i] !== "number")
+                continue;
+            filterArr1.push(array1[i]);
+            filterArr2.push(array2[i]);
+        }
+        return jStat.corrcoeff(filterArr1, filterArr2);
+    },
+
+    'COVARIANCE.P': (array1, array2) => {
+        array1 = H.accept(array1, Types.ARRAY, undefined, true, true);
+        array2 = H.accept(array2, Types.ARRAY, undefined, true, true);
+        if (array1.length !== array2.length)
+            throw FormulaError.NA;
+
+        // filter out values that are not number
+        const filterArr1 = [], filterArr2 = [];
+        for (let i = 0; i < array1.length; i++) {
+            if (typeof array1[i] !== "number" || typeof array2[i] !== "number")
+                continue;
+            filterArr1.push(array1[i]);
+            filterArr2.push(array2[i]);
+        }
+        const mean1 = jStat.mean(filterArr1), mean2 = jStat.mean(filterArr2);
+        let result = 0;
+        for (let i = 0; i < filterArr1.length; i++) {
+            result += (filterArr1[i] - mean1) * (filterArr2[i] - mean2);
+        }
+        return result / filterArr1.length;
+    },
+
+    'COVARIANCE.S': (array1, array2) => {
+        array1 = H.accept(array1, Types.ARRAY, undefined, true, true);
+        array2 = H.accept(array2, Types.ARRAY, undefined, true, true);
+        if (array1.length !== array2.length)
+            throw FormulaError.NA;
+        if (array1.length <= 1)
+            throw FormulaError.DIV0;
+
+        // filter out values that are not number
+        const filterArr1 = [], filterArr2 = [];
+        for (let i = 0; i < array1.length; i++) {
+            if (typeof array1[i] !== "number" || typeof array2[i] !== "number")
+                continue;
+            filterArr1.push(array1[i]);
+            filterArr2.push(array2[i]);
+        }
+        return jStat.covariance(filterArr1, filterArr2);
+    },
+
+    DEVSQ: (...numbers) => {
+        let sum = 0, x = [];
+        // parse number only if the input is literal
+        H.flattenParams(numbers, Types.NUMBER, true, (item, info) => {
+            if (typeof item === "number") {
+                sum += item;
+                x.push(item);
+            }
+        });
+        const mean = sum / x.length;
+        sum = 0;
+        for (let i = 0; i < x.length; i++) {
+            sum += (x[i] - mean) ** 2;
+        }
+        return sum;
+    },
+
+    'EXPON.DIST': (x, lambda, cumulative) => {
+        x = H.accept(x, Types.NUMBER);
+        lambda = H.accept(lambda, Types.NUMBER);
+        cumulative = H.accept(cumulative, Types.BOOLEAN);
+        if (x < 0 || lambda <= 0)
+            throw FormulaError.NUM;
+        return cumulative ? jStat.exponential.cdf(x, lambda) : jStat.exponential.pdf(x, lambda);
     },
 
     'F.DIST': (x, d1, d2, cumulative) => {
@@ -205,6 +275,297 @@ const DistributionFunctions = {
         return (cumulative) ? jStat.centralF.cdf(x, d1, d2) : jStat.centralF.pdf(x, d1, d2);
     },
 
+    'F.DIST.RT': () => {
+        // TODO
+    },
+
+    'F.INV': () => {
+        // TODO
+    },
+
+    'F.INV.RT': () => {
+        // TODO
+    },
+
+    'F.TEST': (array1, array2) => {
+
+    },
+
+    FISHER: () => {
+        // TODO
+    },
+
+    FISHERINV: () => {
+        // TODO
+    },
+
+    FORECAST: () => {
+        // TODO
+    },
+
+    'FORECAST.ETS': () => {
+
+    },
+
+    'FORECAST.ETS.CONFINT': () => {
+
+    },
+
+    'FORECAST.ETS.SEASONALITY': () => {
+
+    },
+
+    'FORECAST.ETS.STAT': () => {
+
+    },
+
+    'FORECAST.LINEAR': () => {
+
+    },
+
+    FREQUENCY: () => {
+
+    },
+
+    GAMMA: () => {
+        // TODO
+    },
+
+    'GAMMA.DIST': () => {
+        // TODO
+    },
+
+    'GAMMA.INV': () => {
+        // TODO
+    },
+
+    GAMMALN: () => {
+        // TODO
+    },
+
+    'GAMMALN.PRECISE': () => {
+        // TODO
+    },
+
+    GAUSS: () => {
+        // TODO
+    },
+
+    GEOMEAN: () => {
+
+    },
+
+    GROWTH: () => {
+
+    },
+
+    HARMEAN: () => {
+
+    },
+
+    'HYPGEOM.DIST': () => {
+
+    },
+
+    INTERCEPT: () => {
+
+    },
+
+    KURT: () => {
+
+    },
+
+    LINEST: () => {
+
+    },
+
+    LOGEST: () => {
+
+    },
+
+    'LOGNORM.DIST': () => {
+
+    },
+
+    'LOGNORM.INV': () => {
+
+    },
+
+    'MODE.MULT': () => {
+
+    },
+
+    'MODE.SNGL': () => {
+
+    },
+
+    'NEGBINOM.DIST': () => {
+
+    },
+
+    'NORM.DIST': () => {
+
+    },
+
+    'NORM.INV': () => {
+
+    },
+
+    'NORM.S.DIST': () => {
+
+    },
+
+    'NORM.S.INV': () => {
+
+    },
+
+    PEARSON: () => {
+
+    },
+
+    'PERCENTILE.EXC': () => {
+
+    },
+
+    'PERCENTILE.INC': () => {
+
+    },
+
+    'PERCENTRANK.EXC': () => {
+
+    },
+
+    'PERCENTRANK.INC': () => {
+
+    },
+
+    PERMUTATIONA: () => {
+
+    },
+
+    PHI: () => {
+
+    },
+
+    'POISSON.DIST': () => {
+
+    },
+
+    'PROB': () => {
+
+    },
+
+    'QUARTILE.EXC': () => {
+
+    },
+
+    'QUARTILE.INC': () => {
+
+    },
+
+    'RANK.AVG': () => {
+
+    },
+
+    'RANK.EQ': () => {
+
+    },
+
+    RSQ: () => {
+
+    },
+
+    SKEW: () => {
+
+    },
+
+    'SKEW.P': () => {
+
+    },
+
+    SLOPE: () => {
+
+    },
+
+    STANDARDIZE: () => {
+
+    },
+
+    'STDEV.P': () => {
+
+    },
+
+    'STDEV.S': () => {
+
+    },
+
+    STDEVA: () => {
+
+    },
+
+    STDEVPA: () => {
+
+    },
+
+    STEYX: () => {
+
+    },
+
+    'T.DIST': () => {
+
+    },
+
+    'T.DIST.2T': () => {
+
+    },
+
+    'T.DIST.RT': () => {
+
+    },
+
+    'T.INV': () => {
+
+    },
+
+    'T.INV.2T': () => {
+
+    },
+
+    'T.TEST': () => {
+
+    },
+
+    TREND: () => {
+
+    },
+
+    TRIMMEAN: () => {
+
+    },
+
+    'VAR.P': () => {
+
+    },
+
+    'VAR.S': () => {
+
+    },
+
+    'VARA': () => {
+
+    },
+
+    'VARPA': () => {
+
+    },
+
+    'WEIBULL.DIST': () => {
+
+    },
+
+    'Z.TEST': () => {
+
+    }
 };
 
 

@@ -9,9 +9,6 @@ const Types = {
     RANGE_REF: 4, // can be 'A:C' or '1:4', not only 'A1:C3'
     CELL_REF: 5,
     COLLECTIONS: 6, // Unions of references
-    ARRAY_OR_STRING: 7,
-    ARRAY_OR_NUMBER: 8,
-    ARRAY_OR_ANYTHING: 9,
     NUMBER_NO_BOOLEAN: 10,
 };
 
@@ -211,44 +208,17 @@ class FormulaHelpers {
         if (param instanceof FormulaError)
             throw param;
 
-        // return a flatten array
-        if (flat && type === Types.ARRAY && (Array.isArray(param) || param.collections)) {
-            // flatten the array
-            if (param instanceof Collection)
-                param = param.data;
-            return this.flattenDeep(param);
-        } else if (!flat && type === Types.ARRAY) {
-            // disallow collections (unions) and do not flatten the array
-            if (Array.isArray(param))
-                return param;
-            else if (allowSingleValue)
-                return [[param]];
+        if (type === Types.ARRAY) {
+            if (Array.isArray(param)) {
+                return flat ? this.flattenDeep(param) : param;
+            } else if (param instanceof Collection) {
+                throw FormulaError.VALUE;
+            } else if (allowSingleValue) {
+                return flat ? [param] : [[param]];
+            }
+            throw FormulaError.VALUE;
         } else if (type === Types.COLLECTIONS) {
             return param;
-        } else if (type === Types.ARRAY_OR_NUMBER) {
-            if (param instanceof Collection)
-                param = param.data;
-            if (Array.isArray(param)) {
-                return this.flattenDeep(param);
-            } else {
-                type = Types.NUMBER;
-            }
-        } else if (type === Types.ARRAY_OR_STRING) {
-            if (param instanceof Collection)
-                param = param.data;
-            if (Array.isArray(param)) {
-                return this.flattenDeep(param);
-            } else {
-                type = Types.STRING;
-            }
-        } else if (type === Types.ARRAY_OR_ANYTHING) {
-            if (param instanceof Collection)
-                param = param.data;
-            if (Array.isArray(param)) {
-                return this.flattenDeep(param);
-            } else {
-                return param;
-            }
         }
 
         // the only possible type for expectSingle=true are: string, boolean, number;

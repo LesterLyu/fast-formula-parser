@@ -125,6 +125,50 @@ const StatisticalFunctions = {
         return cnt;
     },
 
+    LARGE: () => {
+
+    },
+
+    MAX: () => {
+
+    },
+
+    MAXA: () => {
+
+    },
+
+    MAXIFS: () => {
+
+    },
+
+    MEDIAN: () => {
+
+    },
+
+    MIN: () => {
+
+    },
+
+    MINA: () => {
+
+    },
+
+    MINIFS: () => {
+
+    },
+
+    PERMUT: () => {
+
+    },
+
+    PERMUTATIONA: () => {
+
+    },
+
+    SMALL: () => {
+
+    },
+
 };
 
 
