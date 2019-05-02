@@ -524,17 +524,15 @@ const DistributionFunctions = {
         return jStat.normal.cdf(z, 0, 1) - 0.5;
     },
 
-    GEOMEAN: (array) => {
+    GEOMEAN: (...numbers) => {
         // David
-        array = H.accept(array, Types.ARRAY, undefined, true, true);
-
-        // Arguments can either be numbers or names, arrays, or references that contain numbers.
         const filterArr = [];
-        for (let i = 0; i < array.length; i++) {
-            if (typeof array[i] !== "number" )
-                continue;
-            filterArr.push(array[i]);
-        }
+        // parse number only if the input is literal
+        H.flattenParams(numbers, Types.NUMBER, true, (item, info) => {
+            if (typeof item === "number") {
+                filterArr.push(item);
+            }
+        });
         return jStat.geomean(filterArr);
     },
 
