@@ -152,9 +152,108 @@ const distributions = {
         'EXPON.DIST(0.2,10,FALSE)': 1.353352832366130,
     },
 
+    // David
     'F.DIST':{
-        'F.DIST(15.2069,6,4,TRUE)': 0.99,
-    }
+        'F.DIST(15,6,4,TRUE)': 0.989741952394019000,
+        'F.DIST(15,6.1,4,TRUE)': 0.989741952394019000,
+        'F.DIST(15,6.9,4.8,TRUE)': 0.989741952394019000,
+        'F.DIST(15,6,4,FALSE)': 0.001271447,
+        'F.DIST(-0.5,6,4,TRUE)': '#NUM!',
+        'F.DIST(15.6,0.9,4,TRUE)': '#NUM!',
+        'F.DIST(15.6,6,0.4,TRUE)': '#NUM!',
+    },
+
+    'F.DIST.RT': {
+        'F.DIST.RT(15.2068649, 6, 4)': 0.01,
+        'F.DIST.RT(15.2068649, 6.5, 4)': 0.01,
+        'F.DIST.RT(15.2068649, 6, 4.4)': 0.01,
+        'F.DIST.RT(-0.5, 6, 4)': '#NUM!',
+        'F.DIST.RT(15.6, 0.9, 4)': '#NUM!',
+        'F.DIST.RT(15.6, 6, 0.4)': '#NUM!',
+    },
+
+    'F.INV': {
+        'F.INV(0.01,  6,  4)': 0.109309914,
+        'F.INV(0.01,  6.9,  4.9)': 0.109309914,
+        'F.INV(-0.01,  6,  4)': '#NUM!',
+        'F.INV(1.01,  6,  4)': '#NUM!',
+        'F.INV(1.01,  0.6,  4)': '#NUM!',
+        'F.INV(1.01,  -6,  -4)': '#NUM!',
+    },
+    'F.INV.RT': {
+        'F.INV.RT(0.01, 6, 4)': 15.20686486,
+        'F.INV.RT(0.01, 6.9, 4.8)': 15.20686486,
+        'F.INV.RT(0.01, 0.9, 4)': '#NUM!',
+        'F.INV.RT(0.01, 6.9, 0.4)': '#NUM!',
+        'F.INV.RT(0.01, 1000000000000, 4)': '#NUM!',
+        'F.INV.RT(0.01, 6.9, 1000000000000)': '#NUM!',
+    },
+
+    'F.TEST': {
+        // FIXME
+    },
+
+    FISHER: {
+        'FISHER(0.75)': 0.97295507452765700,
+        'FISHER(0.5)': 0.54930614433405500,
+        'FISHER(-1.1)': '#NUM!',
+        'FISHER(1.1)': '#NUM!'
+    },
+
+    FISHERINV: {
+        'FISHERINV(0.972955)': 0.749999967,
+        'FISHERINV("string")': '#VALUE!',
+    },
+
+
+
+    // David
+    GAMMA: {
+        'GAMMA(2.5)': 1.329340388,
+        // 'GAMMA(-3.75)': 0.267866128861417,  // Error: precise problem
+        'GAMMA(0)': '#NUM!',
+        'GAMMA(-2)': '#NUM!',
+    },
+
+    'GAMMA.DIST': {
+        'GAMMA.DIST(-10.00001131, 9, 2, FALSE)': '#NUM!',
+        'GAMMA.DIST(10.00001131, -9, 2, TRUE)': '#NUM!',
+        'GAMMA.DIST(10.00001131, 9, -2, FALSE)': '#NUM!',
+        'GAMMA.DIST(10.00001131, 9, 2, TRUE)': 0.068094004,
+        'GAMMA.DIST(10.00001131, 9, 2, FALSE)': 0.03263913,
+    },
+
+    'GAMMA.INV': {
+        'GAMMA.INV(0.068094,9,2)' : 10.00001119,
+        'GAMMA.INV(-0.1,9,2)' : '#NUM!',
+        'GAMMA.INV(11.1,9,2)' : '#NUM!',
+        'GAMMA.INV(0.5,-0.9,2)' : '#NUM!',
+        'GAMMA.INV(0.5,9,-0.2)' : '#NUM!',
+    },
+
+    GAMMALN: {
+        'GAMMALN(4)': 1.791759469,
+        'GAMMALN("string")': '#VALUE!',
+        'GAMMALN(-4)': '#NUM!',
+    },
+
+    'GAMMALN.PRECISE': {
+        'GAMMALN.PRECISE(4)': 1.791759469,
+        'GAMMALN.PRECISE("string")': '#VALUE!',
+        'GAMMALN.PRECISE(-4)': '#NUM!',
+    },
+    GUESS: {
+        'GAUSS(2)': 0.477249868,
+        'GAUSS("string")': '#VALUE!',
+    },
+
+    GEOMEAN: {
+        'GEOMEAN({2, 2})': 2.0,
+        'GEOMEAN({2, 2, "string"})': 2.0,
+        'GEOMEAN({4,5,8,7,11,4,3})': 5.47698696965696,
+    },
+
+
 
 
 };

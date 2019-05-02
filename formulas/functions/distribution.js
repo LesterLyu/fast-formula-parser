@@ -267,40 +267,115 @@ const DistributionFunctions = {
 
     'F.DIST': (x, d1, d2, cumulative) => {
         x = H.accept(x, Types.NUMBER);
-        d1 = H.accept(x, Types.NUMBER);
-        d2 = H.accept(x, Types.NUMBER);
-        if (utils.anyIsError(x, d1, d2)) {
-            return error.value;
+        d1 = H.accept(d1, Types.NUMBER);
+        d2 = H.accept(d2, Types.NUMBER);
+        cumulative = H.accept(cumulative, Types.BOOLEAN);
+
+        // If x is negative, F.DIST returns the #NUM! error value.
+        // If deg_freedom1 < 1, F.DIST returns the #NUM! error value.
+        // If deg_freedom2 < 1, F.DIST returns the #NUM! error value.
+        if(x< 0 || d1 < 1 || d2 < 1) {
+            throw FormulaError.NUM;
         }
-        return (cumulative) ? jStat.centralF.cdf(x, d1, d2) : jStat.centralF.pdf(x, d1, d2);
+
+        // If deg_freedom1 or deg_freedom2 is not an integer, it is truncated.
+        d1 = Math.trunc(d1);
+        d2 = Math.trunc(d2);
+
+        return cumulative ? jStat.centralF.cdf(x, d1, d2) : jStat.centralF.pdf(x, d1, d2);
     },
 
-    'F.DIST.RT': () => {
-        // TODO
+    'F.DIST.RT': (x, d1, d2) => {
+        // David
+        x = H.accept(x, Types.NUMBER);
+        d1 = H.accept(d1, Types.NUMBER);
+        d2 = H.accept(d2, Types.NUMBER);
+        // If deg_freedom1 < 1 F.DIST.RT returns the #NUM! error value.
+        // If deg_freedom2 < 1 F.DIST.RT returns the #NUM! error value.
+        // If x is negative, F.DIST.RT returns the #NUM! error value.
+        if (x < 0 || d1 < 1 || d2 < 1) {
+            throw FormulaError.NUM;
+        }
+
+        // If deg_freedom1 or deg_freedom2 is not an integer, it is truncated.
+        d1 = Math.trunc(d1);
+        d2 = Math.trunc(d2);
+
+        return 1 - jStat.centralF.cdf(x, d1, d2);
     },
 
-    'F.INV': () => {
-        // TODO
+    'F.INV': (probability, d1, d2) => {
+        // David
+        probability = H.accept(probability, Types.NUMBER);
+        d1 = H.accept(d1, Types.NUMBER);
+        d2 = H.accept(d2, Types.NUMBER);
+        // If probability < 0 or probability > 1, F.INV returns the #NUM! error value.
+        if (probability < 0.0 || probability > 1.0) {
+            throw FormulaError.NUM;
+        }
+        // If deg_freedom1 < 1, or deg_freedom2 < 1, F.INV returns the #NUM! error value.
+        if (d1 < 1.0 || d2 < 1.0) {
+            throw FormulaError.NUM;
+        }
+
+        // If deg_freedom1 or deg_freedom2 is not an integer, it is truncated.
+        d1 = Math.trunc(d1);
+        d2 = Math.trunc(d2);
+
+        return jStat.centralF.inv(probability, d1, d2);
     },
 
-    'F.INV.RT': () => {
-        // TODO
+    'F.INV.RT': (probability, d1, d2) => {
+        // David
+        probability = H.accept(probability, Types.NUMBER);
+        d1 = H.accept(d1, Types.NUMBER);
+        d2 = H.accept(d2, Types.NUMBER);
+        // If Probability is < 0 or probability is > 1, F.INV.RT returns the #NUM! error value.
+        if (probability < 0.0 || probability > 1.0) {
+            throw FormulaError.NUM;
+        }
+
+        // If Deg_freedom1 is < 1, or Deg_freedom2 is < 1, F.INV.RT returns the #NUM! error value.
+        if (d1 < 1.0 || d1 >= Math.pow(10, 10)) {
+            throw FormulaError.NUM;
+        }
+
+        // If Deg_freedom2 is < 1 or Deg_freedom2 is ≥ 10^10, F.INV.RT returns the #NUM! error value.
+        if (d2 < 1.0 || d2 >= Math.pow(10, 10)) {
+            throw FormulaError.NUM;
+        }
+        // If Deg_freedom1 or Deg_freedom2 is not an integer, it is truncated.
+        d1 = Math.trunc(d1);
+        d2 = Math.trunc(d2);
+
+        return jStat.centralF.inv(1.0 - probability, d1, d2);
     },
 
+    // FIXME
     'F.TEST': (array1, array2) => {
 
     },
 
-    FISHER: () => {
-        // TODO
+    FISHER: (x) => {
+        // David
+        x = H.accept(x, Types.NUMBER);
+        // If x ≤ -1 or if x ≥ 1, FISHER returns the #NUM! error value.
+        if (x <= -1 || x >= 1) {
+            throw FormulaError.NUM;
+        }
+        return Math.log((1 + x) / (1 - x)) / 2;
     },
 
-    FISHERINV: () => {
-        // TODO
+    FISHERINV: (x) => {
+        // David
+        x = H.accept(x, Types.NUMBER);
+        let e2y = Math.exp(2 * x);
+        return (e2y - 1) / (e2y + 1);
     },
 
+    // FIXME
     FORECAST: () => {
-        // TODO
+
     },
 
     'FORECAST.ETS': () => {
@@ -327,32 +402,100 @@ const DistributionFunctions = {
 
     },
 
-    GAMMA: () => {
-        // TODO
+    GAMMA: (x) => {
+        // David
+
+        // If Number contains characters that are not valid, GAMMA returns the #VALUE! error value.
+        x = H.accept(x, Types.NUMBER);
+
+        // If Number is a negative integer or 0, GAMMA returns the #NUM! error value.
+        if (x <= 0 ) {
+            throw FormulaError.NUM;
+        }
+
+        return jStat.gammafn(x);
     },
 
-    'GAMMA.DIST': () => {
-        // TODO
+    'GAMMA.DIST': (x, alpha, beta, cumulative) => {
+        // David
+        // If x, alpha, or beta is nonnumeric, GAMMA.DIST returns the #VALUE! error value.
+        x = H.accept(x, Types.NUMBER);
+        alpha = H.accept(alpha, Types.NUMBER);
+        beta = H.accept(beta, Types.NUMBER);
+        cumulative = H.accept(cumulative, Types.BOOLEAN);
+
+        // If x < 0, GAMMA.DIST returns the #NUM! error value.
+        // If alpha ≤ 0 or if beta ≤ 0, GAMMA.DIST returns the #NUM! error value.
+        if (x < 0 || alpha <= 0 || beta <= 0) {
+            throw FormulaError.NUM;
+        }
+
+        return cumulative ? jStat.gamma.cdf(x, alpha, beta, true) : jStat.gamma.pdf(x, alpha, beta, false);
     },
 
-    'GAMMA.INV': () => {
-        // TODO
+    'GAMMA.INV': (probability, alpha, beta) => {
+        // David
+        // If any argument is text, GAMMA.INV returns the #VALUE! error value.
+        probability = H.accept(probability, Types.NUMBER);
+        alpha = H.accept(alpha, Types.NUMBER);
+        beta = H.accept(beta, Types.NUMBER);
+
+        // If probability < 0 or probability > 1, GAMMA.INV returns the #NUM! error value.
+        // If alpha ≤ 0 or if beta ≤ 0, GAMMA.INV returns the #NUM! error value.
+        if (probability < 0 || probability > 1 || alpha <= 0 || beta <= 0) {
+            throw FormulaError.NUM;
+        }
+
+        return jStat.gamma.inv(probability, alpha, beta);
     },
 
-    GAMMALN: () => {
-        // TODO
+    GAMMALN: (x) => {
+        // David
+
+        x = H.accept(x, Types.NUMBER);
+        // If x is nonnumeric, GAMMALN returns the #VALUE! error value.
+        // If x ≤ 0, GAMMALN returns the #NUM! error value.
+        if (x <= 0) {
+            throw FormulaError.NUM;
+        }
+
+        return jStat.gammaln(x);
     },
 
-    'GAMMALN.PRECISE': () => {
-        // TODO
+    'GAMMALN.PRECISE': (x) => {
+        // David
+       // return distribution.GAMMALN(x);
+        x = H.accept(x, Types.NUMBER);
+        // If x is nonnumeric, GAMMALN returns the #VALUE! error value.
+        // If x ≤ 0, GAMMALN returns the #NUM! error value.
+        if (x <= 0) {
+            throw FormulaError.NUM;
+        }
+
+        return jStat.gammaln(x);
     },
 
-    GAUSS: () => {
-        // TODO
+    GAUSS: (z) => {
+        // David
+        // If z is not a valid number, GAUSS returns the #NUM! error value.
+        // If z is not a valid data type, GAUSS returns the #VALUE! error value.
+        z = H.accept(z, Types.NUMBER);
+
+        return jStat.normal.cdf(z, 0, 1) - 0.5;
     },
 
-    GEOMEAN: () => {
+    GEOMEAN: (array) => {
+        // David
+        array = H.accept(array, Types.ARRAY, undefined, true, true);
 
+        // Arguments can either be numbers or names, arrays, or references that contain numbers.
+        const filterArr = [];
+        for (let i = 0; i < array.length; i++) {
+            if (typeof array[i] !== "number" )
+                continue;
+            filterArr.push(array[i]);
+        }
+        return jStat.geomean(filterArr);
     },
 
     GROWTH: () => {
@@ -567,7 +710,6 @@ const DistributionFunctions = {
 
     }
 };
-
 
 
 module.exports = {
