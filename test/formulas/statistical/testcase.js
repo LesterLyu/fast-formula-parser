@@ -209,7 +209,12 @@ const distributions = {
         'FISHERINV("string")': '#VALUE!',
     },
 
-    FORECAST: {},
+    FORECAST: {
+        'FORECAST(30,{6,7,9,15,21},{20,28,31,38,40})': 10.60725308642,
+        'FORECAST(30,{6,6},{2,"1"})': '#DIV/0!',
+        'FORECAST(30,{6,6,4},{2,1,3})': -22.66666666667,
+        'FORECAST(30,{6,6,4},{2,1})': '#N/A',
+    },
 
     'FORECAST.ETS': {},
 
@@ -219,7 +224,12 @@ const distributions = {
 
     'FORECAST.ETS.STAT': {},
 
-    'FORECAST.LINEAR': {},
+    'FORECAST.LINEAR': {
+        'FORECAST.LINEAR(30,{6,7,9,15,21},{20,28,31,38,40})': 10.60725308642,
+        'FORECAST.LINEAR(30,{6,6},{2,"1"})': '#DIV/0!',
+        'FORECAST.LINEAR(30,{6,6,4},{2,1,3})': -22.66666666667,
+        'FORECAST.LINEAR(30,{6,6,4},{2,1})': '#N/A',
+    },
 
     FREQUENCY: {},
 
