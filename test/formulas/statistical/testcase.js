@@ -274,7 +274,20 @@ const distributions = {
 
     HARMEAN: {},
 
-    'HYPGEOM.DIST': {},
+    'HYPGEOM.DIST': {
+        // 'HYPGEOM.DIST': (sample_s, number_sample, population_s, number_pop, cumulative)
+        'HYPGEOM.DIST(1,4,8,20,TRUE)': 0.465428276574,
+        'HYPGEOM.DIST(1,4,8,20,FALSE)': 0.363261093911,
+        'HYPGEOM.DIST(-1,4,8,20,TRUE)': '#NUM!',
+        'HYPGEOM.DIST(5,4,8,20,TRUE)': '#NUM!',
+        'HYPGEOM.DIST(9,15,8,20,TRUE)': '#NUM!',
+        'HYPGEOM.DIST(8,15,8,14,TRUE)': '#NUM!',
+        'HYPGEOM.DIST(1,8,8,7,FALSE)': '#NUM!',
+
+        'HYPGEOM.DIST(1,4,-8,20,FALSE)': '#NUM!',
+        'HYPGEOM.DIST(1,4,21,20,FALSE)': '#NUM!',
+        'HYPGEOM.DIST(1,4,8,-20,FALSE)': '#NUM!',
+    },
 
     INTERCEPT: {},
 

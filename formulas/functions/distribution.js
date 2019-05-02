@@ -544,7 +544,55 @@ const DistributionFunctions = {
     },
 
     'HYPGEOM.DIST': (sample_s, number_sample, population_s, number_pop, cumulative) => {
+        //          num_successes, num_draws, successes_in_pop, pop_size
+        // If any argument is nonnumeric, HYPGEOM.DIST returns the #VALUE! error value.
+        sample_s = H.accept(sample_s, Types.NUMBER);
+        number_sample = H.accept(number_sample, Types.NUMBER);
+        population_s = H.accept(population_s, Types.NUMBER);
+        number_pop = H.accept(number_pop, Types.NUMBER);
+        cumulative = H.accept(cumulative, Types.BOOLEAN);
 
+        // All arguments are truncated to integers.
+        sample_s = Math.trunc(sample_s);
+        number_sample = Math.trunc(number_sample);
+        population_s = Math.trunc(population_s);
+        number_pop = Math.trunc(number_pop);
+
+        // If sample_s < 0 or sample_s is greater than the lesser of number_sample or population_s, HYPGEOM.DIST returns the #NUM! error value.
+        // Google and Mircrosoft has different version on this funtion
+        if (sample_s < 0 || sample_s > number_sample || sample_s > population_s) {
+            throw FormulaError.NUM;
+        }
+        // // If sample_s is less than the larger of 0 or (number_sample - number_population + population_s), HYPGEOM.DIST returns the #NUM! error value.
+        if (sample_s < (number_sample - number_pop + population_s)) {
+            throw FormulaError.NUM;
+        }
+        // // If number_sample ≤ 0 or number_sample > number_population, HYPGEOM.DIST returns the #NUM! error value.
+        if (number_sample > number_pop) {
+            throw FormulaError.NUM;
+        }
+        // // If population_s ≤ 0 or population_s > number_population, HYPGEOM.DIST returns the #NUM! error value.
+        if (population_s <= 0 || population_s > number_pop) {
+            throw FormulaError.NUM;
+        }
+        // // If number_pop ≤ 0, HYPGEOM.DIST returns the #NUM! error value.
+        if (number_pop < 0) {
+            throw FormulaError.NUM;
+        }
+
+        function pdf(x, n, M, N) {
+            return MathFunctions.COMBIN(M, x) * MathFunctions.COMBIN(N - M, n - x) / MathFunctions.COMBIN(N, n);
+        }
+
+        function cdf(x, n, M, N) {
+            var result = 0;
+            for (var i = 0; i <= x; i++) {
+                result += pdf(i, n, M, N);
+            }
+            return result;
+        }
+
+        return cumulative ? cdf(sample_s, number_sample, population_s, number_pop) : pdf(sample_s, number_sample, population_s, number_pop);
     },
 
     INTERCEPT: () => {
