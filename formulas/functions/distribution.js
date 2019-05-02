@@ -136,6 +136,7 @@ const DistributionFunctions = {
             for (let j = 0; j < col; j++) {
                 if (typeof actual[i][j] !== "number" || typeof expected[i][j] !== "number")
                     continue;
+                if (expected[i][j] === 0) throw FormulaError.DIV0;
                 xsqr += Math.pow((actual[i][j] - expected[i][j]), 2) / expected[i][j];
             }
         }
@@ -143,7 +144,7 @@ const DistributionFunctions = {
         // Get independent by X square and its degree of freedom
         let p = Math.exp(-0.5 * xsqr);
         if ((dof % 2) === 1) {
-            p = p * Math.sqrt(2 * xsqr / Pi);
+            p = p * Math.sqrt(2 * xsqr / Math.PI);
         }
         let k = dof;
         while (k >= 2) {
@@ -195,6 +196,9 @@ const DistributionFunctions = {
             filterArr1.push(array1[i]);
             filterArr2.push(array2[i]);
         }
+        if (filterArr1.length <= 1)
+            throw FormulaError.DIV0;
+
         return jStat.corrcoeff(filterArr1, filterArr2);
     },
 
@@ -225,8 +229,6 @@ const DistributionFunctions = {
         array2 = H.accept(array2, Types.ARRAY, undefined, true, true);
         if (array1.length !== array2.length)
             throw FormulaError.NA;
-        if (array1.length <= 1)
-            throw FormulaError.DIV0;
 
         // filter out values that are not number
         const filterArr1 = [], filterArr2 = [];
@@ -236,6 +238,10 @@ const DistributionFunctions = {
             filterArr1.push(array1[i]);
             filterArr2.push(array2[i]);
         }
+
+        if (filterArr1.length <= 1)
+            throw FormulaError.DIV0;
+
         return jStat.covariance(filterArr1, filterArr2);
     },
 
@@ -265,8 +271,15 @@ const DistributionFunctions = {
         return cumulative ? jStat.exponential.cdf(x, lambda) : jStat.exponential.pdf(x, lambda);
     },
 
-    'F.DIST': () => {
-        // TODO
+    'F.DIST': (x, degFreedom1, degFreedom2, cumulative) => {
+        x = H.accept(x, Types.NUMBER);
+        degFreedom1 = H.accept(degFreedom1, Types.NUMBER);
+        degFreedom2 = H.accept(degFreedom2, Types.NUMBER);
+        cumulative = H.accept(cumulative, Types.BOOLEAN);
+        degFreedom1 = Math.trunc(degFreedom1);
+        degFreedom2 = Math.trunc(degFreedom2);
+        return (cumulative) ? jStat.centralF.cdf(x, degFreedom1, degFreedom2)
+            : jStat.centralF.pdf(x, degFreedom1, degFreedom2);
     },
 
     'F.DIST.RT': () => {
@@ -281,8 +294,42 @@ const DistributionFunctions = {
         // TODO
     },
 
+    /**
+     * https://en.wikipedia.org/wiki/F-test_of_equality_of_variances
+     */
     'F.TEST': (array1, array2) => {
+        array1 = H.accept(array1, Types.ARRAY, undefined, true, true);
+        array2 = H.accept(array2, Types.ARRAY, undefined, true, true);
 
+        // filter out values that are not number
+        const x1 = [], x2 = [];
+        let x1Mean = 0, x2Mean = 0;
+        for (let i = 0; i < Math.max(array1.length, array2.length); i++) {
+            if (typeof array1[i] === "number") {
+                x1.push(array1[i]);
+                x1Mean += array1[i];
+            }
+            if (typeof array2[i] === "number") {
+                x2.push(array2[i]);
+                x2Mean += array2[i];
+            }
+        }
+        if (x1.length <= 1 || x2.length <= 1)
+            throw FormulaError.DIV0;
+
+        x1Mean /= x1.length;
+        x2Mean /= x2.length;
+        let s1 = 0, s2 = 0; // sample variance S^2
+        for (let i = 0; i < x1.length; i++) {
+            s1 += (x1Mean - x1[i]) ** 2
+        }
+        s1 /= x1.length - 1;
+        for (let i = 0; i < x2.length; i++) {
+            s2 += (x2Mean - x2[i]) ** 2
+        }
+        s2 /= x2.length - 1;
+        // P(F<=f) one-tail * 2
+        return jStat.centralF.cdf(s1 / s2, x1.length - 1, x2.length - 1) * 2;
     },
 
     FISHER: () => {

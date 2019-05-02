@@ -700,7 +700,6 @@ const EngineeringFunctions = {
         // convert OCT to DEC
         let toDecimal = EngineeringFunctions.OCT2DEC(number);
 
-        // TODO: check error
         // if number is negative, ignores places and return a 10-character octal number.
         if (toDecimal >= 536870912) {
             return 'FF' + (toDecimal + 3221225472).toString(16);
