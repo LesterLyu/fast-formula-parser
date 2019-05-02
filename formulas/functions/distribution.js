@@ -280,7 +280,7 @@ const DistributionFunctions = {
         // If x is negative, F.DIST returns the #NUM! error value.
         // If deg_freedom1 < 1, F.DIST returns the #NUM! error value.
         // If deg_freedom2 < 1, F.DIST returns the #NUM! error value.
-        if(x< 0 || d1 < 1 || d2 < 1) {
+        if (x < 0 || d1 < 1 || d2 < 1) {
             throw FormulaError.NUM;
         }
 
@@ -357,7 +357,6 @@ const DistributionFunctions = {
         return jStat.centralF.inv(1.0 - probability, d1, d2);
     },
 
-    // FIXME
     /**
      * https://en.wikipedia.org/wiki/F-test_of_equality_of_variances
      */
@@ -449,7 +448,7 @@ const DistributionFunctions = {
         x = H.accept(x, Types.NUMBER);
 
         // If Number is a negative integer or 0, GAMMA returns the #NUM! error value.
-        if (x <= 0 ) {
+        if (x === 0 || (x < 0 && x === Math.trunc(x))) {
             throw FormulaError.NUM;
         }
 
@@ -504,7 +503,7 @@ const DistributionFunctions = {
 
     'GAMMALN.PRECISE': (x) => {
         // David
-       // return distribution.GAMMALN(x);
+        // return distribution.GAMMALN(x);
         x = H.accept(x, Types.NUMBER);
         // If x is nonnumeric, GAMMALN returns the #VALUE! error value.
         // If x ≤ 0, GAMMALN returns the #NUM! error value.
@@ -544,7 +543,7 @@ const DistributionFunctions = {
 
     },
 
-    'HYPGEOM.DIST': () => {
+    'HYPGEOM.DIST': (sample_s, number_sample, population_s, number_pop, cumulative) => {
 
     },
 
