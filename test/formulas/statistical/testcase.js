@@ -154,7 +154,7 @@ const distributions = {
     },
 
     // David
-    'F.DIST':{
+    'F.DIST': {
         'F.DIST(15,6,4,TRUE)': 0.989741952394019000,
         'F.DIST(15,6.1,4,TRUE)': 0.989741952394019000,
         'F.DIST(15,6.9,4.8,TRUE)': 0.989741952394019000,
@@ -190,7 +190,7 @@ const distributions = {
         'F.INV.RT(0.01, 6.9, 1000000000000)': '#NUM!',
     },
 
-    'F.TEST':{
+    'F.TEST': {
         'F.TEST({6,7,9,15,21}, {20,1})': 0.200507085811744,
         'F.TEST({6,7,9,15,21}, {20,28,31,38,40})': 0.648317846786174,
         'F.TEST({6,7,9,15,21}, {20,28,31,38,"40"})': 0.732034211877256,
@@ -209,10 +209,25 @@ const distributions = {
         'FISHERINV("string")': '#VALUE!',
     },
 
+    FORECAST: {},
+
+    'FORECAST.ETS': {},
+
+    'FORECAST.ETS.CONFINT': {},
+
+    'FORECAST.ETS.SEASONALITY': {},
+
+    'FORECAST.ETS.STAT': {},
+
+    'FORECAST.LINEAR': {},
+
+    FREQUENCY: {},
+
     // David
     GAMMA: {
         'GAMMA(2.5)': 1.329340388,
         // 'GAMMA(-3.75)': 0.267866128861417,  // Error: precise problem
+        'GAMMA(-2.5)': -0.94530872048,
         'GAMMA(0)': '#NUM!',
         'GAMMA(-2)': '#NUM!',
     },
@@ -226,11 +241,11 @@ const distributions = {
     },
 
     'GAMMA.INV': {
-        'GAMMA.INV(0.068094,9,2)' : 10.00001119,
-        'GAMMA.INV(-0.1,9,2)' : '#NUM!',
-        'GAMMA.INV(11.1,9,2)' : '#NUM!',
-        'GAMMA.INV(0.5,-0.9,2)' : '#NUM!',
-        'GAMMA.INV(0.5,9,-0.2)' : '#NUM!',
+        'GAMMA.INV(0.068094,9,2)': 10.00001119,
+        'GAMMA.INV(-0.1,9,2)': '#NUM!',
+        'GAMMA.INV(11.1,9,2)': '#NUM!',
+        'GAMMA.INV(0.5,-0.9,2)': '#NUM!',
+        'GAMMA.INV(0.5,9,-0.2)': '#NUM!',
     },
 
     GAMMALN: {
@@ -254,6 +269,112 @@ const distributions = {
         'GEOMEAN({2, 2, "string"})': 2.0,
         'GEOMEAN({4,5,8,7,11,4,3})': 5.47698696965696,
     },
+
+    GROWTH: {},
+
+    HARMEAN: {},
+
+    'HYPGEOM.DIST': {},
+
+    INTERCEPT: {},
+
+    KURT: {},
+
+    LINEST: {},
+
+    LOGEST: {},
+
+    'LOGNORM.DIST': {},
+
+    'LOGNORM.INV': {},
+
+    'MODE.MULT': {},
+
+    'MODE.SNGL': {},
+
+    'NEGBINOM.DIST': {},
+
+    'NORM.DIST': {},
+
+    'NORM.INV': {},
+
+    'NORM.S.DIST': {},
+
+    'NORM.S.INV': {},
+
+    PEARSON: {},
+
+    'PERCENTILE.EXC': {},
+
+    'PERCENTILE.INC': {},
+
+    'PERCENTRANK.EXC': {},
+
+    'PERCENTRANK.INC': {},
+
+    PERMUTATIONA: {},
+
+    PHI: {},
+
+    'POISSON.DIST': {},
+
+    'PROB': {},
+
+    'QUARTILE.EXC': {},
+
+    'QUARTILE.INC': {},
+
+    'RANK.AVG': {},
+
+    'RANK.EQ': {},
+
+    RSQ: {},
+
+    SKEW: {},
+
+    'SKEW.P': {},
+
+    SLOPE: {},
+
+    STANDARDIZE: {},
+
+    'STDEV.P': {},
+
+    'STDEV.S': {},
+
+    STDEVA: {},
+
+    STDEVPA: {},
+
+    STEYX: {},
+
+    'T.DIST': {},
+
+    'T.DIST.2T': {},
+
+    'T.DIST.RT': {},
+
+    'T.INV': {},
+
+    'T.INV.2T': {},
+
+    'T.TEST': {},
+
+    TREND: {},
+
+    TRIMMEAN: {},
+
+    'VAR.P': {},
+
+    'VAR.S': {},
+
+    'VARA': {},
+
+    'VARPA': {},
+
+    'WEIBULL.DIST': {},
+
+    'Z.TEST': {}
 
 
 };
