@@ -151,6 +151,9 @@ const distributions = {
     'EXPON.DIST': {
         'EXPON.DIST(0.2,10,TRUE)': 0.864664716763387,
         'EXPON.DIST(0.2,10,FALSE)': 1.353352832366130,
+        'EXPON.DIST(0.-2,10,FALSE)': '#NUM!',
+        'EXPON.DIST(0.2,-10,FALSE)': '#NUM!',
+        'EXPON.DIST(0.2,0.0,FALSE)': '#NUM!',
     },
 
     // David
@@ -179,11 +182,14 @@ const distributions = {
         'F.INV(-0.01,  6,  4)': '#NUM!',
         'F.INV(1.01,  6,  4)': '#NUM!',
         'F.INV(1.01,  0.6,  4)': '#NUM!',
+        'F.INV(0.01,  6,  0.4)': '#NUM!',
         'F.INV(1.01,  -6,  -4)': '#NUM!',
     },
     'F.INV.RT': {
         'F.INV.RT(0.01, 6, 4)': 15.20686486,
         'F.INV.RT(0.01, 6.9, 4.8)': 15.20686486,
+        'F.INV.RT(-0.01, 6.9, 4.8)': '#NUM!',
+        'F.INV.RT(1.01, 6.9, 4.8)': '#NUM!',
         'F.INV.RT(0.01, 0.9, 4)': '#NUM!',
         'F.INV.RT(0.01, 6.9, 0.4)': '#NUM!',
         'F.INV.RT(0.01, 1000000000000, 4)': '#NUM!',
@@ -331,7 +337,6 @@ const distributions = {
         'HYPGEOM.DIST(1,8,8,7,FALSE)': '#NUM!',
         'HYPGEOM.DIST(1,4,21,20,FALSE)': '#NUM!',
 
-
     },
 
     INTERCEPT: {
@@ -349,8 +354,7 @@ const distributions = {
 
     'LOGNORM.DIST': {
         'LOGNORM.DIST(4,3.5,1.2,TRUE)': 0.0390835557068,
-        // FIXME
-        //'LOGNORM.DIST(4,3.5,1.2,FALSE)': 0.0176175966818,
+        'LOGNORM.DIST(4,3.5,1.2,FALSE)': 0.0176175966818,
         'LOGNORM.DIST(-4,3.5,1.2,TRUE)': '#NUM!',
         'LOGNORM.DIST(4,3.5,-1.2,TRUE)': '#NUM!',
     },

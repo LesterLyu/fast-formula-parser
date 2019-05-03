@@ -795,7 +795,7 @@ const DistributionFunctions = {
         x = H.accept(x, Types.NUMBER);
         mean = H.accept(mean, Types.NUMBER);
         standard_dev = H.accept(standard_dev, Types.NUMBER);
-        cumulative = H.accept(x, Types.BOOLEAN);
+        cumulative = H.accept(cumulative, Types.BOOLEAN);
         // If x ≤ 0 or if standard_dev ≤ 0, LOGNORM.DIST returns the #NUM! error value.
         if (x <= 0 || standard_dev <= 0) {
             throw FormulaError.NUM;
