@@ -413,64 +413,32 @@ const DistributionFunctions = {
     },
 
     // FIXME
-    FORECAST: (x, knownYs, knownXs) => {
-        x = H.accept(x, Types.NUMBER);
-        knownYs = H.accept(knownYs, Types.ARRAY, undefined, true, true);
-        knownXs = H.accept(knownXs, Types.ARRAY, undefined, true, true);
+    FORECAST: () => {
 
-        if (knownXs.length !== knownYs.length)
-            throw FormulaError.NA;
-
-        // filter out values that are not number
-        const filteredY = [], filteredX = [];
-        let xAllEqual = true;
-        for (let i = 0; i < knownYs.length; i++) {
-            if (typeof knownYs[i] !== "number" || typeof knownXs[i] !== "number")
-                continue;
-            filteredY.push(knownYs[i]);
-            filteredX.push(knownXs[i]);
-            if (knownXs[i] !== knownXs[0])
-                xAllEqual = false;
-        }
-        if (xAllEqual)
-            throw FormulaError.DIV0;
-        const yMean = jStat.mean(filteredY);
-        const xMean = jStat.mean(filteredX);
-        let numerator = 0, denominator = 0;
-        for (let i = 0; i < filteredY.length; i++) {
-            numerator += (filteredX[i] - xMean) * (filteredY[i] - yMean);
-            denominator += (filteredX[i] - xMean) ** 2;
-        }
-        const b = numerator / denominator;
-        const a = yMean - b * xMean;
-        return a + b * x;
     },
 
     'FORECAST.ETS': () => {
-        // skip, not yet possible to implement, may need tensorflow.js ?
+
     },
 
     'FORECAST.ETS.CONFINT': () => {
-        // skip
+
     },
 
     'FORECAST.ETS.SEASONALITY': () => {
-        // skip
+
     },
 
     'FORECAST.ETS.STAT': () => {
-        // skip
+
     },
 
-    'FORECAST.LINEAR': (...params) => {
-        return DistributionFunctions.FORECAST(...params);
+    'FORECAST.LINEAR': () => {
+
     },
 
-    FREQUENCY: (dataArray, binsArray) => {
-        dataArray = H.accept(dataArray, Types.ARRAY, undefined, true, true);
-        binsArray = H.accept(binsArray, Types.ARRAY, undefined, true, true);
+    FREQUENCY: () => {
 
-        // TODO
     },
 
     GAMMA: (x) => {
@@ -590,25 +558,27 @@ const DistributionFunctions = {
         population_s = Math.trunc(population_s);
         number_pop = Math.trunc(number_pop);
 
-        // If sample_s < 0 or sample_s is greater than the lesser of number_sample or population_s, HYPGEOM.DIST returns the #NUM! error value.
-        // Google and Mircrosoft has different version on this funtion
-        if (sample_s < 0 || sample_s > number_sample || sample_s > population_s) {
+        // // If number_pop ≤ 0, HYPGEOM.DIST returns the #NUM! error value.
+        if (number_pop <= 0 || sample_s < 0 || number_sample <= 0 || population_s <= 0) {
             throw FormulaError.NUM;
         }
-        // // If sample_s is less than the larger of 0 or (number_sample - number_population + population_s), HYPGEOM.DIST returns the #NUM! error value.
-        if (sample_s < (number_sample - number_pop + population_s)) {
-            throw FormulaError.NUM;
-        }
+
         // // If number_sample ≤ 0 or number_sample > number_population, HYPGEOM.DIST returns the #NUM! error value.
         if (number_sample > number_pop) {
             throw FormulaError.NUM;
         }
         // // If population_s ≤ 0 or population_s > number_population, HYPGEOM.DIST returns the #NUM! error value.
-        if (population_s <= 0 || population_s > number_pop) {
+        if (population_s > number_pop) {
             throw FormulaError.NUM;
         }
-        // // If number_pop ≤ 0, HYPGEOM.DIST returns the #NUM! error value.
-        if (number_pop < 0) {
+
+        // If sample_s < 0 or sample_s is greater than the lesser of number_sample or population_s, HYPGEOM.DIST returns the #NUM! error value.
+        // Google and Mircrosoft has different version on this funtion
+        if (number_sample < sample_s || population_s < sample_s) {
+            throw FormulaError.NUM;
+        }
+        // If sample_s is less than the larger of 0 or (number_sample - number_population + population_s), HYPGEOM.DIST returns the #NUM! error value.
+        if (sample_s < (number_sample - number_pop + population_s)) {
             throw FormulaError.NUM;
         }
 
@@ -617,8 +587,8 @@ const DistributionFunctions = {
         }
 
         function cdf(x, n, M, N) {
-            var result = 0;
-            for (var i = 0; i <= x; i++) {
+            let result = 0;
+            for (let i = 0; i <= x; i++) {
                 result += pdf(i, n, M, N);
             }
             return result;
@@ -704,7 +674,7 @@ const DistributionFunctions = {
         return cumulative ? jStat.negbin.cdf(number_f, number_s, probability_s) : jStat.negbin.pdf(number_f, number_s, probability_s);
     },
 
-    'NORM.DIST': () => {
+    'NORM.DIST': (x, mean, standard_dev, cumulative) => {
         // If mean or standard_dev is nonnumeric, NORM.DIST returns the #VALUE! error value.
         x = H.accept(x, Types.NUMBER);
         mean = H.accept(mean, Types.NUMBER);
@@ -716,18 +686,29 @@ const DistributionFunctions = {
             throw FormulaError.NUM;
         }
         // If mean = 0, standard_dev = 1, and cumulative = TRUE, NORM.DIST returns the standard normal distribution, NORM.S.DIST.
-
+        return cumulative ? jStat.normal.cdf(x, mean, standard_dev) : jStat.normal.pdf(x, mean, standard_dev);
 
     },
 
     'NORM.INV': (probability, mean, standard_dev) => {
-        // If probability is nonnumeric, NORMS.INV returns the #VALUE! error value.
+        // If any argument is nonnumeric, NORM.INV returns the #VALUE! error value.
         probability = H.accept(probability, Types.NUMBER);
+        mean = H.accept(mean, Types.NUMBER);
+        standard_dev = H.accept(standard_dev, Types.NUMBER);
 
-        // If probability <= 0 or if probability >= 1, NORMS.INV returns the #NUM! error value.
+        // If probability <= 0 or if probability >= 1, NORM.INV returns the #NUM! error value.
         if (probability <= 0 || probability >= 1) {
             throw FormulaError.NUM;
         }
+        // If standard_dev ≤ 0, NORM.INV returns the #NUM! error value.
+        if (standard_dev <= 0) {
+            throw FormulaError.NUM;
+        }
+        // If mean = 0 and standard_dev = 1, NORM.INV uses the standard normal distribution (see NORMS.INV).
+        // if(mean === 0 && standard_dev === 1){
+        // }
+
+        return jStat.normal.inv(probability, mean, standard_dev);
 
     },
 
