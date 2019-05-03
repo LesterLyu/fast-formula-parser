@@ -413,28 +413,57 @@ const DistributionFunctions = {
     },
 
     // FIXME
-    FORECAST: () => {
+    FORECAST: (x, knownYs, knownXs) => {
+        x = H.accept(x, Types.NUMBER);
+        knownYs = H.accept(knownYs, Types.ARRAY, undefined, true, true);
+        knownXs = H.accept(knownXs, Types.ARRAY, undefined, true, true);
 
+        if (knownXs.length !== knownYs.length)
+            throw FormulaError.NA;
+
+        // filter out values that are not number
+        const filteredY = [], filteredX = [];
+        let xAllEqual = true;
+        for (let i = 0; i < knownYs.length; i++) {
+            if (typeof knownYs[i] !== "number" || typeof knownXs[i] !== "number")
+                continue;
+            filteredY.push(knownYs[i]);
+            filteredX.push(knownXs[i]);
+            if (knownXs[i] !== knownXs[0])
+                xAllEqual = false;
+        }
+        if (xAllEqual)
+            throw FormulaError.DIV0;
+        const yMean = jStat.mean(filteredY);
+        const xMean = jStat.mean(filteredX);
+        let numerator = 0, denominator = 0;
+        for (let i = 0; i < filteredY.length; i++) {
+            numerator += (filteredX[i] - xMean) * (filteredY[i] - yMean);
+            denominator += (filteredX[i] - xMean) ** 2;
+        }
+        const b = numerator / denominator;
+        const a = yMean - b * xMean;
+        return a + b * x;
     },
 
     'FORECAST.ETS': () => {
-
+        // skip, not yet possible to implement, may need tensorflow.js ?
     },
 
     'FORECAST.ETS.CONFINT': () => {
-
+        // skip
     },
 
     'FORECAST.ETS.SEASONALITY': () => {
-
+        // skip
     },
 
     'FORECAST.ETS.STAT': () => {
-
+        // skip
     },
 
-    'FORECAST.LINEAR': () => {
-
+    'FORECAST.LINEAR': (...params) => {
+        return DistributionFunctions.FORECAST(...params);
     },
 
     FREQUENCY: (dataArray, binsArray) => {
