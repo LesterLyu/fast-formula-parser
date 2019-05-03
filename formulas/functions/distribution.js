@@ -695,25 +695,27 @@ const DistributionFunctions = {
         population_s = Math.trunc(population_s);
         number_pop = Math.trunc(number_pop);
 
-        // If sample_s < 0 or sample_s is greater than the lesser of number_sample or population_s, HYPGEOM.DIST returns the #NUM! error value.
-        // Google and Mircrosoft has different version on this funtion
-        if (sample_s < 0 || sample_s > number_sample || sample_s > population_s) {
+        // // If number_pop ≤ 0, HYPGEOM.DIST returns the #NUM! error value.
+        if (number_pop <= 0 || sample_s < 0 || number_sample <= 0 || population_s <= 0) {
             throw FormulaError.NUM;
         }
-        // // If sample_s is less than the larger of 0 or (number_sample - number_population + population_s), HYPGEOM.DIST returns the #NUM! error value.
-        if (sample_s < (number_sample - number_pop + population_s)) {
-            throw FormulaError.NUM;
-        }
+
         // // If number_sample ≤ 0 or number_sample > number_population, HYPGEOM.DIST returns the #NUM! error value.
         if (number_sample > number_pop) {
             throw FormulaError.NUM;
         }
         // // If population_s ≤ 0 or population_s > number_population, HYPGEOM.DIST returns the #NUM! error value.
-        if (population_s <= 0 || population_s > number_pop) {
+        if (population_s > number_pop) {
             throw FormulaError.NUM;
         }
-        // // If number_pop ≤ 0, HYPGEOM.DIST returns the #NUM! error value.
-        if (number_pop < 0) {
+
+        // If sample_s < 0 or sample_s is greater than the lesser of number_sample or population_s, HYPGEOM.DIST returns the #NUM! error value.
+        // Google and Mircrosoft has different version on this funtion
+        if (number_sample < sample_s || population_s < sample_s) {
+            throw FormulaError.NUM;
+        }
+        // If sample_s is less than the larger of 0 or (number_sample - number_population + population_s), HYPGEOM.DIST returns the #NUM! error value.
+        if (sample_s < (number_sample - number_pop + population_s)) {
             throw FormulaError.NUM;
         }
 
@@ -722,8 +724,8 @@ const DistributionFunctions = {
         }
 
         function cdf(x, n, M, N) {
-            var result = 0;
-            for (var i = 0; i <= x; i++) {
+            let result = 0;
+            for (let i = 0; i <= x; i++) {
                 result += pdf(i, n, M, N);
             }
             return result;
@@ -761,7 +763,7 @@ const DistributionFunctions = {
         return yMean - b * xMean;
     },
 
-    KURT:  (...numbers) => {
+    KURT: (...numbers) => {
         let mean = 0, range = [];
         // parse number only if the input is literal
         H.flattenParams(numbers, Types.NUMBER, true, (item, info) => {
@@ -850,19 +852,59 @@ const DistributionFunctions = {
     },
 
     'NORM.DIST': (x, mean, standard_dev, cumulative) => {
+        // If mean or standard_dev is nonnumeric, NORM.DIST returns the #VALUE! error value.
+        x = H.accept(x, Types.NUMBER);
+        mean = H.accept(mean, Types.NUMBER);
+        standard_dev = H.accept(standard_dev, Types.NUMBER);
+        cumulative = H.accept(cumulative, Types.BOOLEAN);
+
+        // If standard_dev ≤ 0, NORM.DIST returns the #NUM! error value.
+        if (standard_dev <= 0) {
+            throw FormulaError.NUM;
+        }
+        // If mean = 0, standard_dev = 1, and cumulative = TRUE, NORM.DIST returns the standard normal distribution, NORM.S.DIST.
+        return cumulative ? jStat.normal.cdf(x, mean, standard_dev) : jStat.normal.pdf(x, mean, standard_dev);
 
     },
 
-    'NORM.INV': () => {
+    'NORM.INV': (probability, mean, standard_dev) => {
+        // If any argument is nonnumeric, NORM.INV returns the #VALUE! error value.
+        probability = H.accept(probability, Types.NUMBER);
+        mean = H.accept(mean, Types.NUMBER);
+        standard_dev = H.accept(standard_dev, Types.NUMBER);
+
+        // If probability <= 0 or if probability >= 1, NORM.INV returns the #NUM! error value.
+        if (probability <= 0 || probability >= 1) {
+            throw FormulaError.NUM;
+        }
+        // If standard_dev ≤ 0, NORM.INV returns the #NUM! error value.
+        if (standard_dev <= 0) {
+            throw FormulaError.NUM;
+        }
+        // If mean = 0 and standard_dev = 1, NORM.INV uses the standard normal distribution (see NORMS.INV).
+        // if(mean === 0 && standard_dev === 1){
+        // }
+
+        return jStat.normal.inv(probability, mean, standard_dev);
 
     },
 
-    'NORM.S.DIST': () => {
+    'NORM.S.DIST': (z, cumulative) => {
+        // If z is nonnumeric, NORM.S.DIST returns the #VALUE! error value.
+        z = H.accept(z, Types.NUMBER);
+        cumulative = H.accept(cumulative, Types.BOOLEAN);
 
+        return (cumulative) ? jStat.normal.cdf(z, 0, 1) : jStat.normal.pdf(z, 0, 1);
     },
 
-    'NORM.S.INV': () => {
-
+    'NORM.S.INV': (probability) => {
+        // If probability is nonnumeric, NORMS.INV returns the #VALUE! error value.
+        probability = H.accept(probability, Types.NUMBER);
+        // If probability <= 0 or if probability >= 1, NORMS.INV returns the #NUM! error value.
+        if (probability <= 0 || probability >= 1) {
+            throw FormulaError.NUM;
+        }
+        return jStat.normal.inv(probability, 0, 1);
     },
 
     PEARSON: () => {

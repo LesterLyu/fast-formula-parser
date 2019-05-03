@@ -305,14 +305,33 @@ const distributions = {
         // 'HYPGEOM.DIST': (sample_s, number_sample, population_s, number_pop, cumulative)
         'HYPGEOM.DIST(1,4,8,20,TRUE)': 0.465428276574,
         'HYPGEOM.DIST(1,4,8,20,FALSE)': 0.363261093911,
+        // if ( sample_s < 0  || number_sample <= 0 || population_s <= 0 || number_pop <= 0 )
+        'HYPGEOM.DIST(0,4,8,20,TRUE)': 0.102167183,
         'HYPGEOM.DIST(-1,4,8,20,TRUE)': '#NUM!',
+        'HYPGEOM.DIST(1,0.0,8,20,TRUE)': '#NUM!',
+        'HYPGEOM.DIST(1,-4,8,20,TRUE)': '#NUM!',
+        'HYPGEOM.DIST(1,4,0,20,TRUE)': '#NUM!',
+        'HYPGEOM.DIST(1,4,-8,20,TRUE)': '#NUM!',
+        'HYPGEOM.DIST(1,4,8,0.0,TRUE)': '#NUM!',
+        'HYPGEOM.DIST(1,4,8,-20,TRUE)': '#NUM!',
+
+        // if (number_sample > number_pop)
+        'HYPGEOM.DIST(1,21,8,20,TRUE)': '#NUM!',
+
+        // if (population_s > number_pop)
+        'HYPGEOM.DIST(1,4,8,7,TRUE)': '#NUM!',
+
+        // If sample_s is less than the larger of 0 or (number_sample - number_population + population_s), HYPGEOM.DIST returns the #NUM! error value.
+        'HYPGEOM.DIST(1,4,8,10,FALSE)': '#NUM!',
+
+        // if (number_sample < sample_s || population_s < sample_s)
         'HYPGEOM.DIST(5,4,8,20,TRUE)': '#NUM!',
         'HYPGEOM.DIST(9,15,8,20,TRUE)': '#NUM!',
         'HYPGEOM.DIST(8,15,8,14,TRUE)': '#NUM!',
         'HYPGEOM.DIST(1,8,8,7,FALSE)': '#NUM!',
-        'HYPGEOM.DIST(1,4,-8,20,FALSE)': '#NUM!',
         'HYPGEOM.DIST(1,4,21,20,FALSE)': '#NUM!',
-        'HYPGEOM.DIST(1,4,8,-20,FALSE)': '#NUM!',
+
+
     },
 
     INTERCEPT: {
@@ -357,13 +376,37 @@ const distributions = {
         'NEGBINOM.DIST(10, 0.5, 0.25,FALSE)': '#NUM!',
     },
 
-    'NORM.DIST': {},
+    'NORM.DIST': {
+        'NORM.DIST(42, 40, 1.5, TRUE)': 0.90878878,
+        'NORM.DIST(42, 40, 1.5, FALSE)': 0.10934005,
+        'NORM.DIST(1.333333, 0, 1, TRUE)': 0.908788726, // the same to NORM.S.DIST
+        'NORM.DIST(42, 40, 0, TRUE)': '#NUM!',
+        'NORM.DIST(42, 40, -1.1, TRUE)': '#NUM!',
+    },
 
-    'NORM.INV': {},
+    'NORM.INV': {
+        'NORM.INV(0.908789, 40, 1.5)': 42.00000201,
+        'NORM.INV(0.908789, 0, 1)': 1.333334673,  // the same to NORM.S.INV
+        'NORM.INV(-1.0, 40, 1.5)': '#NUM!',
+        'NORM.INV(0.0, 40, 1.5)': '#NUM!',
+        'NORM.INV(1.1, 40, 1.5)': '#NUM!',
+        'NORM.INV(1.0, 40, 1.5)': '#NUM!',
+        'NORM.INV(0.9, 40, -1.5)': '#NUM!',
+        'NORM.INV(0.9, 40, 0.0)': '#NUM!',
+    },
 
-    'NORM.S.DIST': {},
+    'NORM.S.DIST': {
+        'NORM.S.DIST(1.333333,TRUE)': 0.908788726,
+        'NORM.S.DIST(1.333333,FALSE)': 0.164010148,
+    },
 
-    'NORM.S.INV': {},
+    'NORM.S.INV': {
+        'NORM.S.INV(0.908789)': 1.333334673,
+        'NORM.S.INV(-1)': '#NUM!',
+        'NORM.S.INV(0)': '#NUM!',
+        'NORM.S.INV(1)': '#NUM!',
+        'NORM.S.INV(1.1)': '#NUM!',
+    },
 
     PEARSON: {},
 
