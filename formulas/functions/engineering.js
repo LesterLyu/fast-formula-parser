@@ -382,6 +382,9 @@ const EngineeringFunctions = {
         number = H.accept(number, Types.STRING);
         places = H.accept(places, Types.NUMBER, null);
 
+        if (number.length > 10 || !/^[0-9a-fA-F]*$/.test(number)) {
+            throw FormulaError.NUM;
+        }
         // to check if the number is negative
         let ifNegative = (number.length === 10 && number.substr(0, 1).toLowerCase() === "f");
         // convert HEX to DEC
@@ -411,12 +414,22 @@ const EngineeringFunctions = {
 
     HEX2DEC: (number) => {
         number = H.accept(number, Types.STRING);
+        if (number.length > 10 || !/^[0-9a-fA-F]*$/.test(number)) {
+            throw FormulaError.NUM;
+        }
         let result = parseInt(number, 16);
+        //david: validate
+        // If the places is larger than 10, or number is larger than, return #NUM!
+        // If number is not a valid Hex number,  returns the #NUM! error value.
+
         return (result >= 549755813888) ? result - 1099511627776 : result;
     },
 
     HEX2OCT: (number, places) => {
         number = H.accept(number, Types.STRING);
+        if (number.length > 10 || !/^[0-9a-fA-F]*$/.test(number)) {
+            throw FormulaError.NUM;
+        }
         // convert HEX to DEC
         let toDecimal = EngineeringFunctions.HEX2DEC(number);
         if (toDecimal > MAX_OCT || toDecimal < MIN_OCT) {
