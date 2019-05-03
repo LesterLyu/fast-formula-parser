@@ -327,11 +327,25 @@ const distributions = {
 
     'NORM.DIST': {},
 
-    'NORM.INV': {},
+    'NORM.INV': {
+        'NORM.INV(-1)': '#NUM!',
+        'NORM.INV(0)': '#NUM!',
+        'NORM.INV(1)': '#NUM!',
+        'NORM.INV(1.1)': '#NUM!',
+    },
 
-    'NORM.S.DIST': {},
+    'NORM.S.DIST': {
+        'NORM.S.DIST(1.333333,TRUE)': 0.908788726,
+        'NORM.S.DIST(1.333333,FALSE)': 0.164010148,
+    },
 
-    'NORM.S.INV': {},
+    'NORM.S.INV': {
+        'NORM.INV(-1)': '#NUM!',
+        'NORM.INV(0)': '#NUM!',
+        'NORM.INV(1)': '#NUM!',
+        'NORM.INV(1.1)': '#NUM!',
+        'NORM.S.INV(0.908789)': 1.333334673,
+    },
 
     PEARSON: {},
 

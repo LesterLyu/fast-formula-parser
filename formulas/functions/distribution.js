@@ -672,20 +672,49 @@ const DistributionFunctions = {
         return cumulative ? jStat.negbin.cdf(number_f, number_s, probability_s) : jStat.negbin.pdf(number_f, number_s, probability_s);
     },
 
-    'NORM.DIST': (x, mean, standard_dev, cumulative) => {
+    'NORM.DIST': () => {
+        // If mean or standard_dev is nonnumeric, NORM.DIST returns the #VALUE! error value.
+        x = H.accept(x, Types.NUMBER);
+        mean = H.accept(mean, Types.NUMBER);
+        standard_dev = H.accept(standard_dev, Types.NUMBER);
+        cumulative = H.accept(cumulative, Types.BOOLEAN);
+
+        // If standard_dev ≤ 0, NORM.DIST returns the #NUM! error value.
+        if (standard_dev <= 0) {
+            throw FormulaError.NUM;
+        }
+        // If mean = 0, standard_dev = 1, and cumulative = TRUE, NORM.DIST returns the standard normal distribution, NORM.S.DIST.
+
 
     },
 
-    'NORM.INV': () => {
+    'NORM.INV': (probability, mean, standard_dev) => {
+        // If probability is nonnumeric, NORMS.INV returns the #VALUE! error value.
+        probability = H.accept(probability, Types.NUMBER);
+
+        // If probability <= 0 or if probability >= 1, NORMS.INV returns the #NUM! error value.
+        if (probability <= 0 || probability >= 1) {
+            throw FormulaError.NUM;
+        }
 
     },
 
-    'NORM.S.DIST': () => {
+    'NORM.S.DIST': (z, cumulative) => {
+        // If z is nonnumeric, NORM.S.DIST returns the #VALUE! error value.
+        z = H.accept(z, Types.NUMBER);
+        cumulative = H.accept(cumulative, Types.BOOLEAN);
 
+        return (cumulative) ? jStat.normal.cdf(z, 0, 1) : jStat.normal.pdf(z, 0, 1);
     },
 
-    'NORM.S.INV': () => {
-
+    'NORM.S.INV': (probability) => {
+        // If probability is nonnumeric, NORMS.INV returns the #VALUE! error value.
+        probability = H.accept(probability, Types.NUMBER);
+        // If probability <= 0 or if probability >= 1, NORMS.INV returns the #NUM! error value.
+        if (probability <= 0 || probability >= 1) {
+            throw FormulaError.NUM;
+        }
+        return jStat.normal.inv(probability, 0, 1);
     },
 
     PEARSON: () => {
