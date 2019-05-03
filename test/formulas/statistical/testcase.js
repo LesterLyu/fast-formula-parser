@@ -315,7 +315,15 @@ const distributions = {
 
     'MODE.SNGL': {},
 
-    'NEGBINOM.DIST': {},
+    'NEGBINOM.DIST': {
+        // number_f, number_s,probability_s,cumulative
+        'NEGBINOM.DIST(10, 5, 0.25,TRUE)': 0.3135140584782,
+        'NEGBINOM.DIST(10, 5, 0.25,FALSE)': 0.0550486603752,
+        'NEGBINOM.DIST(10, 5, -0.25,FALSE)': '#NUM!',
+        'NEGBINOM.DIST(10, 5, 1.25,FALSE)': '#NUM!',
+        'NEGBINOM.DIST(-10, 5, 0.25,FALSE)': '#NUM!',
+        'NEGBINOM.DIST(10, 0.5, 0.25,FALSE)': '#NUM!',
+    },
 
     'NORM.DIST': {},
 

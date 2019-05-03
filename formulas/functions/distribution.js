@@ -650,8 +650,26 @@ const DistributionFunctions = {
 
     },
 
-    'NEGBINOM.DIST': () => {
+    'NEGBINOM.DIST': (number_f, number_s, probability_s, cumulative) => {
+        // If any argument is nonnumeric, NEGBINOM.DIST returns the #VALUE! error value.
+        number_f = H.accept(number_f, Types.NUMBER);
+        number_s = H.accept(number_s, Types.NUMBER);
+        probability_s = H.accept(probability_s, Types.NUMBER);
+        cumulative = H.accept(cumulative, Types.BOOLEAN);
+        // Number_f and number_s are truncated to integers.
+        number_f = Math.trunc(number_f);
+        number_s = Math.trunc(number_s);
 
+        // If probability_s < 0 or if probability > 1, NEGBINOM.DIST returns the #NUM! error value.
+        if (probability_s < 0 || probability_s > 1) {
+            throw FormulaError.NUM;
+        }
+        // If number_f < 0 or number_s < 1, NEGBINOM.DIST returns the #NUM! error value.
+        if (number_f < 0 || number_s < 1) {
+            throw FormulaError.NUM;
+        }
+
+        return cumulative ? jStat.negbin.cdf(number_f, number_s, probability_s) : jStat.negbin.pdf(number_f, number_s, probability_s);
     },
 
     'NORM.DIST': () => {
