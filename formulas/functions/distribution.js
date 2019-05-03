@@ -672,7 +672,7 @@ const DistributionFunctions = {
         return cumulative ? jStat.negbin.cdf(number_f, number_s, probability_s) : jStat.negbin.pdf(number_f, number_s, probability_s);
     },
 
-    'NORM.DIST': () => {
+    'NORM.DIST': (x, mean, standard_dev, cumulative) => {
 
     },
 
