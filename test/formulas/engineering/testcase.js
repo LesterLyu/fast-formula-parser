@@ -252,6 +252,7 @@ module.exports = {
         'HEX2DEC("A000000000")': -412316860416,
         'HEX2DEC("7fffffffff")': 549755813887, // max positive number
         'HEX2DEC("3DA408B9")': 1034160313,
+        'HEX2DEC("G")': '#NUM!',
     },
 
     HEX2OCT: {
@@ -462,23 +463,55 @@ module.exports = {
         'IMTAN("24+72y")': "#NUM!",
     },
 
+    // David
     OCT2BIN: {
-        'OCT2BIN(3, 3)': "011",
-        'OCT2BIN(51)': "101001",
-        'OCT2BIN(51,5)': "#NUM!",
-        'OCT2BIN(1777, 3)': "#NUM!",
-        'OCT2BIN(7777567000, 3)': "#NUM!",
+        // 'OCT2BIN(3, 3)': "011",
+        // 'OCT2BIN(51)': "101001",
+        // 'OCT2BIN(51,5)': "#NUM!",
+        // 'OCT2BIN(1777, 3)': "#NUM!",
+        // 'OCT2BIN(7777567000, 3)': "#NUM!",
         'OCT2BIN(7777777000)': "1000000000",
         'OCT2BIN(3)': "11",
-        'OCT2BIN(3, -3)': "#NUM!",
         'OCT2BIN(34565423412, 3)': "#NUM!",
+
+        // David
+        'OCT2BIN("string", 11)': "#NUM!",
+        'OCT2BIN(3, "string")': "#VALUE!",
+        // 1. If number's length larger than 10, returns #NUM!
+        'OCT2BIN(123456789012, 11)': "#NUM!",
+        // 2. office: If places is negative, OCT2BIN returns the #NUM! error value.
+        'OCT2BIN(3, -3)': "#NUM!",
+        'OCT2BIN(3, 3.1)': "011",
+        'OCT2BIN(3, 3.9)': "011",
+        // In microsoft Excel, if places is larger than 10, it will return #NUM!
+        'OCT2BIN(3, 11)': "#NUM!",
+        'OCT2BIN(376, 10)': '0011111110',
+        'OCT2BIN(377, 10)': '0011111111',
+        'OCT2BIN(400, 10)': '0100000000',
+        'OCT2BIN(401, 10)': '0100000001',
+        'OCT2BIN(776, 10)': '0111111110',
+        'OCT2BIN(777, 10)': '0111111111',
+        'OCT2BIN(777, 8)': "#NUM!",
+        'OCT2BIN(7771)': "#NUM!",
+
     },
 
     OCT2DEC: {
         'OCT2DEC(54)': 44,
         'OCT2DEC(51)': 41,
+        'OCT2DEC(10)': 8,
         'OCT2DEC(7777777533)': -165,
-        'OCT2DEC(TRUE)': "#VALUE!",
+        'OCT2DEC(3777777777)': 536870911,
+        'OCT2DEC(4000000000)': -536870912,
+        'OCT2DEC(4000000001)': -536870911,
+        'OCT2DEC(7777777777)': -1,
+        'OCT2DEC(12345671234)': '#NUM!',
+        // If number is not a valid octal number, OCT2DEC returns the #NUM! error value.
+        // 'OCT2DEC(TRUE)': "#VALUE!",
+        'OCT2DEC(TRUE)': '#NUM!',
+        'OCT2DEC(8)': '#NUM!',
+        'OCT2DEC("AAA")': '#NUM!',
+        'OCT2DEC("//")': '#NUM!',
     },
 
     OCT2HEX: {
@@ -494,5 +527,20 @@ module.exports = {
         'OCT2HEX(7777777533)': "FFFFFFFF5B",
         'OCT2HEX(7777777772,10)': "FFFFFFFFFA",
         'OCT2HEX(4000000001,10)': "FFE0000001",
+        // david
+        'OCT2HEX("string", 10)': "#NUM!",
+        'OCT2HEX(777, "aaa")': "#VALUE!",
+        'OCT2HEX(12345671231, 10)': "#NUM!",
+        'OCT2HEX(1234567123, 10)': '000A72EE53',
+        'OCT2HEX(888, 10)': "#NUM!",
+        'OCT2HEX("//", 10)': "#NUM!",
+        'OCT2HEX(100, 4.9)': "0040",
+        'OCT2HEX(100, 4.1)': "0040",
+        'OCT2HEX(100, 0)': "40",
+        'OCT2HEX(7777777777, 10)': 'FFFFFFFFFF',
+        'OCT2HEX(3777777777, 10)': '001FFFFFFF',
+        'OCT2HEX(4000000000, 10)': 'FFE0000000',
+        'OCT2HEX(4000000001, 10)': 'FFE0000001',
+        'OCT2HEX(4000000001, 11)': "#NUM!",
     },
 };
