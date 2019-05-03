@@ -284,7 +284,19 @@ const distributions = {
 
     HARMEAN: {},
 
-    'HYPGEOM.DIST': {},
+    'HYPGEOM.DIST': {
+        // 'HYPGEOM.DIST': (sample_s, number_sample, population_s, number_pop, cumulative)
+        'HYPGEOM.DIST(1,4,8,20,TRUE)': 0.465428276574,
+        'HYPGEOM.DIST(1,4,8,20,FALSE)': 0.363261093911,
+        'HYPGEOM.DIST(-1,4,8,20,TRUE)': '#NUM!',
+        'HYPGEOM.DIST(5,4,8,20,TRUE)': '#NUM!',
+        'HYPGEOM.DIST(9,15,8,20,TRUE)': '#NUM!',
+        'HYPGEOM.DIST(8,15,8,14,TRUE)': '#NUM!',
+        'HYPGEOM.DIST(1,8,8,7,FALSE)': '#NUM!',
+        'HYPGEOM.DIST(1,4,-8,20,FALSE)': '#NUM!',
+        'HYPGEOM.DIST(1,4,21,20,FALSE)': '#NUM!',
+        'HYPGEOM.DIST(1,4,8,-20,FALSE)': '#NUM!',
+    },
 
     INTERCEPT: {},
 
@@ -294,15 +306,34 @@ const distributions = {
 
     LOGEST: {},
 
-    'LOGNORM.DIST': {},
+    'LOGNORM.DIST': {
+        'LOGNORM.DIST(4,3.5,1.2,TRUE)': 0.0390835557068,
+        // FIXME
+        //'LOGNORM.DIST(4,3.5,1.2,FALSE)': 0.0176175966818,
+        'LOGNORM.DIST(-4,3.5,1.2,TRUE)': '#NUM!',
+        'LOGNORM.DIST(4,3.5,-1.2,TRUE)': '#NUM!',
+    },
 
-    'LOGNORM.INV': {},
+    'LOGNORM.INV': {
+        'LOGNORM.INV(0.039084, 3.5, 1.2)': 4.0000252186806,
+        'LOGNORM.INV(-0.039084, 3.5, 1.2)': '#NUM!',
+        'LOGNORM.INV( 1.039084, 3.5, 1.2)': '#NUM!',
+        'LOGNORM.INV(0.039084, 3.5, -1.2)': '#NUM!',
+    },
 
     'MODE.MULT': {},
 
     'MODE.SNGL': {},
 
-    'NEGBINOM.DIST': {},
+    'NEGBINOM.DIST': {
+        // number_f, number_s,probability_s,cumulative
+        'NEGBINOM.DIST(10, 5, 0.25,TRUE)': 0.3135140584782,
+        'NEGBINOM.DIST(10, 5, 0.25,FALSE)': 0.0550486603752,
+        'NEGBINOM.DIST(10, 5, -0.25,FALSE)': '#NUM!',
+        'NEGBINOM.DIST(10, 5, 1.25,FALSE)': '#NUM!',
+        'NEGBINOM.DIST(-10, 5, 0.25,FALSE)': '#NUM!',
+        'NEGBINOM.DIST(10, 0.5, 0.25,FALSE)': '#NUM!',
+    },
 
     'NORM.DIST': {},
 

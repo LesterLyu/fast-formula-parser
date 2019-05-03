@@ -576,7 +576,55 @@ const DistributionFunctions = {
     },
 
     'HYPGEOM.DIST': (sample_s, number_sample, population_s, number_pop, cumulative) => {
+        //          num_successes, num_draws, successes_in_pop, pop_size
+        // If any argument is nonnumeric, HYPGEOM.DIST returns the #VALUE! error value.
+        sample_s = H.accept(sample_s, Types.NUMBER);
+        number_sample = H.accept(number_sample, Types.NUMBER);
+        population_s = H.accept(population_s, Types.NUMBER);
+        number_pop = H.accept(number_pop, Types.NUMBER);
+        cumulative = H.accept(cumulative, Types.BOOLEAN);
 
+        // All arguments are truncated to integers.
+        sample_s = Math.trunc(sample_s);
+        number_sample = Math.trunc(number_sample);
+        population_s = Math.trunc(population_s);
+        number_pop = Math.trunc(number_pop);
+
+        // If sample_s < 0 or sample_s is greater than the lesser of number_sample or population_s, HYPGEOM.DIST returns the #NUM! error value.
+        // Google and Mircrosoft has different version on this funtion
+        if (sample_s < 0 || sample_s > number_sample || sample_s > population_s) {
+            throw FormulaError.NUM;
+        }
+        // // If sample_s is less than the larger of 0 or (number_sample - number_population + population_s), HYPGEOM.DIST returns the #NUM! error value.
+        if (sample_s < (number_sample - number_pop + population_s)) {
+            throw FormulaError.NUM;
+        }
+        // // If number_sample ≤ 0 or number_sample > number_population, HYPGEOM.DIST returns the #NUM! error value.
+        if (number_sample > number_pop) {
+            throw FormulaError.NUM;
+        }
+        // // If population_s ≤ 0 or population_s > number_population, HYPGEOM.DIST returns the #NUM! error value.
+        if (population_s <= 0 || population_s > number_pop) {
+            throw FormulaError.NUM;
+        }
+        // // If number_pop ≤ 0, HYPGEOM.DIST returns the #NUM! error value.
+        if (number_pop < 0) {
+            throw FormulaError.NUM;
+        }
+
+        function pdf(x, n, M, N) {
+            return MathFunctions.COMBIN(M, x) * MathFunctions.COMBIN(N - M, n - x) / MathFunctions.COMBIN(N, n);
+        }
+
+        function cdf(x, n, M, N) {
+            var result = 0;
+            for (var i = 0; i <= x; i++) {
+                result += pdf(i, n, M, N);
+            }
+            return result;
+        }
+
+        return cumulative ? cdf(sample_s, number_sample, population_s, number_pop) : pdf(sample_s, number_sample, population_s, number_pop);
     },
 
     INTERCEPT: () => {
@@ -595,12 +643,35 @@ const DistributionFunctions = {
 
     },
 
-    'LOGNORM.DIST': () => {
+    'LOGNORM.DIST': (x, mean, standard_dev, cumulative) => {
+        // if any argument is nonnumeric, LOGNORM.DIST returns the #VALUE! error value.
+        x = H.accept(x, Types.NUMBER);
+        mean = H.accept(mean, Types.NUMBER);
+        standard_dev = H.accept(standard_dev, Types.NUMBER);
+        cumulative = H.accept(x, Types.BOOLEAN);
+        // If x ≤ 0 or if standard_dev ≤ 0, LOGNORM.DIST returns the #NUM! error value.
+        if (x <= 0 || standard_dev <= 0) {
+            throw FormulaError.NUM;
+        }
 
+        return cumulative ? jStat.lognormal.cdf(x, mean, standard_dev) : jStat.lognormal.pdf(x, mean, standard_dev);
     },
 
-    'LOGNORM.INV': () => {
+    'LOGNORM.INV': (probability, mean, standard_dev) => {
+        // If any argument is nonnumeric, LOGNORM.INV returns the #VALUE! error value.
+        probability = H.accept(probability, Types.NUMBER);
+        mean = H.accept(mean, Types.NUMBER);
+        standard_dev = H.accept(standard_dev, Types.NUMBER);
+        // If probability <= 0 or probability >= 1, LOGNORM.INV returns the #NUM! error value.
+        if (probability <= 0 || probability >= 1) {
+            throw FormulaError.NUM;
+        }
+        // If standard_dev <= 0, LOGNORM.INV returns the #NUM! error value.
+        if (standard_dev <= 0) {
+            throw FormulaError.NUM;
+        }
 
+        return jStat.lognormal.inv(probability, mean, standard_dev);
     },
 
     'MODE.MULT': () => {
@@ -611,11 +682,29 @@ const DistributionFunctions = {
 
     },
 
-    'NEGBINOM.DIST': () => {
+    'NEGBINOM.DIST': (number_f, number_s, probability_s, cumulative) => {
+        // If any argument is nonnumeric, NEGBINOM.DIST returns the #VALUE! error value.
+        number_f = H.accept(number_f, Types.NUMBER);
+        number_s = H.accept(number_s, Types.NUMBER);
+        probability_s = H.accept(probability_s, Types.NUMBER);
+        cumulative = H.accept(cumulative, Types.BOOLEAN);
+        // Number_f and number_s are truncated to integers.
+        number_f = Math.trunc(number_f);
+        number_s = Math.trunc(number_s);
 
+        // If probability_s < 0 or if probability > 1, NEGBINOM.DIST returns the #NUM! error value.
+        if (probability_s < 0 || probability_s > 1) {
+            throw FormulaError.NUM;
+        }
+        // If number_f < 0 or number_s < 1, NEGBINOM.DIST returns the #NUM! error value.
+        if (number_f < 0 || number_s < 1) {
+            throw FormulaError.NUM;
+        }
+
+        return cumulative ? jStat.negbin.cdf(number_f, number_s, probability_s) : jStat.negbin.pdf(number_f, number_s, probability_s);
     },
 
-    'NORM.DIST': () => {
+    'NORM.DIST': (x, mean, standard_dev, cumulative) => {
 
     },
 

@@ -382,6 +382,9 @@ const EngineeringFunctions = {
         number = H.accept(number, Types.STRING);
         places = H.accept(places, Types.NUMBER, null);
 
+        if (number.length > 10 || !/^[0-9a-fA-F]*$/.test(number)) {
+            throw FormulaError.NUM;
+        }
         // to check if the number is negative
         let ifNegative = (number.length === 10 && number.substr(0, 1).toLowerCase() === "f");
         // convert HEX to DEC
@@ -411,12 +414,22 @@ const EngineeringFunctions = {
 
     HEX2DEC: (number) => {
         number = H.accept(number, Types.STRING);
+        if (number.length > 10 || !/^[0-9a-fA-F]*$/.test(number)) {
+            throw FormulaError.NUM;
+        }
         let result = parseInt(number, 16);
+        //david: validate
+        // If the places is larger than 10, or number is larger than, return #NUM!
+        // If number is not a valid Hex number,  returns the #NUM! error value.
+
         return (result >= 549755813888) ? result - 1099511627776 : result;
     },
 
     HEX2OCT: (number, places) => {
         number = H.accept(number, Types.STRING);
+        if (number.length > 10 || !/^[0-9a-fA-F]*$/.test(number)) {
+            throw FormulaError.NUM;
+        }
         // convert HEX to DEC
         let toDecimal = EngineeringFunctions.HEX2DEC(number);
         if (toDecimal > MAX_OCT || toDecimal < MIN_OCT) {
@@ -648,47 +661,80 @@ const EngineeringFunctions = {
         return EngineeringFunctions.IMDIV(EngineeringFunctions.IMSIN(iNumber), EngineeringFunctions.IMCOS(iNumber), unit);
     },
 
+    // FIXME: need to check the test cases
     OCT2BIN: (number, places) => {
+        // office: If number is not a valid octal number, OCT2BIN returns the #NUM! error value.
+        // office: If places is nonnumeric, OCT2BIN returns the #VALUE! error value.
         number = H.accept(number, Types.STRING);
         places = H.accept(places, Types.NUMBER, null);
 
+        // 1. If number's length larger than 10, returns #NUM!
         if (number.length > 10) {
             throw FormulaError.NUM
         }
+        // In microsoft Excel, if places is larger than 10, it will return #NUM!
+        if (places > 10) {
+            throw FormulaError.NUM;
+        }
+
+        // 2. office: If places is negative, OCT2BIN returns the #NUM! error value.
+        if (places !== null && places < 0) {
+            throw FormulaError.NUM;
+        }
+        // if places is not an integer, it is truncated
+        // office: If places is not an integer, it is truncated.
+        places = Math.trunc(places);
+
         // to check if the Oct number is negative
         let isNegative = (number.length === 10 && number.substring(0, 1) === '7');
         // convert OCT to DEC
         let toDecimal = EngineeringFunctions.OCT2DEC(number);
+        // 2.
+        // office: If number is negative, it cannot be less than 7777777000, and if number is positive, it cannot be greater than 777.
+        // MiN_BIN = -512, MAX_BIN = 511
         if (toDecimal < MIN_BIN || toDecimal > MAX_BIN) {
             return FormulaError.NUM;
         }
         // if number is negative, ignores places and return a 10-character binary number
+        // office: If number is negative, OCT2BIN ignores places and returns a 10-character binary number.
         if (isNegative) {
             return '1' + TextFunctions.REPT('0', 9 - (512 + toDecimal).toString(2).length) + (512 + toDecimal).toString(2);
         }
+
         // convert DEC to BIN
         let result = toDecimal.toString(2);
 
-        if (places === null) {
+
+        //if (places === null) {
+        if (places === 0) {
             return result;
         }
 
-        // if places is not an integer, it is truncated
-        places = Math.trunc(places);
-        if (places < 0) {
-            throw FormulaError.NUM;
-        }
+        // office: If OCT2BIN requires more than places characters, it returns the #NUM! error value.
         if (places < result.length) {
             throw FormulaError.NUM;
         }
+
         return TextFunctions.REPT('0', places - result.length) + result;
     },
 
     OCT2DEC: (number) => {
         number = H.accept(number, Types.STRING);
-        // conver to DEC
+        // In microsoft Excel, if number contains more than ten characters (10 digits), it will return #NUM!
+        if (number.length > 10) {
+            throw FormulaError.NUM;
+        }
+
+        // If number is not a valid octal number, OCT2DEC returns the #NUM! error value.
+        for (const n of number) {
+            if (n < '0' || n > '7') {
+                throw FormulaError.NUM;
+            }
+        }
+        // convert to DEC
         let result = parseInt(number, 8);
         return (result >= 536870912) ? result - 1073741824 : result;
+        //  536870912(4000000000) : -536870912;   1073741823(7777777777) : -1
     },
 
     OCT2HEX: (number, places) => {
@@ -697,25 +743,29 @@ const EngineeringFunctions = {
         if (number.length > 10) {
             throw FormulaError.NUM
         }
-        // convert OCT to DEC
-        let toDecimal = EngineeringFunctions.OCT2DEC(number);
-
-        // if number is negative, ignores places and return a 10-character octal number.
-        if (toDecimal >= 536870912) {
-            return 'FF' + (toDecimal + 3221225472).toString(16);
-        }
-
-        // convert DEC to HEX
-        let toHex = EngineeringFunctions.DEC2HEX(toDecimal, places);
-
-        if (places === null) {
-            return toHex;
-        }
-        if (places < 0) {
-            throw FormulaError.NUM;
+        // office: If number is not a valid octal number, OCT2DEC returns the #NUM! error value.
+        for (const n of number) {
+            if (n < '0' || n > '7') {
+                throw FormulaError.NUM;
+            }
         }
         // if places is not an integer, it is truncated
         places = Math.trunc(places);
+        // office: If places is negative, OCT2HEX returns the #NUM! error value.
+        if (places < 0 || places > 10) {
+            throw FormulaError.NUM;
+        }
+
+        // convert OCT to DEC
+        let toDecimal = EngineeringFunctions.OCT2DEC(number);
+
+        // convert DEC to HEX
+        // let toHex = EngineeringFunctions.DEC2HEX(toDecimal, places);
+        let toHex = EngineeringFunctions.DEC2HEX(toDecimal);
+        //if (places === null) {
+        if (places === 0) {
+            return toHex;
+        }
         if (places < toHex.length) {
             throw FormulaError.NUM;
         } else {
