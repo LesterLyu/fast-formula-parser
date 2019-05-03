@@ -216,13 +216,13 @@ const distributions = {
         // 'FORECAST(30,{6,6,4},{2,1})': '#N/A',
     },
 
-    'FORECAST.ETS': {},
-
-    'FORECAST.ETS.CONFINT': {},
-
-    'FORECAST.ETS.SEASONALITY': {},
-
-    'FORECAST.ETS.STAT': {},
+    // 'FORECAST.ETS': {},
+    //
+    // 'FORECAST.ETS.CONFINT': {},
+    //
+    // 'FORECAST.ETS.SEASONALITY': {},
+    //
+    // 'FORECAST.ETS.STAT': {},
 
     'FORECAST.LINEAR': {
         // 'FORECAST.LINEAR(30,{6,7,9,15,21},{20,28,31,38,40})': 10.60725308642,
@@ -231,7 +231,12 @@ const distributions = {
         // 'FORECAST.LINEAR(30,{6,6,4},{2,1})': '#N/A',
     },
 
-    FREQUENCY: {},
+    FREQUENCY: {
+        'FREQUENCY({1,2,3,4,5},{1,5,11})': 1,
+        'FREQUENCY({1,2,3,4,5},{5,1,11})': 1,
+        'FREQUENCY({1,2,3,4,5},{2,3})': 2,
+        'FREQUENCY({1,2,3,4,5},A1)': 5,
+    },
 
     // David
     GAMMA: {
@@ -269,7 +274,7 @@ const distributions = {
         'GAMMALN.PRECISE("string")': '#VALUE!',
         'GAMMALN.PRECISE(-4)': '#NUM!',
     },
-    GUESS: {
+    GAUSS: {
         'GAUSS(2)': 0.477249868,
         'GAUSS("string")': '#VALUE!',
     },
@@ -280,9 +285,21 @@ const distributions = {
         'GEOMEAN({4,5,8,7,11,4,3})': 5.47698696965696,
     },
 
-    GROWTH: {},
+    GROWTH: {
+        'GROWTH({33100,47300,69000,102000,150000,220000})': 32618.2037735398,
+        'GROWTH({33100,47300,69000,102000,150000,"220000"})': '#VALUE!',
+        'GROWTH({33100,47300,69000,102000,150000,220000}, {11,12,13,14,15})': '#REF!',
+        'GROWTH({33100,47300,69000,102000,150000,220000}, {11,12,13,14,15,16})': 32618.2037735398,
+        'SUM(GROWTH({33100,47300,69000,102000,150000,220000}, {11,12,13,14,15,16}))': 620750.363577979,
+        'GROWTH({33100,47300,69000,102000,150000,220000}, {11,12,13,14,15,16},{1;2})': 724.76739866295,
+        'SUM(GROWTH({33100,47300,69000,102000,150000,220000}, {11,12,13,14,15,16},{1;2}))': 1785.301869179600,
+        'SUM(GROWTH({1,2,3,4},{4,6,8,11},{8,9,10,11}))': 13.9796233554563,
+    },
 
-    HARMEAN: {},
+    HARMEAN: {
+        'HARMEAN(4,5,8,7,11,4,3)': 5.02837596206,
+        'HARMEAN(4,"5",{8,7,11,4,3})': 5.02837596206,
+    },
 
     'HYPGEOM.DIST': {
         // 'HYPGEOM.DIST': (sample_s, number_sample, population_s, number_pop, cumulative)
@@ -317,9 +334,14 @@ const distributions = {
 
     },
 
-    INTERCEPT: {},
+    INTERCEPT: {
+        'INTERCEPT({2,3,9,1,8},{6,5,11,7,5})': 0.04838709677,
+    },
 
-    KURT: {},
+    KURT: {
+        'KURT(3,4,5,2,3,4,5,6,4,7)': -0.151799637208,
+        'KURT(3,{4,5},"2",3,4,5,6,4,7)': -0.151799637208,
+    },
 
     LINEST: {},
 

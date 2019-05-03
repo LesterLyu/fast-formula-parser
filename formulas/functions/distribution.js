@@ -437,8 +437,36 @@ const DistributionFunctions = {
 
     },
 
-    FREQUENCY: () => {
+    FREQUENCY: (dataArray, binsArray) => {
+        dataArray = H.accept(dataArray, Types.ARRAY, undefined, true, true);
+        binsArray = H.accept(binsArray, Types.ARRAY, undefined, true, true);
 
+        const binsArrayFiltered = [];
+        for (let i = 0; i < binsArray.length; i++) {
+            if (typeof binsArray[i] !== "number")
+                continue;
+            binsArrayFiltered.push(binsArray[i]);
+        }
+        binsArrayFiltered.sort();
+        binsArrayFiltered.push(Infinity);
+
+        const result = [];
+        for (let j = 0; j < binsArrayFiltered.length; j++) {
+            result[j] = [];
+            result[j][0] = 0;
+            for (let i = 0; i < dataArray.length; i++) {
+                if (typeof dataArray[i] !== "number") {
+                    continue;
+                }
+                const curr = dataArray[i];
+                if (curr <= binsArrayFiltered[j]) {
+                    result[j][0]++;
+                    dataArray[i] = null;
+                }
+            }
+        }
+        // return a 2d array
+        return result;
     },
 
     GAMMA: (x) => {
@@ -535,12 +563,92 @@ const DistributionFunctions = {
         return jStat.geomean(filterArr);
     },
 
-    GROWTH: () => {
+    GROWTH: (knownY, knownX, newX, useConst) => {
+        // Credits: Ilmari Karonen (http://stackoverflow.com/questions/14161990/how-to-implement-growth-function-in-javascript)
+        knownY = H.accept(knownY, Types.ARRAY, undefined, true, true);
+        for (let i = 0; i < knownY.length; i++) {
+            if (typeof knownY[i] !== "number")
+                throw FormulaError.VALUE;
+        }
 
+        knownX = H.accept(knownX, Types.ARRAY, null, true, true);
+        const isKnownXOmitted = knownX == null;
+        if (knownX == null) {
+            knownX = [];
+            for (let i = 1; i <= knownY.length; i++) {
+                knownX.push(i);
+            }
+        } else {
+            if (knownX.length !== knownY.length)
+                throw FormulaError.REF;
+            for (let i = 0; i < knownX.length; i++) {
+                if (typeof knownX[i] !== "number")
+                    throw FormulaError.VALUE;
+            }
+        }
+
+        newX = H.accept(newX, Types.ARRAY, null, false, true);
+        if (newX == null && isKnownXOmitted) {
+            newX = [];
+            for (let i = 1; i <= knownY.length; i++) {
+                newX.push(i);
+            }
+            newX = [newX];
+        } else if (newX == null) {
+            newX = Array.isArray(knownX[0]) ? knownX : [knownX];
+        }
+        useConst = H.accept(useConst, Types.BOOLEAN, true);
+
+        // Calculate sums over the data:
+        const n = knownY.length;
+        let avg_x = 0, avg_y = 0, avg_xy = 0, avg_xx = 0;
+        for (let i = 0; i < n; i++) {
+            const x = knownX[i];
+            const y = Math.log(knownY[i]);
+            avg_x += x;
+            avg_y += y;
+            avg_xy += x * y;
+            avg_xx += x * x;
+        }
+        avg_x /= n;
+        avg_y /= n;
+        avg_xy /= n;
+        avg_xx /= n;
+
+        // Compute linear regression coefficients:
+        let beta;
+        let alpha;
+        if (useConst) {
+            beta = (avg_xy - avg_x * avg_y) / (avg_xx - avg_x * avg_x);
+            alpha = avg_y - beta * avg_x;
+        } else {
+            beta = avg_xy / avg_xx;
+            alpha = 0;
+        }
+
+        // Compute and return result array:
+        const new_y = [];
+        for (let i = 0; i < newX.length; i++) {
+            new_y[i] = [];
+            for (let j = 0; j < newX[0].length; j++) {
+                if (typeof newX[i][j] !== "number")
+                    throw FormulaError.VALUE;
+                new_y[i][j] = Math.exp(alpha + beta * newX[i][j]);
+            }
+        }
+        return new_y;
     },
 
-    HARMEAN: () => {
-
+    HARMEAN: (...numbers) => {
+        let cnt = 0, denominator = 0;
+        // parse number only if the input is literal
+        H.flattenParams(numbers, Types.NUMBER, true, (item, info) => {
+            if (typeof item === "number") {
+                denominator += 1 / item;
+                cnt++;
+            }
+        });
+        return cnt / denominator;
     },
 
     'HYPGEOM.DIST': (sample_s, number_sample, population_s, number_pop, cumulative) => {
@@ -597,12 +705,52 @@ const DistributionFunctions = {
         return cumulative ? cdf(sample_s, number_sample, population_s, number_pop) : pdf(sample_s, number_sample, population_s, number_pop);
     },
 
-    INTERCEPT: () => {
+    INTERCEPT: (knownYs, knownXs) => {
+        // similar to FORECAST
+        knownYs = H.accept(knownYs, Types.ARRAY, undefined, true, true);
+        knownXs = H.accept(knownXs, Types.ARRAY, undefined, true, true);
 
+        if (knownXs.length !== knownYs.length)
+            throw FormulaError.NA;
+
+        // filter out values that are not number
+        const filteredY = [], filteredX = [];
+        for (let i = 0; i < knownYs.length; i++) {
+            if (typeof knownYs[i] !== "number" || typeof knownXs[i] !== "number")
+                continue;
+            filteredY.push(knownYs[i]);
+            filteredX.push(knownXs[i]);
+        }
+        if (filteredY.length <= 1)
+            throw FormulaError.DIV0;
+        const yMean = jStat.mean(filteredY);
+        const xMean = jStat.mean(filteredX);
+        let numerator = 0, denominator = 0;
+        for (let i = 0; i < filteredY.length; i++) {
+            numerator += (filteredX[i] - xMean) * (filteredY[i] - yMean);
+            denominator += (filteredX[i] - xMean) ** 2;
+        }
+        const b = numerator / denominator;
+        return yMean - b * xMean;
     },
 
-    KURT: () => {
-
+    KURT: (...numbers) => {
+        let mean = 0, range = [];
+        // parse number only if the input is literal
+        H.flattenParams(numbers, Types.NUMBER, true, (item, info) => {
+            if (typeof item === "number") {
+                mean += item;
+                range.push(item);
+            }
+        });
+        const n = range.length;
+        mean /= n;
+        let sigma = 0;
+        for (let i = 0; i < n; i++) {
+            sigma += Math.pow(range[i] - mean, 4);
+        }
+        sigma = sigma / Math.pow(jStat.stdev(range, true), 4);
+        return ((n * (n + 1)) / ((n - 1) * (n - 2) * (n - 3))) * sigma - 3 * (n - 1) * (n - 1) / ((n - 2) * (n - 3));
     },
 
     LINEST: () => {
