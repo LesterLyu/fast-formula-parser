@@ -283,7 +283,6 @@ const distributions = {
         'HYPGEOM.DIST(9,15,8,20,TRUE)': '#NUM!',
         'HYPGEOM.DIST(8,15,8,14,TRUE)': '#NUM!',
         'HYPGEOM.DIST(1,8,8,7,FALSE)': '#NUM!',
-
         'HYPGEOM.DIST(1,4,-8,20,FALSE)': '#NUM!',
         'HYPGEOM.DIST(1,4,21,20,FALSE)': '#NUM!',
         'HYPGEOM.DIST(1,4,8,-20,FALSE)': '#NUM!',
@@ -297,9 +296,20 @@ const distributions = {
 
     LOGEST: {},
 
-    'LOGNORM.DIST': {},
+    'LOGNORM.DIST': {
+        'LOGNORM.DIST(4,3.5,1.2,TRUE)': 0.0390835557068,
+        // FIXME
+        //'LOGNORM.DIST(4,3.5,1.2,FALSE)': 0.0176175966818,
+        'LOGNORM.DIST(-4,3.5,1.2,TRUE)': '#NUM!',
+        'LOGNORM.DIST(4,3.5,-1.2,TRUE)': '#NUM!',
+    },
 
-    'LOGNORM.INV': {},
+    'LOGNORM.INV': {
+        'LOGNORM.INV(0.039084, 3.5, 1.2)': 4.0000252186806,
+        'LOGNORM.INV(-0.039084, 3.5, 1.2)': '#NUM!',
+        'LOGNORM.INV( 1.039084, 3.5, 1.2)': '#NUM!',
+        'LOGNORM.INV(0.039084, 3.5, -1.2)': '#NUM!',
+    },
 
     'MODE.MULT': {},
 

@@ -611,12 +611,35 @@ const DistributionFunctions = {
 
     },
 
-    'LOGNORM.DIST': () => {
+    'LOGNORM.DIST': (x, mean, standard_dev, cumulative) => {
+        // if any argument is nonnumeric, LOGNORM.DIST returns the #VALUE! error value.
+        x = H.accept(x, Types.NUMBER);
+        mean = H.accept(mean, Types.NUMBER);
+        standard_dev = H.accept(standard_dev, Types.NUMBER);
+        cumulative = H.accept(x, Types.BOOLEAN);
+        // If x ≤ 0 or if standard_dev ≤ 0, LOGNORM.DIST returns the #NUM! error value.
+        if (x <= 0 || standard_dev <= 0) {
+            throw FormulaError.NUM;
+        }
 
+        return cumulative ? jStat.lognormal.cdf(x, mean, standard_dev) : jStat.lognormal.pdf(x, mean, standard_dev);
     },
 
-    'LOGNORM.INV': () => {
+    'LOGNORM.INV': (probability, mean, standard_dev) => {
+        // If any argument is nonnumeric, LOGNORM.INV returns the #VALUE! error value.
+        probability = H.accept(probability, Types.NUMBER);
+        mean = H.accept(mean, Types.NUMBER);
+        standard_dev = H.accept(standard_dev, Types.NUMBER);
+        // If probability <= 0 or probability >= 1, LOGNORM.INV returns the #NUM! error value.
+        if (probability <= 0 || probability >= 1) {
+            throw FormulaError.NUM;
+        }
+        // If standard_dev <= 0, LOGNORM.INV returns the #NUM! error value.
+        if (standard_dev <= 0) {
+            throw FormulaError.NUM;
+        }
 
+        return jStat.lognormal.inv(probability, mean, standard_dev);
     },
 
     'MODE.MULT': () => {
