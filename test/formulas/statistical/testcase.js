@@ -424,7 +424,11 @@ const distributions = {
 
     PERMUTATIONA: {},
 
-    PHI: {},
+    PHI: {
+        'PHI(0.5)': 0.3520653268,
+        'PHI(0.75)': 0.301137432,
+        'PHI(1.00)': 0.2419707245,
+    },
 
     'POISSON.DIST': {},
 

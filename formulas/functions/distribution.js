@@ -4,6 +4,7 @@ const {Infix} = require('../operators');
 const H = FormulaHelpers;
 const jStat = require("jstat");
 const MathFunctions = require('./math');
+const SQRT2PI = 2.5066282746310002;
 
 const DistributionFunctions = {
     'BETA.DIST': (x, alpha, beta, cumulative, a, b) => {
@@ -931,8 +932,11 @@ const DistributionFunctions = {
 
     },
 
-    PHI: () => {
+    PHI: (x) => {
+        // If x is a numeric value that is not valid, PHI returns the #NUM! error value.
+        x = H.accept(x, Types.NUMBER);
 
+        return Math.exp(-0.5 * x * x) / SQRT2PI;
     },
 
     'POISSON.DIST': () => {
