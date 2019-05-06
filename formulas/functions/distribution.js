@@ -1061,8 +1061,22 @@ const DistributionFunctions = {
         return 1 - jStat.studentt.cdf(x, deg_freedom);
     },
 
-    'T.INV': () => {
+    'T.INV': (probability, deg_freedom) => {
+        // If either argument is nonnumeric, T.INV returns the #VALUE! error value.
+        probability = H.accept(probability, Types.NUMBER);
+        deg_freedom = H.accept(deg_freedom, Types.NUMBER);
+        // If probability <= 0 or if probability > 1, T.INV returns the #NUM! error value.
+        if (probability <= 0 || probability > 1) {
+            throw FormulaError.NUM;
+        }
+        // If deg_freedom < 1, T.INV returns the #NUM! error value.
+        if (deg_freedom < 1) {
+            throw FormulaError.NUM;
+        }
+        // If deg_freedom is not an integer, it is truncated.
+        deg_freedom = deg_freedom % 1 === 0 ? deg_freedom : Math.trunc(deg_freedom);
 
+        return jStat.studentt.inv(probability, deg_freedom);
     },
 
     'T.INV.2T': () => {
