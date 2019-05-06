@@ -524,7 +524,15 @@ const distributions = {
 
     'VARPA': {},
 
-    'WEIBULL.DIST': {},
+    'WEIBULL.DIST': {
+        'WEIBULL.DIST(105, 20, 100,TRUE)': 0.92958139,
+        'WEIBULL.DIST(105, 20, 100,FALSE)': 0.035588864,
+        'WEIBULL.DIST(-105, 20, 100,FALSE)': '#NUM!',
+        'WEIBULL.DIST(105, 0.0, 100,FALSE)': '#NUM!',
+        'WEIBULL.DIST(105, -20, 100,FALSE)': '#NUM!',
+        'WEIBULL.DIST(105, 20, 0.0,FALSE)': '#NUM!',
+        'WEIBULL.DIST(105, 20, -100,FALSE)': '#NUM!',
+    },
 
     'Z.TEST': {}
 

@@ -1121,8 +1121,21 @@ const DistributionFunctions = {
 
     },
 
-    'WEIBULL.DIST': () => {
+    'WEIBULL.DIST': (x, alpha, beta, cumulative) => {
+        // If x, alpha, or beta is nonnumeric, WEIBULL.DIST returns the #VALUE! error value.
+        x = H.accept(x, Types.NUMBER);
+        alpha = H.accept(alpha, Types.NUMBER);
+        beta = H.accept(beta, Types.NUMBER);
+        cumulative = H.accept(cumulative, Types.BOOLEAN);
+        // If x < 0, WEIBULL.DIST returns the #NUM! error value.
+        // If alpha ≤ 0 or if beta ≤ 0, WEIBULL.DIST returns the #NUM! error value.
+        if (x < 0 || alpha <= 0 || beta <= 0) {
+            throw FormulaError.NUM;
+        }
 
+        return cumulative
+            ? 1 - Math.exp(-Math.pow(x / beta, alpha))
+            : Math.pow(x, alpha - 1) * Math.exp(-Math.pow(x / beta, alpha)) * alpha / Math.pow(beta, alpha);
     },
 
     'Z.TEST': () => {
