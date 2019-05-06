@@ -1036,8 +1036,17 @@ const DistributionFunctions = {
         return cumulative ? jStat.studentt.cdf(x, deg_freedom) : jStat.studentt.pdf(x, deg_freedom);
     },
 
-    'T.DIST.2T': () => {
+    'T.DIST.2T': (x, deg_freedom) => {
+        // If any argument is nonnumeric, T.DIST.2T returns the #VALUE! error value.
+        x = H.accept(x, Types.NUMBER);
+        deg_freedom = H.accept(deg_freedom, Types.NUMBER);
+        // If deg_freedom < 1, T.DIST.2T returns the #NUM! error value.
+        // If x < 0, then T.DIST.2T returns the #NUM! error value.
+        if (deg_freedom < 1 || x < 0) {
+            throw FormulaError.NUM;
+        }
 
+        return (1 - jStat.studentt.cdf(x, deg_freedom)) * 2;
     },
 
     'T.DIST.RT': () => {
