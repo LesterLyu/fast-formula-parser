@@ -430,7 +430,12 @@ const distributions = {
         'PHI(1.00)': 0.2419707245,
     },
 
-    'POISSON.DIST': {},
+    'POISSON.DIST': {
+        'POISSON.DIST(2,5,TRUE)': 0.124652019,
+        'POISSON.DIST(2,5,FALSE)': 0.084224337,
+        'POISSON.DIST(-0.5,5,FALSE)': '#NUM!',
+        'POISSON.DIST(2,-0.5,FALSE)': '#NUM!',
+    },
 
     'PROB': {},
 
@@ -450,7 +455,11 @@ const distributions = {
 
     SLOPE: {},
 
-    STANDARDIZE: {},
+    STANDARDIZE: {
+        'STANDARDIZE(42, 40,1.5)': 1.333333333333,
+        'STANDARDIZE(42, 40, 0.0)': '#NUM!',
+        'STANDARDIZE(42, 40, -0.5)': '#NUM!',
+    },
 
     'STDEV.P': {},
 
@@ -462,7 +471,13 @@ const distributions = {
 
     STEYX: {},
 
-    'T.DIST': {},
+    'T.DIST': {
+        'T.DIST(60,1,TRUE)': 0.994695326367,
+        'T.DIST(8,3,TRUE)': 0.9979617112,
+        'T.DIST(8,3,FALSE)': 0.000736906521,
+        'T.DIST(60,0.9,TRUE)': '#NUM!',
+        'T.DIST(60,0,TRUE)': '#NUM!',
+    },
 
     'T.DIST.2T': {},
 

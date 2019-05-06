@@ -1023,8 +1023,17 @@ const DistributionFunctions = {
 
     },
 
-    'T.DIST': () => {
+    'T.DIST': (x, deg_freedom, cumulative) => {
+        // If any argument is nonnumeric, T.DIST returns the #VALUE! error value.
+        x = H.accept(x, Types.NUMBER);
+        deg_freedom = H.accept(deg_freedom, Types.NUMBER);
+        cumulative = H.accept(cumulative, Types.BOOLEAN);
+        // If deg_freedom < 1, T.DIST returns an error value. Deg_freedom needs to be at least 1.
+        if (deg_freedom < 1) {
+            throw FormulaError.NUM;
+        }
 
+        return cumulative ? jStat.studentt.cdf(x, deg_freedom) : jStat.studentt.pdf(x, deg_freedom);
     },
 
     'T.DIST.2T': () => {
