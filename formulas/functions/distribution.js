@@ -1049,8 +1049,16 @@ const DistributionFunctions = {
         return (1 - jStat.studentt.cdf(x, deg_freedom)) * 2;
     },
 
-    'T.DIST.RT': () => {
+    'T.DIST.RT': (x, deg_freedom) => {
+        // If any argument is nonnumeric, T.DIST.RT returns the #VALUE! error value.
+        x = H.accept(x, Types.NUMBER);
+        deg_freedom = H.accept(deg_freedom, Types.NUMBER);
+        // If deg_freedom < 1, T.DIST.RT returns the #NUM! error value.
+        if (deg_freedom < 1) {
+            throw FormulaError.NUM;
+        }
 
+        return 1 - jStat.studentt.cdf(x, deg_freedom);
     },
 
     'T.INV': () => {

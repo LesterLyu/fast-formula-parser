@@ -485,7 +485,10 @@ const distributions = {
         'T.DIST.2T(1.959999998,0.6)': '#NUM!',
     },
 
-    'T.DIST.RT': {},
+    'T.DIST.RT': {
+        'T.DIST.RT(1.959999998, 60)': 0.0273224649880,
+        'T.DIST.RT(1.959999998, 0.6)': '#NUM!',
+    },
 
     'T.INV': {},
 
