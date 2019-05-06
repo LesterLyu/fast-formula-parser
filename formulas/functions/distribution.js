@@ -939,8 +939,20 @@ const DistributionFunctions = {
         return Math.exp(-0.5 * x * x) / SQRT2PI;
     },
 
-    'POISSON.DIST': () => {
+    'POISSON.DIST': (x, mean, cumulative) => {
+        // If x or mean is nonnumeric, POISSON.DIST returns the #VALUE! error value.
+        x = H.accept(x, Types.NUMBER);
+        mean = H.accept(mean, Types.NUMBER);
+        cumulative = H.accept(cumulative, Types.BOOLEAN);
+        // If x < 0, POISSON.DIST returns the #NUM! error value.
+        // If mean < 0, POISSON.DIST returns the #NUM! error value.
+        if (x < 0 || mean < 0) {
+            throw FormulaError.NUM;
+        }
+        // If x is not an integer, it is truncated.
+        x = Math.trunc(x);
 
+        return cumulative ? jStat.poisson.cdf(x, mean) : jStat.poisson.pdf(x, mean);
     },
 
     'PROB': () => {
@@ -979,8 +991,16 @@ const DistributionFunctions = {
 
     },
 
-    STANDARDIZE: () => {
+    STANDARDIZE: (x, mean, standard_dev) => {
+        x = H.accept(x, Types.NUMBER);
+        mean = H.accept(mean, Types.NUMBER);
+        standard_dev = H.accept(standard_dev, Types.NUMBER);
+        // If standard_dev ≤ 0, STANDARDIZE returns the #NUM! error value.
+        if (standard_dev <= 0) {
+            throw FormulaError.NUM;
+        }
 
+        return (x - mean) / standard_dev;
     },
 
     'STDEV.P': () => {
