@@ -169,42 +169,7 @@ function something(workbook) {
     initParser();
     console.log(`open workbook uses ${Date.now() - t}ms`);
     t = Date.now();
-    const formulas = [];
-    workbook.sheets().forEach(sheet => sheetNames.push(sheet.name()));
-    rt = new ReferenceTable(sheetNames);
 
-    workbook.sheets().forEach((sheet, sheetNo) => {
-        const sharedFormulas = [];
-        sheet._rows.forEach((row, rowNumber) => {
-            // const rowStyle = styles[rowNumber - 1] = {};
-            row._cells.forEach((cell, colNumber) => {
-                // process cell data
-                let formula = (cell._formulaType === "shared" && !cell._formulaRef) ? "SHARED" : cell._formula;
-                if (typeof formula === 'string') {
-                    // this is the parent shared formula
-                    if (formula !== 'SHARED' && cell._sharedFormulaId !== undefined) {
-                        sharedFormulas[cell._sharedFormulaId] = cell;
-                    } else if (formula === 'SHARED') {
-                        // convert this cell to normal formula
-                        const refCell = sharedFormulas[cell._sharedFormulaId];
-                        formula = getSharedFormula(cell, refCell);
-                        const oldValue = cell._value;
-                        cell.formula(formula)._value = oldValue;
-                    }
-                    formulas.push(formula);
-                    // console.log(formula, `sheet: ${name}, row: ${rowNumber}, col: ${colNumber}`);
-                    const position = {sheet: sheetNo, row: rowNumber, col: colNumber};
-                    const res = parser.parse(formula, position);
-                    // if (res.length > 0) {
-                    //     res.forEach(refA => {
-                    //         rt.add(refA, position);
-                    //     })
-                    // }
-
-                }
-            });
-        });
-    });
     console.log(`process formulas uses ${Date.now() - t}ms, with ${formulas.length} formulas, query data uses ${tGetter}ms`);
     t = Date.now();
     // get data

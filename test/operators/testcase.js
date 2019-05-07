@@ -13,4 +13,9 @@ module.exports = {
         '+A1': 1,
         '+A6': 'string',
     },
+
+    'reference': {
+        'A1': 1,
+        'A1+2': 3
+    }
 };

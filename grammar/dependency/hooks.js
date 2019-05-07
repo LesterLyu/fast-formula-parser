@@ -1,14 +1,8 @@
-const TextFunctions = require('../../formulas/functions/text');
-const MathFunctions = require('../../formulas/functions/math');
-const TrigFunctions = require('../../formulas/functions/trigonometry');
 const LogicalFunctions = require('../../formulas/functions/logical');
-const EngFunctions = require('../../formulas/functions/engineering');
 const ReferenceFunctions = require('../../formulas/functions/reference');
-const InformationFunctions = require('../../formulas/functions/information');
-const StatisticalFunctions = require('../../formulas/functions/statistical');
 const FormulaError = require('../../formulas/error');
 const {FormulaHelpers} = require('../../formulas/helpers');
-const {Parser, allTokens} = require('../parsing');
+const {Parser} = require('../parsing');
 const lexer = require('../lexing');
 const Utils = require('./utils');
 
@@ -159,6 +153,29 @@ class DepParser {
         return {value: 0, ref: {}};
     }
 
+    /**
+     * Check and return the appropriate formula result.
+     * @param result
+     * @return {*}
+     */
+    checkFormulaResult(result) {
+        const type = typeof result;
+        if (type === 'object') {
+            if (result.ref && result.ref.row && !result.ref.from) {
+                // single cell reference
+                result = this.retrieveRef(result);
+            } else if (result.ref && result.ref.from && result.ref.from.col === result.ref.to.col) {
+                // single Column reference
+                result = this.retrieveRef({
+                    ref: {
+                        row: result.ref.from.row, col: result.ref.from.col
+                    }
+                });
+            }
+        }
+        return result;
+    }
+
     parse(inputText, position) {
         if (inputText.length === 0) throw Error('Input must not be empty.');
         this.data = [];
@@ -166,6 +183,7 @@ class DepParser {
         const lexResult = lexer.lex(inputText);
         this.parser.input = lexResult.tokens;
         let res = this.parser.formulaWithCompareOp();
+        this.checkFormulaResult(res);
         if (this.parser.errors.length > 0) {
             const error = this.parser.errors[0];
             const line = error.previousToken.startLine, column = error.previousToken.startColumn + 1;

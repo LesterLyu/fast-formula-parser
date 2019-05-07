@@ -91,4 +91,5 @@ describe('Parsing Formulas 2', () => {
 
 });
 
+require('./grammar/test');
 require('./formulas');
