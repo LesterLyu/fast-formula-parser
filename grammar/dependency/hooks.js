@@ -159,21 +159,7 @@ class DepParser {
      * @return {*}
      */
     checkFormulaResult(result) {
-        const type = typeof result;
-        if (type === 'object') {
-            if (result.ref && result.ref.row && !result.ref.from) {
-                // single cell reference
-                result = this.retrieveRef(result);
-            } else if (result.ref && result.ref.from && result.ref.from.col === result.ref.to.col) {
-                // single Column reference
-                result = this.retrieveRef({
-                    ref: {
-                        row: result.ref.from.row, col: result.ref.from.col
-                    }
-                });
-            }
-        }
-        return result;
+        this.retrieveRef(result);
     }
 
     parse(inputText, position) {

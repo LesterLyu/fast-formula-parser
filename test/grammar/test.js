@@ -15,6 +15,15 @@ describe('Dependency parser', () => {
         expect(actual).to.deep.eq([Object.assign({address: 'A1'}, position)]);
     });
 
+    it('should parse ranges', () => {
+        let actual = depParser.parse('A1:C3', position);
+        expect(actual).to.deep.eq([{sheet: 'Sheet1', from: {row: 1, col: 1}, to: {row: 3, col: 3}}]);
+        actual = depParser.parse('A:C', position);
+        expect(actual).to.deep.eq([{sheet: 'Sheet1', from: {row: 1, col: 1}, to: {row: 1048576, col: 3}}]);
+        actual = depParser.parse('1:3', position);
+        expect(actual).to.deep.eq([{sheet: 'Sheet1', from: {row: 1, col: 1}, to: {row: 3, col: 16384}}]);
+    });
+
     it('should parse complex formula', () => {
         let actual = depParser.parse('IF(MONTH($K$1)<>MONTH($K$1-(WEEKDAY($K$1,1)-(start_day-1))-IF((WEEKDAY($K$1,1)-(start_day-1))<=0,7,0)+(ROW(O5)-ROW($K$3))*7+(COLUMN(O5)-COLUMN($K$3)+1)),"",$K$1-(WEEKDAY($K$1,1)-(start_day-1))-IF((WEEKDAY($K$1,1)-(start_day-1))<=0,7,0)+(ROW(O5)-ROW($K$3))*7+(COLUMN(O5)-COLUMN($K$3)+1))', position);
         expect(actual).to.deep.eq([
