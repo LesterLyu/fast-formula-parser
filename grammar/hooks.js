@@ -156,6 +156,8 @@ class FormulaParser {
      * @return {*}
      */
     callFunction(name, args) {
+        if (name.indexOf('_xlfn.') === 0)
+            name = name.slice(6);
         name = name.toUpperCase();
         // if one arg is null, it means 0 or "" depends on the function it calls
         const nullValue = this.funsNullAs0.includes(name) ? 0 : '';
