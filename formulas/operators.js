@@ -3,7 +3,24 @@ const {FormulaHelpers} = require('../formulas/helpers');
 
 const Prefix = {
     unaryOp: (prefixes, value, isArray) => {
-        if (value == null) value = 0;
+        let sign = 1;
+        prefixes.forEach(prefix => {
+            if (prefix === '+') {
+            } else if (prefix === '-') {
+                sign = -sign;
+            } else {
+                throw new Error(`Unrecognized prefix: ${prefix}`);
+            }
+        });
+
+        if (value == null) {
+            value = 0;
+        }
+        // positive means no changes
+        if (sign === 1) {
+            return value;
+        }
+        // negative
         try {
             value = FormulaHelpers.acceptNumber(value, isArray);
         } catch (e) {
@@ -15,17 +32,8 @@ const Prefix = {
                 throw e;
         }
 
-        prefixes.forEach(prefix => {
-            if (prefix === '+') {
-
-            } else if (prefix === '-') {
-                value = -value;
-            } else {
-                throw new Error(`Unrecognized prefix: ${prefix}`);
-            }
-        });
         if (typeof value === "number" && isNaN(value)) return FormulaError.VALUE;
-        return value;
+        return -value;
     }
 };
 
