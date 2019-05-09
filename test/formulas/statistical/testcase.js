@@ -151,6 +151,9 @@ const distributions = {
     'EXPON.DIST': {
         'EXPON.DIST(0.2,10,TRUE)': 0.864664716763387,
         'EXPON.DIST(0.2,10,FALSE)': 1.353352832366130,
+        'EXPON.DIST(0.-2,10,FALSE)': '#NUM!',
+        'EXPON.DIST(0.2,-10,FALSE)': '#NUM!',
+        'EXPON.DIST(0.2,0.0,FALSE)': '#NUM!',
     },
 
     // David
@@ -179,11 +182,14 @@ const distributions = {
         'F.INV(-0.01,  6,  4)': '#NUM!',
         'F.INV(1.01,  6,  4)': '#NUM!',
         'F.INV(1.01,  0.6,  4)': '#NUM!',
+        'F.INV(0.01,  6,  0.4)': '#NUM!',
         'F.INV(1.01,  -6,  -4)': '#NUM!',
     },
     'F.INV.RT': {
         'F.INV.RT(0.01, 6, 4)': 15.20686486,
         'F.INV.RT(0.01, 6.9, 4.8)': 15.20686486,
+        'F.INV.RT(-0.01, 6.9, 4.8)': '#NUM!',
+        'F.INV.RT(1.01, 6.9, 4.8)': '#NUM!',
         'F.INV.RT(0.01, 0.9, 4)': '#NUM!',
         'F.INV.RT(0.01, 6.9, 0.4)': '#NUM!',
         'F.INV.RT(0.01, 1000000000000, 4)': '#NUM!',
@@ -331,7 +337,6 @@ const distributions = {
         'HYPGEOM.DIST(1,8,8,7,FALSE)': '#NUM!',
         'HYPGEOM.DIST(1,4,21,20,FALSE)': '#NUM!',
 
-
     },
 
     INTERCEPT: {
@@ -349,8 +354,7 @@ const distributions = {
 
     'LOGNORM.DIST': {
         'LOGNORM.DIST(4,3.5,1.2,TRUE)': 0.0390835557068,
-        // FIXME
-        //'LOGNORM.DIST(4,3.5,1.2,FALSE)': 0.0176175966818,
+        'LOGNORM.DIST(4,3.5,1.2,FALSE)': 0.0176175966818,
         'LOGNORM.DIST(-4,3.5,1.2,TRUE)': '#NUM!',
         'LOGNORM.DIST(4,3.5,-1.2,TRUE)': '#NUM!',
     },
@@ -420,9 +424,18 @@ const distributions = {
 
     PERMUTATIONA: {},
 
-    PHI: {},
+    PHI: {
+        'PHI(0.5)': 0.3520653268,
+        'PHI(0.75)': 0.301137432,
+        'PHI(1.00)': 0.2419707245,
+    },
 
-    'POISSON.DIST': {},
+    'POISSON.DIST': {
+        'POISSON.DIST(2,5,TRUE)': 0.124652019,
+        'POISSON.DIST(2,5,FALSE)': 0.084224337,
+        'POISSON.DIST(-0.5,5,FALSE)': '#NUM!',
+        'POISSON.DIST(2,-0.5,FALSE)': '#NUM!',
+    },
 
     'PROB': {},
 
@@ -442,7 +455,11 @@ const distributions = {
 
     SLOPE: {},
 
-    STANDARDIZE: {},
+    STANDARDIZE: {
+        'STANDARDIZE(42, 40,1.5)': 1.333333333333,
+        'STANDARDIZE(42, 40, 0.0)': '#NUM!',
+        'STANDARDIZE(42, 40, -0.5)': '#NUM!',
+    },
 
     'STDEV.P': {},
 
@@ -454,15 +471,44 @@ const distributions = {
 
     STEYX: {},
 
-    'T.DIST': {},
+    'T.DIST': {
+        'T.DIST(60,1,TRUE)': 0.994695326367,
+        'T.DIST(8,3,TRUE)': 0.9979617112,
+        'T.DIST(8,3,FALSE)': 0.000736906521,
+        'T.DIST(60,0.9,TRUE)': '#NUM!',
+        'T.DIST(60,0,TRUE)': '#NUM!',
+    },
 
-    'T.DIST.2T': {},
+    'T.DIST.2T': {
+        'T.DIST.2T(1.959999998,60)': 0.0546449299759,
+        'T.DIST.2T(-0.959999998,60)': '#NUM!',
+        'T.DIST.2T(1.959999998,0.6)': '#NUM!',
+    },
 
-    'T.DIST.RT': {},
+    'T.DIST.RT': {
+        'T.DIST.RT(1.959999998, 60)': 0.0273224649880,
+        'T.DIST.RT(1.959999998, 0.6)': '#NUM!',
+    },
 
-    'T.INV': {},
+    'T.INV': {
+        'T.INV(0.75, 2)': 0.816496581,
+        'T.INV(0.75, 2.1)': 0.816496581,
+        'T.INV(0.75, 2.9)': 0.816496581,
+        'T.INV(0.0, 2)': '#NUM!',
+        'T.INV(-0.75, 2)': '#NUM!',
+        'T.INV(1.75, 2)': '#NUM!',
+        'T.INV(0.75, 0.92)': '#NUM!',
+    },
 
-    'T.INV.2T': {},
+    'T.INV.2T': {
+        'T.INV.2T(0.546449, 60)': 0.606533076,
+        'T.INV.2T(0.546449, 60.1)': 0.606533076,
+        'T.INV.2T(0.546449, 60.9)': 0.606533076,
+        'T.INV.2T(0.0, 60)': '#NUM!',
+        'T.INV.2T(-0.546449, 60)': '#NUM!',
+        'T.INV.2T(1.546449, 60)': '#NUM!',
+        'T.INV.2T(0.546449, 0.6)': '#NUM!',
+    },
 
     'T.TEST': {},
 
@@ -478,7 +524,15 @@ const distributions = {
 
     'VARPA': {},
 
-    'WEIBULL.DIST': {},
+    'WEIBULL.DIST': {
+        'WEIBULL.DIST(105, 20, 100,TRUE)': 0.92958139,
+        'WEIBULL.DIST(105, 20, 100,FALSE)': 0.035588864,
+        'WEIBULL.DIST(-105, 20, 100,FALSE)': '#NUM!',
+        'WEIBULL.DIST(105, 0.0, 100,FALSE)': '#NUM!',
+        'WEIBULL.DIST(105, -20, 100,FALSE)': '#NUM!',
+        'WEIBULL.DIST(105, 20, 0.0,FALSE)': '#NUM!',
+        'WEIBULL.DIST(105, 20, -100,FALSE)': '#NUM!',
+    },
 
     'Z.TEST': {}
 

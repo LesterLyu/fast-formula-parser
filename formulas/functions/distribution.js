@@ -4,6 +4,7 @@ const {Infix} = require('../operators');
 const H = FormulaHelpers;
 const jStat = require("jstat");
 const MathFunctions = require('./math');
+const SQRT2PI = 2.5066282746310002;
 
 const DistributionFunctions = {
     'BETA.DIST': (x, alpha, beta, cumulative, a, b) => {
@@ -795,7 +796,7 @@ const DistributionFunctions = {
         x = H.accept(x, Types.NUMBER);
         mean = H.accept(mean, Types.NUMBER);
         standard_dev = H.accept(standard_dev, Types.NUMBER);
-        cumulative = H.accept(x, Types.BOOLEAN);
+        cumulative = H.accept(cumulative, Types.BOOLEAN);
         // If x ≤ 0 or if standard_dev ≤ 0, LOGNORM.DIST returns the #NUM! error value.
         if (x <= 0 || standard_dev <= 0) {
             throw FormulaError.NUM;
@@ -931,12 +932,27 @@ const DistributionFunctions = {
 
     },
 
-    PHI: () => {
+    PHI: (x) => {
+        // If x is a numeric value that is not valid, PHI returns the #NUM! error value.
+        x = H.accept(x, Types.NUMBER);
 
+        return Math.exp(-0.5 * x * x) / SQRT2PI;
     },
 
-    'POISSON.DIST': () => {
+    'POISSON.DIST': (x, mean, cumulative) => {
+        // If x or mean is nonnumeric, POISSON.DIST returns the #VALUE! error value.
+        x = H.accept(x, Types.NUMBER);
+        mean = H.accept(mean, Types.NUMBER);
+        cumulative = H.accept(cumulative, Types.BOOLEAN);
+        // If x < 0, POISSON.DIST returns the #NUM! error value.
+        // If mean < 0, POISSON.DIST returns the #NUM! error value.
+        if (x < 0 || mean < 0) {
+            throw FormulaError.NUM;
+        }
+        // If x is not an integer, it is truncated.
+        x = Math.trunc(x);
 
+        return cumulative ? jStat.poisson.cdf(x, mean) : jStat.poisson.pdf(x, mean);
     },
 
     'PROB': () => {
@@ -975,8 +991,16 @@ const DistributionFunctions = {
 
     },
 
-    STANDARDIZE: () => {
+    STANDARDIZE: (x, mean, standard_dev) => {
+        x = H.accept(x, Types.NUMBER);
+        mean = H.accept(mean, Types.NUMBER);
+        standard_dev = H.accept(standard_dev, Types.NUMBER);
+        // If standard_dev ≤ 0, STANDARDIZE returns the #NUM! error value.
+        if (standard_dev <= 0) {
+            throw FormulaError.NUM;
+        }
 
+        return (x - mean) / standard_dev;
     },
 
     'STDEV.P': () => {
@@ -999,23 +1023,73 @@ const DistributionFunctions = {
 
     },
 
-    'T.DIST': () => {
+    'T.DIST': (x, deg_freedom, cumulative) => {
+        // If any argument is nonnumeric, T.DIST returns the #VALUE! error value.
+        x = H.accept(x, Types.NUMBER);
+        deg_freedom = H.accept(deg_freedom, Types.NUMBER);
+        cumulative = H.accept(cumulative, Types.BOOLEAN);
+        // If deg_freedom < 1, T.DIST returns an error value. Deg_freedom needs to be at least 1.
+        if (deg_freedom < 1) {
+            throw FormulaError.NUM;
+        }
 
+        return cumulative ? jStat.studentt.cdf(x, deg_freedom) : jStat.studentt.pdf(x, deg_freedom);
     },
 
-    'T.DIST.2T': () => {
+    'T.DIST.2T': (x, deg_freedom) => {
+        // If any argument is nonnumeric, T.DIST.2T returns the #VALUE! error value.
+        x = H.accept(x, Types.NUMBER);
+        deg_freedom = H.accept(deg_freedom, Types.NUMBER);
+        // If deg_freedom < 1, T.DIST.2T returns the #NUM! error value.
+        // If x < 0, then T.DIST.2T returns the #NUM! error value.
+        if (deg_freedom < 1 || x < 0) {
+            throw FormulaError.NUM;
+        }
 
+        return (1 - jStat.studentt.cdf(x, deg_freedom)) * 2;
     },
 
-    'T.DIST.RT': () => {
+    'T.DIST.RT': (x, deg_freedom) => {
+        // If any argument is nonnumeric, T.DIST.RT returns the #VALUE! error value.
+        x = H.accept(x, Types.NUMBER);
+        deg_freedom = H.accept(deg_freedom, Types.NUMBER);
+        // If deg_freedom < 1, T.DIST.RT returns the #NUM! error value.
+        if (deg_freedom < 1) {
+            throw FormulaError.NUM;
+        }
 
+        return 1 - jStat.studentt.cdf(x, deg_freedom);
     },
 
-    'T.INV': () => {
+    'T.INV': (probability, deg_freedom) => {
+        // If either argument is nonnumeric, T.INV returns the #VALUE! error value.
+        probability = H.accept(probability, Types.NUMBER);
+        deg_freedom = H.accept(deg_freedom, Types.NUMBER);
+        // If probability <= 0 or if probability > 1, T.INV returns the #NUM! error value.
+        // If deg_freedom < 1, T.INV returns the #NUM! error value.
+        if (probability <= 0 || probability > 1 || deg_freedom < 1) {
+            throw FormulaError.NUM;
+        }
 
+        // If deg_freedom is not an integer, it is truncated.
+        deg_freedom = deg_freedom % 1 === 0 ? deg_freedom : Math.trunc(deg_freedom);
+
+        return jStat.studentt.inv(probability, deg_freedom);
     },
 
-    'T.INV.2T': () => {
+    'T.INV.2T': (probability, deg_freedom) => {
+        // If either argument is nonnumeric, T.INV.2T returns the #VALUE! error value.
+        probability = H.accept(probability, Types.NUMBER);
+        deg_freedom = H.accept(deg_freedom, Types.NUMBER);
+        // If probability <= 0 or if probability > 1, T.INV.2T returns the #NUM! error value.
+        // If deg_freedom < 1, T.INV.2T returns the #NUM! error value.
+        if (probability <= 0 || probability > 1 || deg_freedom < 1) {
+            throw FormulaError.NUM;
+        }
+        // If deg_freedom is not an integer, it is truncated.
+        deg_freedom = deg_freedom % 1 === 0 ? deg_freedom : Math.trunc(deg_freedom);
+
+        return Math.abs(jStat.studentt.inv(probability / 2, deg_freedom));
 
     },
 
@@ -1047,8 +1121,21 @@ const DistributionFunctions = {
 
     },
 
-    'WEIBULL.DIST': () => {
+    'WEIBULL.DIST': (x, alpha, beta, cumulative) => {
+        // If x, alpha, or beta is nonnumeric, WEIBULL.DIST returns the #VALUE! error value.
+        x = H.accept(x, Types.NUMBER);
+        alpha = H.accept(alpha, Types.NUMBER);
+        beta = H.accept(beta, Types.NUMBER);
+        cumulative = H.accept(cumulative, Types.BOOLEAN);
+        // If x < 0, WEIBULL.DIST returns the #NUM! error value.
+        // If alpha ≤ 0 or if beta ≤ 0, WEIBULL.DIST returns the #NUM! error value.
+        if (x < 0 || alpha <= 0 || beta <= 0) {
+            throw FormulaError.NUM;
+        }
 
+        return cumulative
+            ? 1 - Math.exp(-Math.pow(x / beta, alpha))
+            : Math.pow(x, alpha - 1) * Math.exp(-Math.pow(x / beta, alpha)) * alpha / Math.pow(beta, alpha);
     },
 
     'Z.TEST': () => {
