@@ -82,25 +82,30 @@ class FormulaHelpers {
             number = obj;
         // TRUE -> 1, FALSE -> 0
         else if (typeof obj === 'boolean') {
-            if (allowBoolean)
+            if (allowBoolean) {
                 number = Number(obj);
-            else
+            }
+            else {
                 throw FormulaError.VALUE;
+            }
         }
         // "123" -> 123
         else if (typeof obj === 'string') {
-            if (obj.length === 0)
+            if (obj.length === 0) {
                 throw FormulaError.VALUE;
+            }
             number = Number(obj);
-            if (isNaN(number))
+            if (isNaN(number)) {
                 throw FormulaError.VALUE;
+            }
         } else if (Array.isArray(obj)) {
             if (!isArray) {
                 // for range ref, only allow single column range ref
-                if (obj[0].length === 1)
+                if (obj[0].length === 1) {
                     number = this.acceptNumber(obj[0][0]);
-                else
+                } else {
                     throw FormulaError.VALUE;
+                }
             } else {
                 number = this.acceptNumber(obj[0][0]);
             }
