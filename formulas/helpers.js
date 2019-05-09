@@ -95,7 +95,8 @@ class FormulaHelpers {
                 throw FormulaError.VALUE;
             }
             number = Number(obj);
-            if (isNaN(number)) {
+            // Note: the unique never-equal-to-itself characteristic of NaN
+            if (number !== number) {
                 throw FormulaError.VALUE;
             }
         } else if (Array.isArray(obj)) {
