@@ -3,7 +3,12 @@ const expect = require('chai').expect;
 const {FormulaParser} = require('../../grammar/hooks');
 const {DepParser} = require('../../grammar/dependency/hooks');
 
-const parser = new FormulaParser();
+const parser = new FormulaParser({
+        onRange: ref => {
+            return [[1, 2, 3], [0, 0, 0]]
+        }
+    }
+);
 const depParser = new DepParser();
 const position = {row: 1, col: 1, sheet: 'Sheet1'};
 
@@ -46,6 +51,26 @@ describe('Dependency parser', () => {
                 "sheet": "Sheet1",
             }
         ]);
+    });
+
+});
+
+describe('Parser allows returning array or range', () => {
+    it('should parse array', function () {
+        let actual = parser.parse('{1,2,3}', position, true);
+        expect(actual).to.deep.eq([[1, 2, 3]]);
+        actual = parser.parse('{1,2,3;4,5,6}', position, true);
+        expect(actual).to.deep.eq([[1, 2, 3], [4, 5, 6]]);
+    });
+
+    it('should parse range', function () {
+        let actual = parser.parse('A1:C1', position, true);
+        expect(actual).to.deep.eq([[1, 2, 3], [0, 0, 0]]);
+    });
+
+    it('should not parse unions', function () {
+        let actual = parser.parse('(A1:C1, A2:E9)', position, true);
+        expect(actual.result).to.eq('#VALUE!');
     });
 
 });

@@ -236,9 +236,10 @@ class FormulaParser {
     /**
      * Check and return the appropriate formula result.
      * @param result
+     * @param {boolean} [allowReturnArray] - If the formula can return an array
      * @return {*}
      */
-    checkFormulaResult(result) {
+    checkFormulaResult(result, allowReturnArray = false) {
         const type = typeof result;
         // number
         if (type === 'number') {
@@ -253,21 +254,33 @@ class FormulaParser {
         else if (type === 'object') {
             if (result instanceof FormulaError)
                 return result;
-            if (result.ref && result.ref.row && !result.ref.from) {
-                // single cell reference
-                result = this.retrieveRef(result);
-            } else if (result.ref && result.ref.from && result.ref.from.col === result.ref.to.col) {
-                // single Column reference
-                result = this.retrieveRef({
-                    ref: {
-                        row: result.ref.from.row, col: result.ref.from.col
-                    }
-                });
-            } else if (Array.isArray(result)) {
-                result = result[0][0]
+            if (allowReturnArray) {
+                if (result.ref) {
+                    result = this.retrieveRef(result);
+                }
+                if (Array.isArray(result)) {
+                    return result;
+                } else {
+                    return FormulaError.VALUE;
+                }
+
             } else {
-                // array, range reference, union collections
-                return FormulaError.VALUE;
+                if (result.ref && result.ref.row && !result.ref.from) {
+                    // single cell reference
+                    result = this.retrieveRef(result);
+                } else if (result.ref && result.ref.from && result.ref.from.col === result.ref.to.col) {
+                    // single Column reference
+                    result = this.retrieveRef({
+                        ref: {
+                            row: result.ref.from.row, col: result.ref.from.col
+                        }
+                    });
+                } else if (Array.isArray(result)) {
+                    result = result[0][0]
+                } else {
+                    // array, range reference, union collections
+                    return FormulaError.VALUE;
+                }
             }
         }
         return result;
@@ -278,9 +291,11 @@ class FormulaParser {
      * @param inputText
      * @param {{row: number, col: number}} [position] - The position of the parsed formula
      *              e.g. {row: 1, col: 1}
+     * @param {boolean} [allowReturnArray] - If the formula can return an array. Useful when parsing array formulas,
+     *                                      or data validation formulas.
      * @returns {*}
      */
-    parse(inputText, position) {
+    parse(inputText, position, allowReturnArray = false) {
         if (inputText.length === 0) throw Error('Input must not be empty.');
         this.position = position;
         const lexResult = lexer.lex(inputText);
@@ -288,7 +303,7 @@ class FormulaParser {
         let res;
         try {
             res = this.parser.formulaWithCompareOp();
-            res = this.checkFormulaResult(res);
+            res = this.checkFormulaResult(res, allowReturnArray);
             if (res instanceof FormulaError) {
                 return {result: res.toString(), detail: ''};
             }
