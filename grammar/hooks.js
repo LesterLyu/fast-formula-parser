@@ -95,9 +95,9 @@ class FormulaParser {
         if (res.ref == null)
             return FormulaError.NAME;
         if (FormulaHelpers.isCellRef(res))
-            this.getCell(res);
+            this.getCell(res.ref);
         else {
-            this.getRange(res);
+            this.getRange(res.ref);
         }
         return res;
     }
