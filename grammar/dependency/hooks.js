@@ -85,7 +85,7 @@ class DepParser {
         else {
             this.getRange(res.ref);
         }
-        return res;
+        return 0;
     }
 
     /**

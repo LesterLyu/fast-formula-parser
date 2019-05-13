@@ -16,6 +16,6 @@ module.exports = {
 
     'reference': {
         'A1': 1,
-        'A1+2': 3
+        'A1+2': 3,
     }
 };

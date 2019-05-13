@@ -4,12 +4,19 @@ const {FormulaParser} = require('../../grammar/hooks');
 const {DepParser} = require('../../grammar/dependency/hooks');
 
 const parser = new FormulaParser({
+        onCell: ref => {
+            return 1;
+        },
         onRange: ref => {
             return [[1, 2, 3], [0, 0, 0]]
-        }
+        },
     }
 );
-const depParser = new DepParser();
+const depParser = new DepParser({
+    onVariable: variable => {
+        return 'aaaa' === variable ? {from: {row: 1, col: 1}, to: {row: 2, col: 2}} : {row: 1, col: 1};
+    }
+});
 const position = {row: 1, col: 1, sheet: 'Sheet1'};
 
 describe('Dependency parser', () => {
@@ -29,12 +36,22 @@ describe('Dependency parser', () => {
         expect(actual).to.deep.eq([{sheet: 'Sheet1', from: {row: 1, col: 1}, to: {row: 3, col: 16384}}]);
     });
 
+    it('should parse variable', function () {
+        let actual = depParser.parse('aaaa', position);
+        expect(actual).to.deep.eq([{sheet: 'Sheet1', from: {row: 1, col: 1}, to: {row: 2, col: 2}}]);
+    });
+
     it('should parse complex formula', () => {
         let actual = depParser.parse('IF(MONTH($K$1)<>MONTH($K$1-(WEEKDAY($K$1,1)-(start_day-1))-IF((WEEKDAY($K$1,1)-(start_day-1))<=0,7,0)+(ROW(O5)-ROW($K$3))*7+(COLUMN(O5)-COLUMN($K$3)+1)),"",$K$1-(WEEKDAY($K$1,1)-(start_day-1))-IF((WEEKDAY($K$1,1)-(start_day-1))<=0,7,0)+(ROW(O5)-ROW($K$3))*7+(COLUMN(O5)-COLUMN($K$3)+1))', position);
         expect(actual).to.deep.eq([
             {
                 "address": "$K$1",
                 "col": 11,
+                "row": 1,
+                "sheet": "Sheet1",
+            },
+            {
+                "col": 1,
                 "row": 1,
                 "sheet": "Sheet1",
             },
@@ -49,7 +66,7 @@ describe('Dependency parser', () => {
                 "col": 11,
                 "row": 3,
                 "sheet": "Sheet1",
-            }
+            },
         ]);
     });
 

@@ -94,11 +94,6 @@ class FormulaParser {
         const res = {ref: this.onVariable(name, this.position.sheet)};
         if (res.ref == null)
             return FormulaError.NAME;
-        if (FormulaHelpers.isCellRef(res))
-            this.getCell(res.ref);
-        else {
-            this.getRange(res.ref);
-        }
         return res;
     }
 
