@@ -16,6 +16,7 @@ Note: The grammar in my implementation is different from theirs. My implementati
  - Ambigious old styles
     - Sheet name contains `:`, e.g. `SUM('1003:1856'!D6)`
     - Sheet name with space that is not quoted, e.g. `I am a sheet!A1`
+ - `SUM(Sheet2:Sheet3!A1:C3)`
  - You tell me
     
 ### Performance
