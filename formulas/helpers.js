@@ -325,8 +325,8 @@ const WildCard = {
 
     toRegex: (lookupText, flags) => {
         return RegExp(lookupText.replace(/[.+^${}()|[\]\\]/g, '\\$&') // escape the special char for js regex
-            .replace(/(?<!~)[?]/g, '.') // ? => .
-            .replace(/(?<!~)[*]/g, '.*') // * => .*
+            .replace(/([^~]??)[?]/g, '$1.') // ? => .
+            .replace(/([^~]??)[*]/g, '$1.*') // * => .*
             .replace(/~([?*])/g, '$1'), flags); // ~* => * and ~? => ?
     }
 };

@@ -225,12 +225,12 @@ const TextFunctions = {
 
     PROPER: (text) => {
         text = H.accept(text, [Types.STRING]);
-        return text.toLowerCase()
-            .replace(/(?<![a-zA-Z])([a-zA-Z])/g,
-                letter => letter.toUpperCase());
+        text = text.toLowerCase();
+        text = text.charAt(0).toUpperCase() + text.slice(1);
+        return text.replace(/(?:[^a-zA-Z])([a-zA-Z])/g,
+            letter => letter.toUpperCase());
     },
 
-    // TODO: Start from here.
     REPLACE: (old_text, start_num, num_chars, new_text) => {
         old_text = H.accept(old_text, [Types.STRING]);
         start_num = H.accept(start_num, [Types.NUMBER]);
