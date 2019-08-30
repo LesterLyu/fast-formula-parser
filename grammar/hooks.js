@@ -16,7 +16,7 @@ const Utils = require('./utils');
 class FormulaParser {
 
     /**
-     * @param {{[functions]: {}, onVariable: function, onCell: function, onRange: function}} [config]
+     * @param {{functions: {}, onVariable: function, onCell: function, onRange: function}} [config]
      */
     constructor(config) {
         this.logs = [];

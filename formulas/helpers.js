@@ -68,7 +68,7 @@ class FormulaHelpers {
     /**
      *
      * @param obj
-     * @param isArray - if it is an array: {1,2,3}, will extract the first element
+     * @param isArray - if it is an array: [1,2,3], will extract the first element
      * @param allowBoolean - Allow parse boolean into number
      * @returns {number|FormulaError}
      */

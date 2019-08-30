@@ -6,7 +6,10 @@
   "scripts": {
     "test": "nyc --reporter=html --reporter=text mocha",
     "test:f": "nyc -n \"formulas/functions/**\" -n \"formulas/operators.js\" --reporter=html --reporter=text mocha test/formulas",
-    "build": "webpack"
+    "build": "webpack",
+    "diagram": "node grammar/diagram.js",
+    "docs": "jsdoc --configure .jsdoc.json --verbose",
+    "publish:docs": "yarn run docs && gh-pages -d docs"
   },
   "author": "Lester(Dishu) Lyu",
   "license": "MIT",
@@ -18,6 +21,9 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
+    "docdash": "^1.1.1",
+    "gh-pages": "^2.1.1",
+    "jsdoc": "^3.6.3",
     "mocha": "^6.1.4",
     "nyc": "^14.0.0",
     "terser-webpack-plugin": "^1.2.3",
