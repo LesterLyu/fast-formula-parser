@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>utils/addressConverter.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Collection.html">Collection</a><ul class='methods'><li data-type='method'><a href="Collection.html#add">add</a></li></ul></li><li><a href="DepParser.html">DepParser</a><ul class='methods'><li data-type='method'><a href="DepParser.html#callFunction">callFunction</a></li><li data-type='method'><a href="DepParser.html#callRefFunction">callRefFunction</a></li><li data-type='method'><a href="DepParser.html#checkFormulaResult">checkFormulaResult</a></li><li data-type='method'><a href="DepParser.html#getCell">getCell</a></li><li data-type='method'><a href="DepParser.html#getRange">getRange</a></li><li data-type='method'><a href="DepParser.html#getVariable">getVariable</a></li><li data-type='method'><a href="DepParser.html#retrieveRef">retrieveRef</a></li></ul></li><li><a href="FormulaParser.html">FormulaParser</a><ul class='methods'><li data-type='method'><a href="FormulaParser.html#callFunction">callFunction</a></li><li data-type='method'><a href="FormulaParser.html#callRefFunction">callRefFunction</a></li><li data-type='method'><a href="FormulaParser.html#checkFormulaResult">checkFormulaResult</a></li><li data-type='method'><a href="FormulaParser.html#getCell">getCell</a></li><li data-type='method'><a href="FormulaParser.html#getRange">getRange</a></li><li data-type='method'><a href="FormulaParser.html#getVariable">getVariable</a></li><li data-type='method'><a href="FormulaParser.html#parse">parse</a></li><li data-type='method'><a href="FormulaParser.html#retrieveRef">retrieveRef</a></li><li data-type='method'><a href="FormulaParser.html#supportedFunctions">supportedFunctions</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#At">At</a></li><li><a href="global.html#parseTime">parseTime</a></li><li><a href="global.html#toDate">toDate</a></li><li><a href="global.html#toSerial">toSerial</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">utils/addressConverter.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const ADDRESS_REGEX = /^(?:'?(.+?)'?!)?(?:(\$)?([A-Z]+)(\$)?(\d+)(?::(\$)?([A-Z]+)(\$)?(\d+))?|(\$)?([A-Z]+):(\$)?([A-Z]+)|(\$)?(\d+):(\$)?(\d+))$/;
+
+/**
+ * Address converter.
+ * @private
+ */
+module.exports = {
+    /**
+     * Convert a column name to a number.
+     * @param {string} name - The column name.
+     * @returns {number} The number.
+     */
+    columnNameToNumber(name) {
+        if (!name || typeof name !== "string") return;
+
+        name = name.toUpperCase();
+        let sum = 0;
+        for (let i = 0; i &lt; name.length; i++) {
+            sum = sum * 26;
+            sum = sum + (name[i].charCodeAt(0) - 'A'.charCodeAt(0) + 1);
+        }
+
+        return sum;
+    },
+
+    /**
+     * Convert a column number to a name.
+     * @param {number} number - The column number.
+     * @returns {string} The name.
+     */
+    columnNumberToName(number) {
+        let dividend = number;
+        let name = '';
+        let modulo = 0;
+
+        while (dividend > 0) {
+            modulo = (dividend - 1) % 26;
+            name = String.fromCharCode('A'.charCodeAt(0) + modulo) + name;
+            dividend = Math.floor((dividend - modulo) / 26);
+        }
+
+        return name;
+    },
+
+    /**
+     * Convert an address to a reference object.
+     * @param {string} address - The address.
+     * @returns {{}} The reference object.
+     */
+    fromAddress(address) {
+        const match = address.match(ADDRESS_REGEX);
+        if (!match) return;
+        const ref = {};
+
+        if (match[1]) ref.sheetName = match[1].replace(/''/g, "'");
+        if (match[3] &amp;&amp; match[7]) {
+            ref.type = 'range';
+            ref.startColumnAnchored = !!match[2];
+            ref.startColumnName = match[3];
+            ref.startColumnNumber = this.columnNameToNumber(ref.startColumnName);
+            ref.startRowAnchored = !!match[4];
+            ref.startRowNumber = parseInt(match[5]);
+            ref.endColumnAnchored = !!match[6];
+            ref.endColumnName = match[7];
+            ref.endColumnNumber = this.columnNameToNumber(ref.endColumnName);
+            ref.endRowAnchored = !!match[8];
+            ref.endRowNumber = parseInt(match[9]);
+        } else if (match[3]) {
+            ref.type = 'cell';
+            ref.columnAnchored = !!match[2];
+            ref.columnName = match[3];
+            ref.columnNumber = this.columnNameToNumber(ref.columnName);
+            ref.rowAnchored = !!match[4];
+            ref.rowNumber = parseInt(match[5]);
+        } else if (match[11] &amp;&amp; match[11] !== match[13]) {
+            ref.type = 'columnRange';
+            ref.startColumnAnchored = !!match[10];
+            ref.startColumnName = match[11];
+            ref.startColumnNumber = this.columnNameToNumber(ref.startColumnName);
+            ref.endColumnAnchored = !!match[12];
+            ref.endColumnName = match[13];
+            ref.endColumnNumber = this.columnNameToNumber(ref.endColumnName);
+        } else if (match[11]) {
+            ref.type = 'column';
+            ref.columnAnchored = !!match[10];
+            ref.columnName = match[11];
+            ref.columnNumber = this.columnNameToNumber(ref.columnName);
+        } else if (match[15] &amp;&amp; match[15] !== match[17]) {
+            ref.type = 'rowRange';
+            ref.startRowAnchored = !!match[14];
+            ref.startRowNumber = parseInt(match[15]);
+            ref.endRowAnchored = !!match[16];
+            ref.endRowNumber = parseInt(match[17]);
+        } else if (match[15]) {
+            ref.type = 'row';
+            ref.rowAnchored = !!match[14];
+            ref.rowNumber = parseInt(match[15]);
+        }
+
+        return ref;
+    },
+
+    /**
+     * Convert a reference object to an address.
+     * @param {{}} ref - The reference object.
+     * @returns {string} The address.
+     */
+    toAddress(ref) {
+        let a, b;
+        const sheetName = ref.sheetName;
+
+        if (ref.type === 'cell') {
+            a = {
+                columnName: ref.columnName,
+                columnNumber: ref.columnNumber,
+                columnAnchored: ref.columnAnchored,
+                rowNumber: ref.rowNumber,
+                rowAnchored: ref.rowAnchored
+            };
+        } else if (ref.type === 'range') {
+            a = {
+                columnName: ref.startColumnName,
+                columnNumber: ref.startColumnNumber,
+                columnAnchored: ref.startColumnAnchored,
+                rowNumber: ref.startRowNumber,
+                rowAnchored: ref.startRowAnchored
+            };
+            b = {
+                columnName: ref.endColumnName,
+                columnNumber: ref.endColumnNumber,
+                columnAnchored: ref.endColumnAnchored,
+                rowNumber: ref.endRowNumber,
+                rowAnchored: ref.endRowAnchored
+            };
+        } else if (ref.type === 'column') {
+            a = b = {
+                columnName: ref.columnName,
+                columnNumber: ref.columnNumber,
+                columnAnchored: ref.columnAnchored
+            };
+        } else if (ref.type === 'row') {
+            a = b = {
+                rowNumber: ref.rowNumber,
+                rowAnchored: ref.rowAnchored
+            };
+        } else if (ref.type === 'columnRange') {
+            a = {
+                columnName: ref.startColumnName,
+                columnNumber: ref.startColumnNumber,
+                columnAnchored: ref.startColumnAnchored
+            };
+            b = {
+                columnName: ref.endColumnName,
+                columnNumber: ref.endColumnNumber,
+                columnAnchored: ref.endColumnAnchored
+            };
+        } else if (ref.type === 'rowRange') {
+            a = {
+                rowNumber: ref.startRowNumber,
+                rowAnchored: ref.startRowAnchored
+            };
+            b = {
+                rowNumber: ref.endRowNumber,
+                rowAnchored: ref.endRowAnchored
+            };
+        }
+
+        let address = '';
+        if (sheetName) address = `${address}'${sheetName.replace(/'/g, "''")}'!`;
+        if (a.columnAnchored) address = `${address}$`;
+        if (a.columnName) address = address + a.columnName;
+        else if (a.columnNumber) address = address + this.columnNumberToName(a.columnNumber);
+        if (a.rowAnchored) address = `${address}$`;
+        if (a.rowNumber) address = address + a.rowNumber;
+
+        if (b) {
+            address = `${address}:`;
+            if (b.columnAnchored) address = `${address}$`;
+            if (b.columnName) address = address + b.columnName;
+            else if (b.columnNumber) address = address + this.columnNumberToName(b.columnNumber);
+            if (b.rowAnchored) address = `${address}$`;
+            if (b.rowNumber) address = address + b.rowNumber;
+        }
+
+        return address;
+    }
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Fri Aug 30 2019 16:23:57 GMT-0400 (Eastern Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>

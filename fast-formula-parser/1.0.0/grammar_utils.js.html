@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>grammar/utils.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Collection.html">Collection</a><ul class='methods'><li data-type='method'><a href="Collection.html#add">add</a></li></ul></li><li><a href="DepParser.html">DepParser</a><ul class='methods'><li data-type='method'><a href="DepParser.html#callFunction">callFunction</a></li><li data-type='method'><a href="DepParser.html#callRefFunction">callRefFunction</a></li><li data-type='method'><a href="DepParser.html#checkFormulaResult">checkFormulaResult</a></li><li data-type='method'><a href="DepParser.html#getCell">getCell</a></li><li data-type='method'><a href="DepParser.html#getRange">getRange</a></li><li data-type='method'><a href="DepParser.html#getVariable">getVariable</a></li><li data-type='method'><a href="DepParser.html#retrieveRef">retrieveRef</a></li></ul></li><li><a href="FormulaParser.html">FormulaParser</a><ul class='methods'><li data-type='method'><a href="FormulaParser.html#callFunction">callFunction</a></li><li data-type='method'><a href="FormulaParser.html#callRefFunction">callRefFunction</a></li><li data-type='method'><a href="FormulaParser.html#checkFormulaResult">checkFormulaResult</a></li><li data-type='method'><a href="FormulaParser.html#getCell">getCell</a></li><li data-type='method'><a href="FormulaParser.html#getRange">getRange</a></li><li data-type='method'><a href="FormulaParser.html#getVariable">getVariable</a></li><li data-type='method'><a href="FormulaParser.html#parse">parse</a></li><li data-type='method'><a href="FormulaParser.html#retrieveRef">retrieveRef</a></li><li data-type='method'><a href="FormulaParser.html#supportedFunctions">supportedFunctions</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#At">At</a></li><li><a href="global.html#parseTime">parseTime</a></li><li><a href="global.html#toDate">toDate</a></li><li><a href="global.html#toSerial">toSerial</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">grammar/utils.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const FormulaError = require('../formulas/error');
+const {FormulaHelpers, Types, Address} = require('../formulas/helpers');
+const {Prefix, Postfix, Infix, Operators} = require('../formulas/operators');
+const Collection = require('./type/collection');
+const MAX_ROW = 1048576, MAX_COLUMN = 16384;
+
+class Utils {
+
+    constructor(context) {
+        this.context = context;
+    }
+
+    columnNameToNumber(columnName) {
+        return Address.columnNameToNumber(columnName);
+    }
+
+    /**
+     * Parse the cell address only.
+     * @param {string} cellAddress
+     * @return {{ref: {col: number, address: string, row: number}}}
+     */
+    parseCellAddress(cellAddress) {
+        const res = cellAddress.match(/([$]?)([A-Za-z]{1,3})([$]?)([1-9][0-9]*)/);
+        // console.log('parseCellAddress', cellAddress);
+        return {
+            ref: {
+                address: res[0],
+                col: this.columnNameToNumber(res[2]),
+                row: +res[4]
+            },
+        };
+    }
+
+    parseRow(row) {
+        const rowNum = +row;
+        if (!Number.isInteger(rowNum))
+            throw Error('Row number must be integer.');
+        return {
+            ref: {
+                col: undefined,
+                row: +row
+            },
+        };
+    }
+
+    parseCol(col) {
+        return {
+            ref: {
+                col: this.columnNameToNumber(col),
+                row: undefined,
+            },
+        };
+    }
+
+    parseColRange(col1, col2) {
+        // const res = colRange.match(/([$]?)([A-Za-z]{1,3}):([$]?)([A-Za-z]{1,4})/);
+        col1 = this.columnNameToNumber(col1);
+        col2 = this.columnNameToNumber(col2);
+        return {
+            ref: {
+                from: {
+                    col: Math.min(col1, col2),
+                    row: null
+                },
+                to: {
+                    col: Math.max(col1, col2),
+                    row: null
+                }
+            }
+        }
+    }
+
+    parseRowRange(row1, row2) {
+        // const res = rowRange.match(/([$]?)([1-9][0-9]*):([$]?)([1-9][0-9]*)/);
+        return {
+            ref: {
+                from: {
+                    col: null,
+                    row: Math.min(row1, row2),
+                },
+                to: {
+                    col: null,
+                    row: Math.max(row1, row2),
+                }
+            }
+
+        }
+    }
+
+    /**
+     * Apply + or - unary prefix.
+     * @param {Array.&lt;string>} prefixes
+     * @param {*} value
+     * @return {*}
+     */
+    applyPrefix(prefixes, value) {
+        // console.log('applyPrefix', prefixes, value);
+        const {val, isArray} = this.extractRefValue(value);
+        if (this.isFormulaError(val))
+            return val;
+        return Prefix.unaryOp(prefixes, val, isArray);
+    }
+
+    applyPostfix(value, postfix) {
+        // console.log('applyPostfix', value, postfix);
+        const {val, isArray} = this.extractRefValue(value);
+        if (this.isFormulaError(val))
+            return val;
+        return Postfix.percentOp(val, postfix, isArray);
+    }
+
+    applyInfix(value1, infix, value2) {
+        const res1 = this.extractRefValue(value1);
+        const val1 = res1.val, isArray1 = res1.isArray;
+        const res2 = this.extractRefValue(value2);
+        const val2 = res2.val, isArray2 = res2.isArray;
+        if (this.isFormulaError(val1))
+            return val1;
+        if (this.isFormulaError(val2))
+            return val2;
+        if (Operators.compareOp.includes(infix))
+            return Infix.compareOp(val1, infix, val2, isArray1, isArray2);
+        else if (Operators.concatOp.includes(infix))
+            return Infix.concatOp(val1, infix, val2, isArray1, isArray2);
+        else if (Operators.mathOp.includes(infix))
+            return Infix.mathOp(val1, infix, val2, isArray1, isArray2);
+        else
+            throw new Error(`Unrecognized infix: ${infix}`);
+
+    }
+
+    applyIntersect(refs) {
+        // console.log('applyIntersect', refs);
+        if (this.isFormulaError(refs[0]))
+            return refs[0];
+        if (!refs[0].ref)
+            throw Error(`Expecting a reference, but got ${refs[0]}.`);
+        // a intersection will keep track of references, value won't be retrieved here.
+        let maxRow, maxCol, minRow, minCol, sheet, res; // index start from 1
+        // first time setup
+        const ref = refs.shift().ref;
+        sheet = ref.sheet;
+        if (!ref.from) {
+            // check whole row/col reference
+            if (ref.row === undefined || ref.col === undefined) {
+                throw Error('Cannot intersect the whole row or column.')
+            }
+
+            // cell ref
+            maxRow = minRow = ref.row;
+            maxCol = minCol = ref.col;
+        } else {
+            // range ref
+            // update
+            maxRow = Math.max(ref.from.row, ref.to.row);
+            minRow = Math.min(ref.from.row, ref.to.row);
+            maxCol = Math.max(ref.from.col, ref.to.col);
+            minCol = Math.min(ref.from.col, ref.to.col);
+        }
+
+        let err;
+        refs.forEach(ref => {
+            if (this.isFormulaError(ref))
+                return ref;
+            ref = ref.ref;
+            if (!ref) throw Error(`Expecting a reference, but got ${ref}.`);
+            if (!ref.from) {
+                if (ref.row === undefined || ref.col === undefined) {
+                    throw Error('Cannot intersect the whole row or column.')
+                }
+                // cell ref
+                if (ref.row > maxRow || ref.row &lt; minRow || ref.col > maxCol || ref.col &lt; minCol
+                    || sheet !== ref.sheet) {
+                    err = FormulaError.NULL;
+                }
+                maxRow = minRow = ref.row;
+                maxCol = minCol = ref.col;
+            } else {
+                // range ref
+                const refMaxRow = Math.max(ref.from.row, ref.to.row);
+                const refMinRow = Math.min(ref.from.row, ref.to.row);
+                const refMaxCol = Math.max(ref.from.col, ref.to.col);
+                const refMinCol = Math.min(ref.from.col, ref.to.col);
+                if (refMinRow > maxRow || refMaxRow &lt; minRow || refMinCol > maxCol || refMaxCol &lt; minCol
+                    || sheet !== ref.sheet) {
+                    err = FormulaError.NULL;
+                }
+                // update
+                maxRow = Math.min(maxRow, refMaxRow);
+                minRow = Math.max(minRow, refMinRow);
+                maxCol = Math.min(maxCol, refMaxCol);
+                minCol = Math.max(minCol, refMinCol);
+            }
+        });
+        if (err) return err;
+        // check if the ref can be reduced to cell reference
+        if (maxRow === minRow &amp;&amp; maxCol === minCol) {
+            res = {
+                ref: {
+                    sheet,
+                    row: maxRow,
+                    col: maxCol
+                }
+            }
+        } else {
+            res = {
+                ref: {
+                    sheet,
+                    from: {row: minRow, col: minCol},
+                    to: {row: maxRow, col: maxCol}
+                }
+            };
+        }
+
+        if (!res.ref.sheet)
+            delete res.ref.sheet;
+        return res;
+    }
+
+    applyUnion(refs) {
+        const collection = new Collection();
+        for (let i = 0; i &lt; refs.length; i++) {
+            if (this.isFormulaError(refs[i]))
+                return refs[i];
+            collection.add(this.extractRefValue(refs[i]).val, refs[i]);
+        }
+
+        // console.log('applyUnion', unions);
+        return collection;
+    }
+
+    /**
+     * Apply multiple references, e.g. A1:B3:C8:A:1:.....
+     * @param refs
+     // * @return {{ref: {from: {col: number, row: number}, to: {col: number, row: number}}}}
+     */
+    applyRange(refs) {
+        let res, maxRow = -1, maxCol = -1, minRow = MAX_ROW + 1, minCol = MAX_COLUMN + 1;
+        refs.forEach(ref => {
+            if (this.isFormulaError(ref))
+                return ref;
+            // row ref is saved as number, parse the number to row ref here
+            if (typeof ref === 'number') {
+                ref = this.parseRow(ref);
+            }
+            ref = ref.ref;
+            // check whole row/col reference
+            if (ref.row === undefined) {
+                minRow = 1;
+                maxRow = MAX_ROW
+            }
+            if (ref.col === undefined) {
+                minCol = 1;
+                maxCol = MAX_COLUMN;
+            }
+
+            if (ref.row > maxRow)
+                maxRow = ref.row;
+            if (ref.row &lt; minRow)
+                minRow = ref.row;
+            if (ref.col > maxCol)
+                maxCol = ref.col;
+            if (ref.col &lt; minCol)
+                minCol = ref.col;
+        });
+        if (maxRow === minRow &amp;&amp; maxCol === minCol) {
+            res = {
+                ref: {
+                    row: maxRow,
+                    col: maxCol
+                }
+            }
+        } else {
+            res = {
+                ref: {
+                    from: {row: minRow, col: minCol},
+                    to: {row: maxRow, col: maxCol}
+                }
+            };
+        }
+        return res;
+    }
+
+    /**
+     * Throw away the refs, and retrieve the value.
+     * @return {{val: *, isArray: boolean}}
+     */
+    extractRefValue(obj) {
+        let res = obj, isArray = false;
+        if (Array.isArray(res))
+            isArray = true;
+        if (obj.ref) {
+            // can be number or array
+            return {val: this.context.retrieveRef(obj), isArray};
+
+        }
+        return {val: res, isArray};
+    }
+
+    /**
+     *
+     * @param array
+     * @return {Array}
+     */
+    toArray(array) {
+        // TODO: check if array is valid
+        // console.log('toArray', array);
+        return array;
+    }
+
+    /**
+     * @param {string} number
+     * @return {number}
+     */
+    toNumber(number) {
+        return Number(number);
+    }
+
+    /**
+     * @param {string} string
+     * @return {string}
+     */
+    toString(string) {
+        return string.substring(1, string.length - 1) .replace(/""/g, '"');
+    }
+
+    /**
+     * @param {string} bool
+     * @return {boolean}
+     */
+    toBoolean(bool) {
+        return bool === 'TRUE';
+    }
+
+    /**
+     * Parse an error.
+     * @param {string} error
+     * @return {string}
+     */
+    toError(error) {
+        return new FormulaError(error.toUpperCase());
+    }
+
+    isFormulaError(obj) {
+        return obj instanceof FormulaError;
+    }
+}
+
+module.exports = Utils;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Fri Aug 30 2019 16:23:57 GMT-0400 (Eastern Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>

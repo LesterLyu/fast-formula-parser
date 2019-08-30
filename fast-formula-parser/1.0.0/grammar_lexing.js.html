@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>grammar/lexing.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Collection.html">Collection</a><ul class='methods'><li data-type='method'><a href="Collection.html#add">add</a></li></ul></li><li><a href="DepParser.html">DepParser</a><ul class='methods'><li data-type='method'><a href="DepParser.html#callFunction">callFunction</a></li><li data-type='method'><a href="DepParser.html#callRefFunction">callRefFunction</a></li><li data-type='method'><a href="DepParser.html#checkFormulaResult">checkFormulaResult</a></li><li data-type='method'><a href="DepParser.html#getCell">getCell</a></li><li data-type='method'><a href="DepParser.html#getRange">getRange</a></li><li data-type='method'><a href="DepParser.html#getVariable">getVariable</a></li><li data-type='method'><a href="DepParser.html#retrieveRef">retrieveRef</a></li></ul></li><li><a href="FormulaParser.html">FormulaParser</a><ul class='methods'><li data-type='method'><a href="FormulaParser.html#callFunction">callFunction</a></li><li data-type='method'><a href="FormulaParser.html#callRefFunction">callRefFunction</a></li><li data-type='method'><a href="FormulaParser.html#checkFormulaResult">checkFormulaResult</a></li><li data-type='method'><a href="FormulaParser.html#getCell">getCell</a></li><li data-type='method'><a href="FormulaParser.html#getRange">getRange</a></li><li data-type='method'><a href="FormulaParser.html#getVariable">getVariable</a></li><li data-type='method'><a href="FormulaParser.html#parse">parse</a></li><li data-type='method'><a href="FormulaParser.html#retrieveRef">retrieveRef</a></li><li data-type='method'><a href="FormulaParser.html#supportedFunctions">supportedFunctions</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#At">At</a></li><li><a href="global.html#parseTime">parseTime</a></li><li><a href="global.html#toDate">toDate</a></li><li><a href="global.html#toSerial">toSerial</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">grammar/lexing.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const {createToken, Lexer} = require('chevrotain');
+
+// the vocabulary will be exported and used in the Parser definition.
+const tokenVocabulary = {};
+
+const WhiteSpace = createToken({
+    name: 'WhiteSpace',
+    pattern: /\s+/,
+    group: Lexer.SKIPPED,
+});
+
+const String = createToken({
+    name: 'String',
+    pattern: /"(""|[^"])*"/
+});
+
+const SingleQuotedString = createToken({
+    name: 'SingleQuotedString',
+    pattern: /'(''|[^'])*'/
+});
+
+const SheetQuoted = createToken({
+    name: 'SheetQuoted',
+    pattern: /'((?![\\\/\[\]*?:]).)+?'!/
+});
+
+const Function = createToken({
+    name: 'Function',
+    pattern: /[A-Za-z_]+[A-Za-z_0-9.]*\(/
+});
+
+const ExcelRefFunction = createToken({
+    name: 'ExcelRefFunction',
+    pattern: /(INDEX|OFFSET|INDIRECT)\(/i
+});
+
+const ExcelConditionalRefFunction = createToken({
+    name: 'ExcelConditionalRefFunction',
+    pattern: /(IF|CHOOSE)\(/i
+});
+
+const FormulaErrorT = createToken({
+    name: 'FormulaErrorT',
+    pattern: /#NULL!|#DIV\/0!|#VALUE!|#NAME\?|#NUM!|#N\/A/
+});
+
+const RefError = createToken({
+    name: 'RefError',
+    pattern: /#REF!/
+});
+
+const Name = createToken({
+    name: 'Name',
+    pattern: /[a-zA-Z_][a-zA-Z0-9_.?]*/,
+    // longer_alt: RangeColumn // e.g. A:AA
+});
+
+const Sheet = createToken({
+    name: 'Sheet',
+    pattern: /[A-Za-z_.\d\u007F-\uFFFF]+!/
+});
+
+const Cell = createToken({
+    name: 'Cell',
+    pattern: /[$]?[A-Za-z]{1,3}[$]?[1-9][0-9]*/,
+    longer_alt: Name
+});
+
+const ReservedName = createToken({
+    name: 'ReservedName',
+    pattern: /_xlnm\.[a-zA-Z_]+/
+});
+
+const Number = createToken({
+    name: 'Number',
+    pattern: /[0-9]+[.]?[0-9]*([eE][+\-][0-9]+)?/
+});
+
+const Boolean = createToken({
+    name: 'Boolean',
+    pattern: /TRUE|FALSE/i
+});
+
+const Column = createToken({
+    name: 'Column',
+    pattern: /[$]?[A-Za-z]{1,3}/,
+    longer_alt: Name
+});
+
+
+/**
+ * Symbols and operators
+ */
+const At = createToken({
+    name: 'At',
+    pattern: /@/
+});
+
+const Comma = createToken({
+    name: 'Comma',
+    pattern: /,/
+});
+
+const Colon = createToken({
+    name: 'Colon',
+    pattern: /:/
+});
+
+const Semicolon = createToken({
+    name: 'Semicolon',
+    pattern: /;/
+});
+
+const OpenParen = createToken({
+    name: 'OpenParen',
+    pattern: /\(/
+});
+
+const CloseParen = createToken({
+    name: 'CloseParen',
+    pattern: /\)/
+});
+
+const OpenSquareParen = createToken({
+    name: 'OpenSquareParen',
+    pattern: /\[/
+});
+
+const CloseSquareParen = createToken({
+    name: 'CloseSquareParen',
+    pattern: /]/
+});
+
+const ExclamationMark = createToken({
+    name: 'exclamationMark',
+    pattern: /!/
+});
+
+const OpenCurlyParen = createToken({
+    name: 'OpenCurlyParen',
+    pattern: /{/
+});
+
+const CloseCurlyParen = createToken({
+    name: 'CloseCurlyParen',
+    pattern: /}/
+});
+
+const QuoteS = createToken({
+    name: 'QuoteS',
+    pattern: /'/
+});
+
+
+const MulOp = createToken({
+    name: 'MulOp',
+    pattern: /\*/
+});
+
+const PlusOp = createToken({
+    name: 'PlusOp',
+    pattern: /\+/
+});
+
+const DivOp = createToken({
+    name: 'DivOp',
+    pattern: /\//
+});
+
+const MinOp = createToken({
+    name: 'MinOp',
+    pattern: /-/
+});
+
+const ConcatOp = createToken({
+    name: 'ConcatOp',
+    pattern: /&amp;/
+});
+
+const ExOp = createToken({
+    name: 'ExOp',
+    pattern: /\^/
+});
+
+const PercentOp = createToken({
+    name: 'PercentOp',
+    pattern: /%/
+});
+
+const GtOp = createToken({
+    name: 'GtOp',
+    pattern: />/
+});
+
+const EqOp = createToken({
+    name: 'EqOp',
+    pattern: /=/
+});
+
+const LtOp = createToken({
+    name: 'LtOp',
+    pattern: /&lt;/
+});
+
+const NeqOp = createToken({
+    name: 'NeqOp',
+    pattern: /&lt;>/
+});
+
+const GteOp = createToken({
+    name: 'GteOp',
+    pattern: />=/
+});
+
+const LteOp = createToken({
+    name: 'LteOp',
+    pattern: /&lt;=/
+});
+
+// The order of tokens is important
+const allTokens = [
+
+    WhiteSpace,
+    String,
+    SheetQuoted,
+    SingleQuotedString,
+    ExcelRefFunction,
+    ExcelConditionalRefFunction,
+    Function,
+    FormulaErrorT,
+    RefError,
+    Sheet,
+    Cell,
+    Boolean,
+    Column,
+    Name,
+    ReservedName,
+    Number,
+
+    At,
+    Comma,
+    Colon,
+    Semicolon,
+    OpenParen,
+    CloseParen,
+    OpenSquareParen,
+    CloseSquareParen,
+    // ExclamationMark,
+    OpenCurlyParen,
+    CloseCurlyParen,
+    QuoteS,
+    MulOp,
+    PlusOp,
+    DivOp,
+    MinOp,
+    ConcatOp,
+    ExOp,
+    MulOp,
+    PercentOp,
+    NeqOp,
+    GteOp,
+    LteOp,
+    GtOp,
+    EqOp,
+    LtOp,
+];
+
+const SelectLexer = new Lexer(allTokens, {ensureOptimizations: true});
+
+allTokens.forEach(tokenType => {
+    tokenVocabulary[tokenType.name] = tokenType
+});
+
+module.exports = {
+    tokenVocabulary: tokenVocabulary,
+
+    lex: function (inputText) {
+        const lexingResult = SelectLexer.tokenize(inputText)
+
+        if (lexingResult.errors.length > 0) {
+            const error = lexingResult.errors[0];
+            const line = error.line, column = error.column;
+            let msg = '\n' + inputText.split('\n')[line - 1] + '\n';
+            msg += Array(column - 1).fill(' ').join('') + '^\n';
+            error.message = msg + `Error at position ${line}:${column}\n` + error.message;
+            throw Error(error.message)
+        }
+
+        return lexingResult
+    }
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Fri Aug 30 2019 16:23:57 GMT-0400 (Eastern Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>

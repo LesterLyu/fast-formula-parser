@@ -1,0 +1,1111 @@
+
+<!-- This is a generated file -->
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+  body {
+    background-color: hsl(30, 20%, 95%)
+  }
+</style>
+
+
+<link rel='stylesheet' href='https://unpkg.com/chevrotain@4.8.1/diagrams/diagrams.css'>
+
+<script src='https://unpkg.com/chevrotain@4.8.1/diagrams/vendor/railroad-diagrams.js'></script>
+<script src='https://unpkg.com/chevrotain@4.8.1/diagrams/src/diagrams_builder.js'></script>
+<script src='https://unpkg.com/chevrotain@4.8.1/diagrams/src/diagrams_behavior.js'></script>
+<script src='https://unpkg.com/chevrotain@4.8.1/diagrams/src/main.js'></script>
+
+<div id="diagrams" align="center"></div>    
+
+<script>
+    window.serializedGrammar = [
+  {
+    "type": "Rule",
+    "name": "formulaWithCompareOp",
+    "orgText": "() => {\r\n            let value = $.SUBRULE($.formulaWithConcatOp);\r\n            $.MANY(() => {\r\n                const infix = $.SUBRULE($.compareOp);\r\n                const value2 = $.SUBRULE2($.formulaWithConcatOp);\r\n                value = this.utils.applyInfix(value, infix, value2);\r\n            });\r\n            return value;\r\n        }",
+    "definition": [
+      {
+        "type": "NonTerminal",
+        "name": "formulaWithConcatOp",
+        "idx": 0
+      },
+      {
+        "type": "Repetition",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "compareOp",
+            "idx": 0
+          },
+          {
+            "type": "NonTerminal",
+            "name": "formulaWithConcatOp",
+            "idx": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "compareOp",
+    "orgText": "() => $.OR([\r\n            {ALT: () => $.CONSUME(GtOp).image},\r\n            {ALT: () => $.CONSUME(EqOp).image},\r\n            {ALT: () => $.CONSUME(LtOp).image},\r\n            {ALT: () => $.CONSUME(NeqOp).image},\r\n            {ALT: () => $.CONSUME(GteOp).image},\r\n            {ALT: () => $.CONSUME(LteOp).image},\r\n        ])",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "GtOp",
+                "label": "GtOp",
+                "idx": 0,
+                "pattern": ">"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "EqOp",
+                "label": "EqOp",
+                "idx": 0,
+                "pattern": "="
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "LtOp",
+                "label": "LtOp",
+                "idx": 0,
+                "pattern": "<"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "NeqOp",
+                "label": "NeqOp",
+                "idx": 0,
+                "pattern": "<>"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "GteOp",
+                "label": "GteOp",
+                "idx": 0,
+                "pattern": ">="
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "LteOp",
+                "label": "LteOp",
+                "idx": 0,
+                "pattern": "<="
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "formulaWithConcatOp",
+    "orgText": "() => {\r\n            let value = $.SUBRULE($.formulaWithBinaryOp);\r\n            $.MANY(() => {\r\n                const infix = $.CONSUME(ConcatOp).image;\r\n                const formula2 = $.SUBRULE2($.formulaWithBinaryOp);\r\n                value = this.utils.applyInfix(value, infix, formula2);\r\n            });\r\n            return value;\r\n        }",
+    "definition": [
+      {
+        "type": "NonTerminal",
+        "name": "formulaWithBinaryOp",
+        "idx": 0
+      },
+      {
+        "type": "Repetition",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "ConcatOp",
+            "label": "ConcatOp",
+            "idx": 0,
+            "pattern": "&"
+          },
+          {
+            "type": "NonTerminal",
+            "name": "formulaWithBinaryOp",
+            "idx": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "formulaWithBinaryOp",
+    "orgText": "() => {\r\n            let value = $.SUBRULE($.formulaWithMulDivOp);\r\n            $.MANY(() => {\r\n                const infix = $.SUBRULE($.plusMinusOp);\r\n                const formula2 = $.SUBRULE2($.formulaWithMulDivOp);\r\n                value = this.utils.applyInfix(value, infix, formula2);\r\n            });\r\n            return value;\r\n        }",
+    "definition": [
+      {
+        "type": "NonTerminal",
+        "name": "formulaWithMulDivOp",
+        "idx": 0
+      },
+      {
+        "type": "Repetition",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "plusMinusOp",
+            "idx": 0
+          },
+          {
+            "type": "NonTerminal",
+            "name": "formulaWithMulDivOp",
+            "idx": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "plusMinusOp",
+    "orgText": "() => $.OR([\r\n            {ALT: () => $.CONSUME(PlusOp).image},\r\n            {ALT: () => $.CONSUME(MinOp).image}\r\n        ])",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "PlusOp",
+                "label": "PlusOp",
+                "idx": 0,
+                "pattern": "\\+"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "MinOp",
+                "label": "MinOp",
+                "idx": 0,
+                "pattern": "-"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "formulaWithMulDivOp",
+    "orgText": "() => {\r\n            let value = $.SUBRULE($.formulaWithExOp);\r\n            $.MANY(() => {\r\n                const infix = $.SUBRULE($.mulDivOp);\r\n                const formula2 = $.SUBRULE2($.formulaWithExOp);\r\n                value = this.utils.applyInfix(value, infix, formula2);\r\n            });\r\n            return value;\r\n        }",
+    "definition": [
+      {
+        "type": "NonTerminal",
+        "name": "formulaWithExOp",
+        "idx": 0
+      },
+      {
+        "type": "Repetition",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "mulDivOp",
+            "idx": 0
+          },
+          {
+            "type": "NonTerminal",
+            "name": "formulaWithExOp",
+            "idx": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "mulDivOp",
+    "orgText": "() => $.OR([\r\n            {ALT: () => $.CONSUME(MulOp).image},\r\n            {ALT: () => $.CONSUME(DivOp).image}\r\n        ])",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "MulOp",
+                "label": "MulOp",
+                "idx": 0,
+                "pattern": "\\*"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "DivOp",
+                "label": "DivOp",
+                "idx": 0,
+                "pattern": "\\/"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "formulaWithExOp",
+    "orgText": "() => {\r\n            let value = $.SUBRULE($.formulaWithPercentOp);\r\n            $.MANY(() => {\r\n                const infix = $.CONSUME(ExOp).image;\r\n                const formula2 = $.SUBRULE2($.formulaWithPercentOp);\r\n                value = this.utils.applyInfix(value, infix, formula2);\r\n            });\r\n            return value;\r\n        }",
+    "definition": [
+      {
+        "type": "NonTerminal",
+        "name": "formulaWithPercentOp",
+        "idx": 0
+      },
+      {
+        "type": "Repetition",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "ExOp",
+            "label": "ExOp",
+            "idx": 0,
+            "pattern": "\\^"
+          },
+          {
+            "type": "NonTerminal",
+            "name": "formulaWithPercentOp",
+            "idx": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "formulaWithPercentOp",
+    "orgText": "() => {\r\n            let value = $.SUBRULE($.formulaWithUnaryOp);\r\n            $.OPTION(() => {\r\n                const postfix = $.CONSUME(PercentOp).image;\r\n                value = this.utils.applyPostfix(value, postfix);\r\n            });\r\n            return value;\r\n        }",
+    "definition": [
+      {
+        "type": "NonTerminal",
+        "name": "formulaWithUnaryOp",
+        "idx": 0
+      },
+      {
+        "type": "Option",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "PercentOp",
+            "label": "PercentOp",
+            "idx": 0,
+            "pattern": "%"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "formulaWithUnaryOp",
+    "orgText": "() => {\r\n            // support ++---3 => -3\r\n            const prefixes = [];\r\n            $.MANY(() => {\r\n                prefixes.push($.SUBRULE($.plusMinusOp));\r\n            });\r\n            const formula = $.SUBRULE($.formulaWithIntersect);\r\n            if (prefixes.length > 0) return this.utils.applyPrefix(prefixes, formula);\r\n            return formula;\r\n        }",
+    "definition": [
+      {
+        "type": "Repetition",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "plusMinusOp",
+            "idx": 0
+          }
+        ]
+      },
+      {
+        "type": "NonTerminal",
+        "name": "formulaWithIntersect",
+        "idx": 0
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "formulaWithIntersect",
+    "orgText": "() => $.OR9([\r\n            {\r\n                // e.g.  'A1 A2 A3'\r\n                ALT: () => {\r\n                    let ref1 = $.SUBRULE($.formulaWithRange);\r\n                    const refs = [ref1];\r\n                    // console.log('check intersect')\r\n                    $.MANY({\r\n                        GATE: () => {\r\n                            // see https://github.com/SAP/chevrotain/blob/master/examples/grammars/css/css.js#L436-L441\r\n                            const prevToken = $.LA(0);\r\n                            const nextToken = $.LA(1);\r\n                            //  This is the only place where the grammar is whitespace sensitive.\r\n                            return nextToken.startOffset > prevToken.endOffset + 1;\r\n                        },\r\n                        DEF: () => {\r\n                            refs.push($.SUBRULE3($.formulaWithRange));\r\n                        }\r\n                    });\r\n                    if (refs.length > 1) {\r\n                        return this.utils.applyIntersect(refs);\r\n                    }\r\n                    return ref1;\r\n                }\r\n            }\r\n        ])",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 9,
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "formulaWithRange",
+                "idx": 0
+              },
+              {
+                "type": "Repetition",
+                "idx": 0,
+                "definition": [
+                  {
+                    "type": "NonTerminal",
+                    "name": "formulaWithRange",
+                    "idx": 3
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "formulaWithRange",
+    "orgText": "() => {\r\n            // e.g. 'A1:C3' or 'A1:A3:C4', can be any number of references, at lease 2\r\n            const ref1 = $.SUBRULE($.formula);\r\n            const refs = [ref1];\r\n            $.MANY(() => {\r\n                $.CONSUME(Colon);\r\n                refs.push($.SUBRULE2($.formula));\r\n            });\r\n            if (refs.length > 1)\r\n                return this.utils.applyRange(refs);\r\n            return ref1;\r\n        }",
+    "definition": [
+      {
+        "type": "NonTerminal",
+        "name": "formula",
+        "idx": 0
+      },
+      {
+        "type": "Repetition",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Colon",
+            "label": "Colon",
+            "idx": 0,
+            "pattern": ":"
+          },
+          {
+            "type": "NonTerminal",
+            "name": "formula",
+            "idx": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "formula",
+    "orgText": "() => $.OR9([\r\n            {ALT: () => $.SUBRULE($.reservedName)},\r\n            {ALT: () => $.SUBRULE($.referenceWithoutInfix)},\r\n            {ALT: () => $.SUBRULE($.paren)},\r\n            {ALT: () => $.SUBRULE($.constant)},\r\n            {ALT: () => $.SUBRULE($.functionCall)},\r\n            {ALT: () => $.SUBRULE($.constantArray)},\r\n        ])",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 9,
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "reservedName",
+                "idx": 0
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "referenceWithoutInfix",
+                "idx": 0
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "paren",
+                "idx": 0
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "constant",
+                "idx": 0
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "functionCall",
+                "idx": 0
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "constantArray",
+                "idx": 0
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "paren",
+    "orgText": "() => {\r\n            // formula paren or union paren\r\n            $.CONSUME(OpenParen);\r\n            let result;\r\n            const refs = [];\r\n            refs.push($.SUBRULE($.formulaWithCompareOp));\r\n            $.MANY(() => {\r\n                $.CONSUME(Comma);\r\n                refs.push($.SUBRULE2($.formulaWithCompareOp));\r\n            });\r\n            if (refs.length > 1)\r\n                result = this.utils.applyUnion(refs);\r\n            else\r\n                result = refs[0];\r\n\r\n            $.CONSUME(CloseParen);\r\n            return result;\r\n        }",
+    "definition": [
+      {
+        "type": "Terminal",
+        "name": "OpenParen",
+        "label": "OpenParen",
+        "idx": 0,
+        "pattern": "\\("
+      },
+      {
+        "type": "NonTerminal",
+        "name": "formulaWithCompareOp",
+        "idx": 0
+      },
+      {
+        "type": "Repetition",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Comma",
+            "label": "Comma",
+            "idx": 0,
+            "pattern": ","
+          },
+          {
+            "type": "NonTerminal",
+            "name": "formulaWithCompareOp",
+            "idx": 2
+          }
+        ]
+      },
+      {
+        "type": "Terminal",
+        "name": "CloseParen",
+        "label": "CloseParen",
+        "idx": 0,
+        "pattern": "\\)"
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "constantArray",
+    "orgText": "() => {\r\n            // console.log('constantArray');\r\n            const arr = [[]];\r\n            let currentRow = 0;\r\n            $.CONSUME(OpenCurlyParen);\r\n\r\n            // array must contain at least one item\r\n            arr[currentRow].push($.SUBRULE($.constantForArray));\r\n            $.MANY(() => {\r\n                const sep = $.OR([\r\n                    {ALT: () => $.CONSUME(Comma).image},\r\n                    {ALT: () => $.CONSUME(Semicolon).image}\r\n                ]);\r\n                const constant = $.SUBRULE2($.constantForArray);\r\n                if (sep === ',') {\r\n                    arr[currentRow].push(constant)\r\n                } else {\r\n                    currentRow++;\r\n                    arr[currentRow] = [];\r\n                    arr[currentRow].push(constant)\r\n                }\r\n            });\r\n\r\n            $.CONSUME(CloseCurlyParen);\r\n\r\n            return this.utils.toArray(arr);\r\n        }",
+    "definition": [
+      {
+        "type": "Terminal",
+        "name": "OpenCurlyParen",
+        "label": "OpenCurlyParen",
+        "idx": 0,
+        "pattern": "{"
+      },
+      {
+        "type": "NonTerminal",
+        "name": "constantForArray",
+        "idx": 0
+      },
+      {
+        "type": "Repetition",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Alternation",
+            "idx": 0,
+            "definition": [
+              {
+                "type": "Flat",
+                "definition": [
+                  {
+                    "type": "Terminal",
+                    "name": "Comma",
+                    "label": "Comma",
+                    "idx": 0,
+                    "pattern": ","
+                  }
+                ]
+              },
+              {
+                "type": "Flat",
+                "definition": [
+                  {
+                    "type": "Terminal",
+                    "name": "Semicolon",
+                    "label": "Semicolon",
+                    "idx": 0,
+                    "pattern": ";"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "NonTerminal",
+            "name": "constantForArray",
+            "idx": 2
+          }
+        ]
+      },
+      {
+        "type": "Terminal",
+        "name": "CloseCurlyParen",
+        "label": "CloseCurlyParen",
+        "idx": 0,
+        "pattern": "}"
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "constantForArray",
+    "orgText": "() => $.OR([\r\n            {\r\n                ALT: () => {\r\n                    const prefix = $.OPTION(() => $.SUBRULE($.plusMinusOp));\r\n                    const number = this.utils.toNumber($.CONSUME(Number).image);\r\n                    if (prefix)\r\n                        return this.utils.applyPrefix([prefix], number);\r\n                    return number;\r\n                }\r\n            }, {\r\n                ALT: () => {\r\n                    return this.utils.toString($.CONSUME(String).image);\r\n                }\r\n            }, {\r\n                ALT: () => {\r\n                    return this.utils.toBoolean($.CONSUME(Boolean).image);\r\n                }\r\n            }, {\r\n                ALT: () => {\r\n                    return this.utils.toError($.CONSUME(FormulaErrorT).image);\r\n                }\r\n            }, {\r\n                ALT: () => {\r\n                    return this.utils.toError($.CONSUME(RefError).image);\r\n                }\r\n            },\r\n        ])",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Option",
+                "idx": 0,
+                "definition": [
+                  {
+                    "type": "NonTerminal",
+                    "name": "plusMinusOp",
+                    "idx": 0
+                  }
+                ]
+              },
+              {
+                "type": "Terminal",
+                "name": "Number",
+                "label": "Number",
+                "idx": 0,
+                "pattern": "[0-9]+[.]?[0-9]*([eE][+\\-][0-9]+)?"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "String",
+                "label": "String",
+                "idx": 0,
+                "pattern": "\"(\"\"|[^\"])*\""
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Boolean",
+                "label": "Boolean",
+                "idx": 0,
+                "pattern": "TRUE|FALSE"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "FormulaErrorT",
+                "label": "FormulaErrorT",
+                "idx": 0,
+                "pattern": "#NULL!|#DIV\\/0!|#VALUE!|#NAME\\?|#NUM!|#N\\/A"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "RefError",
+                "label": "RefError",
+                "idx": 0,
+                "pattern": "#REF!"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "reservedName",
+    "orgText": "() => {\r\n            const name = $.CONSUME(ReservedName).image;\r\n            return context.getVariable(name);\r\n        }",
+    "definition": [
+      {
+        "type": "Terminal",
+        "name": "ReservedName",
+        "label": "ReservedName",
+        "idx": 0,
+        "pattern": "_xlnm\\.[a-zA-Z_]+"
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "constant",
+    "orgText": "() => $.OR([\r\n            {\r\n                ALT: () => {\r\n                    return this.utils.toNumber($.CONSUME(Number).image);\r\n                }\r\n            }, {\r\n                ALT: () => {\r\n                    return this.utils.toString($.CONSUME(String).image);\r\n                }\r\n            }, {\r\n                ALT: () => {\r\n                    return this.utils.toBoolean($.CONSUME(Boolean).image);\r\n                }\r\n            }, {\r\n                ALT: () => {\r\n                    return this.utils.toError($.CONSUME(FormulaErrorT).image);\r\n                }\r\n            },\r\n        ])",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Number",
+                "label": "Number",
+                "idx": 0,
+                "pattern": "[0-9]+[.]?[0-9]*([eE][+\\-][0-9]+)?"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "String",
+                "label": "String",
+                "idx": 0,
+                "pattern": "\"(\"\"|[^\"])*\""
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Boolean",
+                "label": "Boolean",
+                "idx": 0,
+                "pattern": "TRUE|FALSE"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "FormulaErrorT",
+                "label": "FormulaErrorT",
+                "idx": 0,
+                "pattern": "#NULL!|#DIV\\/0!|#VALUE!|#NAME\\?|#NUM!|#N\\/A"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "functionCall",
+    "orgText": "() => $.OR([\r\n            {\r\n                ALT: () => {\r\n                    const functionName = $.CONSUME(Function).image.slice(0, -1);\r\n                    // console.log('functionName', functionName);\r\n                    const args = $.SUBRULE($.arguments);\r\n                    $.CONSUME(CloseParen);\r\n                    // dependency parser won't call function.\r\n                    return context.callFunction(functionName, args);\r\n                }\r\n            }\r\n        ])",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Function",
+                "label": "Function",
+                "idx": 0,
+                "pattern": "[A-Za-z_]+[A-Za-z_0-9.]*\\("
+              },
+              {
+                "type": "NonTerminal",
+                "name": "arguments",
+                "idx": 0
+              },
+              {
+                "type": "Terminal",
+                "name": "CloseParen",
+                "label": "CloseParen",
+                "idx": 0,
+                "pattern": "\\)"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "arguments",
+    "orgText": "() => {\r\n            // console.log('try arguments')\r\n\r\n            // allows ',' in the front\r\n            $.MANY2(() => {\r\n                $.CONSUME2(Comma);\r\n            });\r\n            const args = [];\r\n            // allows empty arguments\r\n            $.OPTION(() => {\r\n                args.push($.SUBRULE($.formulaWithCompareOp));\r\n                $.MANY(() => {\r\n                    $.CONSUME1(Comma);\r\n                    args.push(null); // e.g. ROUND(1.5,)\r\n                    $.OPTION3(() => {\r\n                        args.pop();\r\n                        args.push($.SUBRULE2($.formulaWithCompareOp))\r\n                    });\r\n                });\r\n            });\r\n            return args;\r\n        }",
+    "definition": [
+      {
+        "type": "Repetition",
+        "idx": 2,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Comma",
+            "label": "Comma",
+            "idx": 2,
+            "pattern": ","
+          }
+        ]
+      },
+      {
+        "type": "Option",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "formulaWithCompareOp",
+            "idx": 0
+          },
+          {
+            "type": "Repetition",
+            "idx": 0,
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Comma",
+                "label": "Comma",
+                "idx": 1,
+                "pattern": ","
+              },
+              {
+                "type": "Option",
+                "idx": 3,
+                "definition": [
+                  {
+                    "type": "NonTerminal",
+                    "name": "formulaWithCompareOp",
+                    "idx": 2
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "postfixOp",
+    "orgText": "() => $.CONSUME(PercentOp).image",
+    "definition": [
+      {
+        "type": "Terminal",
+        "name": "PercentOp",
+        "label": "PercentOp",
+        "idx": 0,
+        "pattern": "%"
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "referenceWithoutInfix",
+    "orgText": "() => $.OR([\r\n\r\n            {ALT: () => ($.SUBRULE($.referenceItem))},\r\n            {ALT: () => $.SUBRULE($.referenceFunctionCall)},\r\n\r\n            {\r\n                // sheet name prefix\r\n                ALT: () => {\r\n                    // console.log('try sheetName');\r\n                    const sheetName = $.SUBRULE($.prefixName);\r\n                    // console.log('sheetName', sheetName);\r\n                    const referenceItem = $.SUBRULE2($.formulaWithRange);\r\n                    if (this.utils.isFormulaError(referenceItem))\r\n                        return referenceItem;\r\n                    referenceItem.ref.sheet = sheetName;\r\n                    return (referenceItem);\r\n                }\r\n            },\r\n\r\n            // {ALT: () => $.SUBRULE('dynamicDataExchange')},\r\n        ])",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "referenceItem",
+                "idx": 0
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "referenceFunctionCall",
+                "idx": 0
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "prefixName",
+                "idx": 0
+              },
+              {
+                "type": "NonTerminal",
+                "name": "formulaWithRange",
+                "idx": 2
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "referenceFunctionCall",
+    "orgText": "() => $.OR([\r\n\r\n            {\r\n                ALT: () => {\r\n                    const refFunctionName = $.SUBRULE($.refFunctionName);\r\n                    // console.log('refFunctionName', refFunctionName);\r\n                    const args = $.SUBRULE($.arguments);\r\n                    $.CONSUME2(CloseParen);\r\n                    return context.callRefFunction(refFunctionName, args);\r\n                }\r\n            }\r\n        ])",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "refFunctionName",
+                "idx": 0
+              },
+              {
+                "type": "NonTerminal",
+                "name": "arguments",
+                "idx": 0
+              },
+              {
+                "type": "Terminal",
+                "name": "CloseParen",
+                "label": "CloseParen",
+                "idx": 2,
+                "pattern": "\\)"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "refFunctionName",
+    "orgText": "() => $.OR([\r\n            {ALT: () => $.CONSUME(ExcelRefFunction).image.slice(0, -1)},\r\n            {ALT: () => $.CONSUME(ExcelConditionalRefFunction).image.slice(0, -1)}\r\n        ])",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "ExcelRefFunction",
+                "label": "ExcelRefFunction",
+                "idx": 0,
+                "pattern": "(INDEX|OFFSET|INDIRECT)\\("
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "ExcelConditionalRefFunction",
+                "label": "ExcelConditionalRefFunction",
+                "idx": 0,
+                "pattern": "(IF|CHOOSE)\\("
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "referenceItem",
+    "orgText": "() => $.OR([\r\n            {ALT: () => this.utils.parseCellAddress($.CONSUME(Cell).image)},\r\n            {ALT: () => context.getVariable($.CONSUME(Name).image)},\r\n            {ALT: () => this.utils.parseCol($.CONSUME(Column).image)},\r\n            // A row check should be here, but the token is same with Number,\r\n            // In other to resolve ambiguities, I leave this empty, and\r\n            // parse the number to row number when needed.\r\n            {ALT: () => this.utils.toError($.CONSUME(RefError).image)},\r\n            // {ALT: () => $.SUBRULE($.udfFunctionCall)},\r\n            // {ALT: () => $.SUBRULE($.structuredReference)},\r\n        ])",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Cell",
+                "label": "Cell",
+                "idx": 0,
+                "pattern": "[$]?[A-Za-z]{1,3}[$]?[1-9][0-9]*"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Name",
+                "label": "Name",
+                "idx": 0,
+                "pattern": "[a-zA-Z_][a-zA-Z0-9_.?]*"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Column",
+                "label": "Column",
+                "idx": 0,
+                "pattern": "[$]?[A-Za-z]{1,3}"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "RefError",
+                "label": "RefError",
+                "idx": 0,
+                "pattern": "#REF!"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "prefixName",
+    "orgText": "() => $.OR([\r\n            {ALT: () => $.CONSUME(Sheet).image.slice(0, -1)},\r\n            {ALT: () => $.CONSUME(SheetQuoted).image.slice(1, -2).replace(/''/g, \"'\")},\r\n        ])",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Sheet",
+                "label": "Sheet",
+                "idx": 0,
+                "pattern": "[A-Za-z_.\\d\\u007F-\\uFFFF]+!"
+              }
+            ]
+          },
+          {
+            "type": "Flat",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "SheetQuoted",
+                "label": "SheetQuoted",
+                "idx": 0,
+                "pattern": "'((?![\\\\\\/\\[\\]*?:]).)+?'!"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+];
+</script>
+
+<script>
+    var diagramsDiv = document.getElementById("diagrams");
+    main.drawDiagramsFromSerializedGrammar(serializedGrammar, diagramsDiv);
+</script>

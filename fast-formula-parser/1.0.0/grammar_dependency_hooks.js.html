@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>grammar/dependency/hooks.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Collection.html">Collection</a><ul class='methods'><li data-type='method'><a href="Collection.html#add">add</a></li></ul></li><li><a href="DepParser.html">DepParser</a><ul class='methods'><li data-type='method'><a href="DepParser.html#callFunction">callFunction</a></li><li data-type='method'><a href="DepParser.html#callRefFunction">callRefFunction</a></li><li data-type='method'><a href="DepParser.html#checkFormulaResult">checkFormulaResult</a></li><li data-type='method'><a href="DepParser.html#getCell">getCell</a></li><li data-type='method'><a href="DepParser.html#getRange">getRange</a></li><li data-type='method'><a href="DepParser.html#getVariable">getVariable</a></li><li data-type='method'><a href="DepParser.html#retrieveRef">retrieveRef</a></li></ul></li><li><a href="FormulaParser.html">FormulaParser</a><ul class='methods'><li data-type='method'><a href="FormulaParser.html#callFunction">callFunction</a></li><li data-type='method'><a href="FormulaParser.html#callRefFunction">callRefFunction</a></li><li data-type='method'><a href="FormulaParser.html#checkFormulaResult">checkFormulaResult</a></li><li data-type='method'><a href="FormulaParser.html#getCell">getCell</a></li><li data-type='method'><a href="FormulaParser.html#getRange">getRange</a></li><li data-type='method'><a href="FormulaParser.html#getVariable">getVariable</a></li><li data-type='method'><a href="FormulaParser.html#parse">parse</a></li><li data-type='method'><a href="FormulaParser.html#retrieveRef">retrieveRef</a></li><li data-type='method'><a href="FormulaParser.html#supportedFunctions">supportedFunctions</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#At">At</a></li><li><a href="global.html#parseTime">parseTime</a></li><li><a href="global.html#toDate">toDate</a></li><li><a href="global.html#toSerial">toSerial</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">grammar/dependency/hooks.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const LogicalFunctions = require('../../formulas/functions/logical');
+const ReferenceFunctions = require('../../formulas/functions/reference');
+const FormulaError = require('../../formulas/error');
+const {FormulaHelpers} = require('../../formulas/helpers');
+const {Parser} = require('../parsing');
+const lexer = require('../lexing');
+const Utils = require('./utils');
+
+class DepParser {
+
+    /**
+     *
+     * @param {{onVariable: Function}} [config]
+     */
+    constructor(config) {
+        this.logs = [];
+        this.data = [];
+        this.utils = new Utils(this);
+        config = Object.assign({
+            onVariable: () => null,
+        }, config);
+        this.utils = new Utils(this);
+
+        this.onVariable = config.onVariable;
+        this.functions = Object.assign({}, ReferenceFunctions, LogicalFunctions);
+
+        this.parser = new Parser(this, this.utils);
+    }
+
+    /**
+     * Get value from the cell reference
+     * @param ref
+     * @return {*}
+     */
+    getCell(ref) {
+        // console.log('get cell', JSON.stringify(ref));
+        if (ref.row != null) {
+            if (ref.sheet == null)
+                ref.sheet = this.position ? this.position.sheet : undefined;
+            const idx = this.data.findIndex(element => {
+                return (element.from &amp;&amp; element.from.row &lt;= ref.row &amp;&amp; element.to.row >= ref.row
+                    &amp;&amp; element.from.col &lt;= ref.col &amp;&amp; element.to.col >= ref.col)
+                    || (element.row === ref.row &amp;&amp; element.col === ref.col &amp;&amp; element.sheet === ref.sheet)
+            });
+            if (idx === -1)
+                this.data.push(ref);
+        }
+        return 0;
+    }
+
+    /**
+     * Get values from the range reference.
+     * @param ref
+     * @return {*}
+     */
+    getRange(ref) {
+        // console.log('get range', JSON.stringify(ref));
+        if (ref.from.row != null) {
+            if (ref.sheet == null)
+                ref.sheet = this.position ? this.position.sheet : undefined;
+
+            const idx = this.data.findIndex(element => {
+                return element.from &amp;&amp; element.from.row === ref.from.row &amp;&amp; element.from.col === ref.from.col
+                    &amp;&amp; element.to.row === ref.to.row &amp;&amp; element.to.col === ref.to.col;
+            });
+            if (idx === -1)
+                this.data.push(ref);
+        }
+        return [[0]]
+    }
+
+    /**
+     * TODO:
+     * Get references or values from a user defined variable.
+     * @param name
+     * @return {*}
+     */
+    getVariable(name) {
+        // console.log('get variable', name);
+        const res = {ref: this.onVariable(name, this.position.sheet)};
+        if (res.ref == null)
+            return FormulaError.NAME;
+        if (FormulaHelpers.isCellRef(res))
+            this.getCell(res.ref);
+        else {
+            this.getRange(res.ref);
+        }
+        return 0;
+    }
+
+    /**
+     * Retrieve values from the given reference.
+     * @param valueOrRef
+     * @return {*}
+     */
+    retrieveRef(valueOrRef) {
+        if (FormulaHelpers.isRangeRef(valueOrRef)) {
+            return this.getRange(valueOrRef.ref);
+        }
+        if (FormulaHelpers.isCellRef(valueOrRef)) {
+            return this.getCell(valueOrRef.ref)
+        }
+        return valueOrRef;
+    }
+
+    /**
+     * The functions that can return a reference instead of a value as normal functions.
+     * Note: Not all functions from "Lookup and reference" category can return a reference.
+     * {@link https://support.office.com/en-ie/article/lookup-and-reference-functions-reference-8aa21a3a-b56a-4055-8257-3ec89df2b23e}
+     * @param name - Reference function name.
+     * @param args - Arguments that pass to the function.
+     */
+    callRefFunction(name, args) {
+        args.forEach(arg => {
+            this.retrieveRef(arg);
+        });
+        name = name.toUpperCase();
+        if (this.functions[name]) {
+            let res;
+            try {
+                res = (this.functions[name](this, ...args));
+            } catch (e) {
+                // allow functions throw FormulaError, this make functions easier to implement!
+                if (e instanceof FormulaError) {
+                    return e;
+                } else {
+                    throw e;
+                }
+            }
+            if (res === undefined) {
+                return {value: 0, ref: {}};
+            }
+            return FormulaHelpers.checkFunctionResult(res);
+        } else {
+            if (!this.logs.includes(name)) this.logs.push(name);
+            // console.log(`Function ${name} is not implemented`);
+            return {value: 0, ref: {}};
+        }
+    }
+
+    /**
+     * Call an excel function.
+     * @param name - Function name.
+     * @param args - Arguments that pass to the function.
+     * @return {*}
+     */
+    callFunction(name, args) {
+        args.forEach(arg => {
+            if (arg === null)
+                return;
+            this.utils.extractRefValue(arg);
+        });
+        return {value: 0, ref: {}};
+    }
+
+    /**
+     * Check and return the appropriate formula result.
+     * @param result
+     * @return {*}
+     */
+    checkFormulaResult(result) {
+        this.retrieveRef(result);
+    }
+
+    parse(inputText, position) {
+        if (inputText.length === 0) throw Error('Input must not be empty.');
+        this.data = [];
+        this.position = position;
+        const lexResult = lexer.lex(inputText);
+        this.parser.input = lexResult.tokens;
+        let res = this.parser.formulaWithCompareOp();
+        this.checkFormulaResult(res);
+        if (this.parser.errors.length > 0) {
+            const error = this.parser.errors[0];
+            const line = error.previousToken.startLine, column = error.previousToken.startColumn + 1;
+            let msg = '\n' + inputText.split('\n')[line - 1] + '\n';
+            msg += Array(column - 1).fill(' ').join('') + '^\n';
+            error.message = msg + `Error at position ${line}:${column}\n` + error.message;
+            console.error(error.toString())
+        }
+        return this.data;
+    }
+}
+
+module.exports = {
+    DepParser,
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Fri Aug 30 2019 16:23:57 GMT-0400 (Eastern Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>
