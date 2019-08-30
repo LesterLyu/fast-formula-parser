@@ -13,7 +13,6 @@
       "grammar",
       "utils",
       "ssf",
-      "package.json",
       "README.md",
       "docs/generated_diagrams.html"
     ],
@@ -37,6 +36,7 @@
     "encoding": "utf8",
     "recurse": true,
     "verbose": true,
-    "template": "./node_modules/docdash"
+    "template": "./node_modules/docdash",
+    "package": ""
   }
 }

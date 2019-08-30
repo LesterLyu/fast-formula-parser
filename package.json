@@ -8,7 +8,7 @@
     "test:f": "nyc -n \"formulas/functions/**\" -n \"formulas/operators.js\" --reporter=html --reporter=text mocha test/formulas",
     "build": "webpack",
     "diagram": "node grammar/diagram.js",
-    "docs": "jsdoc --configure .jsdoc.json --verbose",
+    "docs": "yarn run diagram && jsdoc --configure .jsdoc.json --verbose",
     "publish:docs": "yarn run docs && gh-pages -d docs"
   },
   "author": "Lester(Dishu) Lyu",

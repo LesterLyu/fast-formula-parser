@@ -2,7 +2,8 @@
 > **This project is under developments and not ready to publish.**
 
 Aim to be the fastest and the most reliable excel formula parser in javascript. Using **LL(1)** parser.
-
+### [Documentation](https://lesterlyu.github.io/fast-formula-parser/)
+### [Grammar Diagram](https://lesterlyu.github.io/fast-formula-parser/generated_diagrams.html)
 ### Background
 
 Inspired by [XLParser](https://github.com/spreadsheetlab/XLParser/blob/master/src/XLParser/ExcelFormulaGrammar.cs)
