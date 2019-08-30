@@ -1,4 +1,4 @@
-## A Fast Excel Formula Parser
+## [A Fast Excel Formula Parser](https://github.com/LesterLyu/fast-formula-parser)
 > **This project is under developments and not ready to publish.**
 
 Aim to be the fastest and the most reliable excel formula parser in javascript. Using **LL(1)** parser.
