@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>Home - Documentation</title>
+    <title>ARG_MISSING - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -32,17 +32,89 @@
 
 <div id="main">
     
+    <h1 class="page-title">ARG_MISSING</h1>
+    
 
     
 
 
 
+
+<section>
+
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="FormulaError.html">FormulaError</a>.</span>
+        
+        ARG_MISSING
+        </h2>
+        
+    
+</header>
+
+<article>
+    
+        <div class="container-overview">
+        
+            
+
+    
+
+    <h4 class="name" id="ARG_MISSING"><span class="type-signature"></span>new ARG_MISSING<span class="signature">(args)</span><span class="type-signature"> &rarr; {Error}</span></h4>
+
     
 
 
-    <section class="package">
-        <h3> </h3>		
-    </section>
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="formulas_error.js.html">formulas/error.js</a>, <a href="formulas_error.js.html#line120">line 120</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>ARG_MISSING error</p>
+</div>
 
 
 
@@ -51,51 +123,114 @@
 
 
 
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>args</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>the name of the errored function</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Error</span>
+
+
+    </dd>
+</dl>
 
     
 
 
 
-    <section class="readme">
-        <article><h2 id="a-fast-excel-formula-parser"><a href="https://github.com/LesterLyu/fast-formula-parser">A Fast Excel Formula Parser</a></h2>
-<blockquote>
-<p><strong>This project is under developments and not ready to publish.</strong></p>
-</blockquote>
-<p>Aim to be the fastest and the most reliable excel formula parser in javascript. Using <strong>LL(1)</strong> parser.</p>
-<h3 id="documentation"><a href="https://lesterlyu.github.io/fast-formula-parser/">Documentation</a></h3>
-<h3 id="grammar-diagram"><a href="https://lesterlyu.github.io/fast-formula-parser/generated_diagrams.html">Grammar Diagram</a></h3>
-<h3 id="background">Background</h3>
-<p>Inspired by <a href="https://github.com/spreadsheetlab/XLParser/blob/master/src/XLParser/ExcelFormulaGrammar.cs">XLParser</a>
-and the paper <a href="https://fenia266781730.files.wordpress.com/2019/01/07335408.pdf">&quot;A Grammar for Spreadsheet Formulas Evaluated on Two Large Datasets&quot; by Efthimia Aivaloglou, David Hoepelman and Felienne Hermans</a>.</p>
-<p>Note: The grammar in my implementation is different from theirs. My implementation gets rid of ambiguities to boost the performance.</p>
-<h3 id="what-is-not-supported%3A">What is not supported:</h3>
-<ul>
-<li><a href="https://support.office.com/en-ie/article/create-an-external-reference-link-to-a-cell-range-in-another-workbook-c98d1803-dd75-4668-ac6a-d7cca2a9b95f">External reference</a>
-<ul>
-<li>Anything with <code>[</code> and <code>]</code></li>
-</ul>
-</li>
-<li>Ambigious old styles
-<ul>
-<li>Sheet name contains <code>:</code>, e.g. <code>SUM('1003:1856'!D6)</code></li>
-<li>Sheet name with space that is not quoted, e.g. <code>I am a sheet!A1</code></li>
-</ul>
-</li>
-<li><code>SUM(Sheet2:Sheet3!A1:C3)</code></li>
-<li>You tell me</li>
-</ul>
-<h3 id="performance">Performance</h3>
-<ul>
-<li>The expected performace is at least 3x faster than my optimized <a href="https://github.com/LesterLyu/formula-parser">formula-parser</a>
-with <em>more syntax suppoort</em>.</li>
-</ul>
-<h3 id="dependency">Dependency</h3>
-<ul>
-<li><a href="https://github.com/SAP/chevrotain">Chevrotain</a> , thanks to this great parser building toolkit.</li>
-</ul></article>
-    </section>
+        
+        </div>
+    
 
+    
 
+    
+
+    
+    
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 

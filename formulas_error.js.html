@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>Home - Documentation</title>
+    <title>formulas/error.js - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -32,70 +32,143 @@
 
 <div id="main">
     
+    <h1 class="page-title">formulas/error.js</h1>
+    
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Formula Error.
+ */
+class FormulaError {
 
+    constructor(error) {
+        this._error = error;
+    }
 
-    <section class="package">
-        <h3> </h3>		
+    /**
+     * Get the error message.
+     * @returns {*}
+     */
+    get message() {
+        return this._msg;
+    }
+
+    /**
+     * Set the error message.
+     * @param {string} msg
+     */
+    set message(msg) {
+        this._msg = msg;
+    }
+
+    /**
+     * Get the error.
+     * @returns {string} formula error
+     */
+    get error() {
+        return this._error;
+    }
+
+    /**
+     * Return true if two errors are same.
+     * @param {FormulaError} err
+     * @returns {boolean} if two errors are same.
+     */
+    equals(err) {
+        return err._error === this._error;
+    }
+
+    /**
+     * Return the formula error in string representation.
+     * @returns {string} the formula error in string representation.
+     */
+    toString() {
+        return this._error;
+    }
+}
+
+/**
+ * DIV0 error
+ * @type {FormulaError}
+ */
+FormulaError.DIV0 = new FormulaError("#DIV/0!");
+
+/**
+ * NA error
+ * @type {FormulaError}
+ */
+FormulaError.NA = new FormulaError("#N/A");
+
+/**
+ * NAME error
+ * @type {FormulaError}
+ */
+FormulaError.NAME = new FormulaError("#NAME?");
+
+/**
+ * NULL error
+ * @type {FormulaError}
+ */
+FormulaError.NULL = new FormulaError("#NULL!");
+
+/**
+ * NUM error
+ * @type {FormulaError}
+ */
+FormulaError.NUM = new FormulaError("#NUM!");
+
+/**
+ * REF error
+ * @type {FormulaError}
+ */
+FormulaError.REF = new FormulaError("#REF!");
+
+/**
+ * VALUE error
+ * @type {FormulaError}
+ */
+FormulaError.VALUE = new FormulaError("#VALUE!");
+
+/**
+ * NOT_IMPLEMENTED error
+ * @param {string} functionName - the name of the not implemented function
+ * @returns {Error}
+ * @constructor
+ */
+FormulaError.NOT_IMPLEMENTED = (functionName) => {
+    return new Error(`Function ${functionName} is not implemented.`)
+};
+
+/**
+ * TOO_MANY_ARGS error
+ * @param functionName - the name of the errored function
+ * @returns {Error}
+ * @constructor
+ */
+FormulaError.TOO_MANY_ARGS = (functionName) => {
+    return new Error(`Function ${functionName} has too many arguments.`)
+};
+
+/**
+ * ARG_MISSING error
+ * @param args - the name of the errored function
+ * @returns {Error}
+ * @constructor
+ */
+FormulaError.ARG_MISSING = (args) => {
+    return new Error(`Argument type ${args.join(', ')} is missing.`)
+};
+
+module.exports = FormulaError;
+</code></pre>
+        </article>
     </section>
-
-
-
-
-
-
-
-
-
-    
-
-
-
-    <section class="readme">
-        <article><h2 id="a-fast-excel-formula-parser"><a href="https://github.com/LesterLyu/fast-formula-parser">A Fast Excel Formula Parser</a></h2>
-<blockquote>
-<p><strong>This project is under developments and not ready to publish.</strong></p>
-</blockquote>
-<p>Aim to be the fastest and the most reliable excel formula parser in javascript. Using <strong>LL(1)</strong> parser.</p>
-<h3 id="documentation"><a href="https://lesterlyu.github.io/fast-formula-parser/">Documentation</a></h3>
-<h3 id="grammar-diagram"><a href="https://lesterlyu.github.io/fast-formula-parser/generated_diagrams.html">Grammar Diagram</a></h3>
-<h3 id="background">Background</h3>
-<p>Inspired by <a href="https://github.com/spreadsheetlab/XLParser/blob/master/src/XLParser/ExcelFormulaGrammar.cs">XLParser</a>
-and the paper <a href="https://fenia266781730.files.wordpress.com/2019/01/07335408.pdf">&quot;A Grammar for Spreadsheet Formulas Evaluated on Two Large Datasets&quot; by Efthimia Aivaloglou, David Hoepelman and Felienne Hermans</a>.</p>
-<p>Note: The grammar in my implementation is different from theirs. My implementation gets rid of ambiguities to boost the performance.</p>
-<h3 id="what-is-not-supported%3A">What is not supported:</h3>
-<ul>
-<li><a href="https://support.office.com/en-ie/article/create-an-external-reference-link-to-a-cell-range-in-another-workbook-c98d1803-dd75-4668-ac6a-d7cca2a9b95f">External reference</a>
-<ul>
-<li>Anything with <code>[</code> and <code>]</code></li>
-</ul>
-</li>
-<li>Ambigious old styles
-<ul>
-<li>Sheet name contains <code>:</code>, e.g. <code>SUM('1003:1856'!D6)</code></li>
-<li>Sheet name with space that is not quoted, e.g. <code>I am a sheet!A1</code></li>
-</ul>
-</li>
-<li><code>SUM(Sheet2:Sheet3!A1:C3)</code></li>
-<li>You tell me</li>
-</ul>
-<h3 id="performance">Performance</h3>
-<ul>
-<li>The expected performace is at least 3x faster than my optimized <a href="https://github.com/LesterLyu/formula-parser">formula-parser</a>
-with <em>more syntax suppoort</em>.</li>
-</ul>
-<h3 id="dependency">Dependency</h3>
-<ul>
-<li><a href="https://github.com/SAP/chevrotain">Chevrotain</a> , thanks to this great parser building toolkit.</li>
-</ul></article>
-    </section>
-
-
 
 
 
