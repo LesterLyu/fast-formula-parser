@@ -30,6 +30,9 @@ Object.keys(Types).forEach((key) => {
     ReversedTypes[Types[key]] = key;
 });
 
+/**
+ * Formula helpers.
+ */
 class FormulaHelpers {
     constructor() {
         this.Types = Types;

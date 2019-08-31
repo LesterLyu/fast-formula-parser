@@ -4,12 +4,12 @@
   "description": "fast excel formula parser",
   "main": "index.js",
   "scripts": {
-    "test": "nyc --reporter=html --reporter=text mocha",
+    "test": "nyc --reporter=html --reporter=text --report-dir=docs/coverage mocha",
     "test:f": "nyc -n \"formulas/functions/**\" -n \"formulas/operators.js\" --reporter=html --reporter=text mocha test/formulas",
     "build": "webpack",
     "diagram": "node grammar/diagram.js",
     "docs": "yarn run diagram && jsdoc --configure .jsdoc.json --verbose",
-    "publish:docs": "yarn run docs && gh-pages -d docs"
+    "publish:docs": "yarn run docs && yarn run test && gh-pages -d docs"
   },
   "author": "Lester(Dishu) Lyu",
   "license": "MIT",

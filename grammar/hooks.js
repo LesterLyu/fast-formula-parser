@@ -13,6 +13,9 @@ const {Parser, allTokens} = require('./parsing');
 const lexer = require('./lexing');
 const Utils = require('./utils');
 
+/**
+ * A Excel Formula Parser & Evaluator
+ */
 class FormulaParser {
 
     /**
@@ -52,7 +55,7 @@ class FormulaParser {
     }
 
     /**
-     * Webpack needs this.
+     * Get all lexing token names. Webpack needs this.
      * @return {Array.<string>} - All token names that should not be minimized.
      */
     static get allTokens() {
