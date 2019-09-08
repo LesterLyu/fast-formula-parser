@@ -168,7 +168,7 @@ class DepParser {
         this.position = position;
         const lexResult = lexer.lex(inputText);
         this.parser.input = lexResult.tokens;
-        let res = this.parser.formulaWithCompareOp();
+        let res = this.parser.formulaWithBinaryOp();
         this.checkFormulaResult(res);
         if (this.parser.errors.length > 0) {
             const error = this.parser.errors[0];

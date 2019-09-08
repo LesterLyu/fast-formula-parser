@@ -126,7 +126,6 @@ class Utils {
             return Infix.mathOp(val1, infix, val2, isArray1, isArray2);
         else
             throw new Error(`Unrecognized infix: ${infix}`);
-
     }
 
     applyIntersect(refs) {
