@@ -352,13 +352,13 @@ class Parsing extends EmbeddedActionsParser {
             {
                 ALT: () => {
                     const name = $.CONSUME(Name).image;
-                    $.ACTION(() => context.getVariable(name))
+                    return $.ACTION(() => context.getVariable(name))
                 }
             },
             {
                 ALT: () => {
                     const column = $.CONSUME(Column).image;
-                    $.ACTION(() => this.utils.parseCol(column))
+                    return $.ACTION(() => this.utils.parseCol(column))
                 }
             },
             // A row check should be here, but the token is same with Number,
@@ -367,7 +367,7 @@ class Parsing extends EmbeddedActionsParser {
             {
                 ALT: () => {
                     const err = $.CONSUME(RefError).image;
-                    $.ACTION(() => this.utils.toError(err))
+                    return $.ACTION(() => this.utils.toError(err))
                 }
             },
             // {ALT: () => $.SUBRULE($.udfFunctionCall)},
