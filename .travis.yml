@@ -7,9 +7,8 @@ node_js:
 before_script:
   - export CI=true
 install:
-  - npm -g i yarn
-  - yarn install
+  - npm install
 script:
-  - yarn test
+  - npm test
 after_success:
-  - yarn run coverage:server
+  - npm run coverage:server

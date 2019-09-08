@@ -9,7 +9,7 @@
     "build": "webpack",
     "diagram": "node grammar/diagram.js",
     "docs": "yarn run diagram && jsdoc --configure .jsdoc.json --verbose",
-    "publish:docs": "yarn run docs && yarn run test && gh-pages -d docs",
+    "publish:docs": "yarn run docs && yarn run coverage && gh-pages -d docs",
     "coverage": "nyc -x ssf -x test --reporter=html --reporter=text --report-dir=docs/coverage mocha",
     "coverage:f": "nyc -n \"formulas/functions/**\" -n \"formulas/operators.js\" --reporter=html --reporter=text mocha test/formulas",
     "coverage:server": "nyc -x ssf -x test --reporter=text-lcov --report-dir=docs/coverage mocha | coveralls"
