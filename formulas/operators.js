@@ -9,7 +9,7 @@ const Prefix = {
             } else if (prefix === '-') {
                 sign = -sign;
             } else {
-                // throw new Error(`Unrecognized prefix: ${prefix}`);
+                throw new Error(`Unrecognized prefix: ${prefix}`);
             }
         });
 
@@ -49,7 +49,7 @@ const Postfix = {
         if (postfix === '%') {
             return value / 100;
         }
-        // throw new Error(`Unrecognized postfix: ${postfix}`);
+        throw new Error(`Unrecognized postfix: ${postfix}`);
     }
 };
 
@@ -107,7 +107,7 @@ const Infix = {
             }
 
         }
-        // throw Error('Infix.compareOp: Should not reach here.');
+        throw Error('Infix.compareOp: Should not reach here.');
     },
 
     concatOp: (value1, infix, value2, isArray1, isArray2) => {
@@ -163,7 +163,7 @@ const Infix = {
                 return value1 ** value2;
         }
 
-        // throw Error('Infix.mathOp: Should not reach here.');
+        throw Error('Infix.mathOp: Should not reach here.');
     },
 
 };

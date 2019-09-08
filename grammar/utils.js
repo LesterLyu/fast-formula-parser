@@ -124,8 +124,8 @@ class Utils {
             return Infix.concatOp(val1, infix, val2, isArray1, isArray2);
         else if (Operators.mathOp.includes(infix))
             return Infix.mathOp(val1, infix, val2, isArray1, isArray2);
-        // else
-        //     throw new Error(`Unrecognized infix: ${infix}`);
+        else
+            throw new Error(`Unrecognized infix: ${infix}`);
     }
 
     applyIntersect(refs) {
