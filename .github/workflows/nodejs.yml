@@ -37,6 +37,8 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: npm install, publish docs
       run: |
+        git config --global user.email "lvds2000@gmail.com"
+        git config --global user.name "Lester(Dishu) Lyu"
         mkdir docs
         npm install
         npm run publish:docs
