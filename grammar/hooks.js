@@ -300,7 +300,7 @@ class FormulaParser {
         this.parser.input = lexResult.tokens;
         let res;
         try {
-            res = this.parser.formulaWithCompareOp();
+            res = this.parser.formulaWithBinaryOp();
             res = this.checkFormulaResult(res, allowReturnArray);
             if (res instanceof FormulaError) {
                 return {result: res.toString(), detail: ''};
