@@ -44,6 +44,11 @@ const {
 } = lexer.tokenVocabulary;
 
 class Parsing extends EmbeddedActionsParser {
+    /**
+     *
+     * @param {FormulaParser} context
+     * @param {Utils} utils
+     */
     constructor(context, utils) {
         super(tokenVocabulary, {
             outputCst: false,
@@ -52,34 +57,58 @@ class Parsing extends EmbeddedActionsParser {
             // traceInitPerf: true,
         });
         this.utils = utils;
+        this.binaryOperatorsPrecedence = [
+            ['^'],
+            ['*', '/'],
+            ['+', '-'],
+            ['&'],
+            ['<', '>', '=', '<>', '<=', '>='],
+        ];
         const $ = this;
 
         // Adopted from https://github.com/spreadsheetlab/XLParser/blob/master/src/XLParser/ExcelFormulaGrammar.cs
 
         $.RULE('formulaWithBinaryOp', () => {
-            let value = $.SUBRULE($.formulaWithPercentOp);
+            const infixes = [];
+            const values = [$.SUBRULE($.formulaWithPercentOp)];
             $.MANY(() => {
-                const infix = $.SUBRULE($.binaryOp);
-                const value2 = $.SUBRULE2($.formulaWithPercentOp);
-                value = $.ACTION(() => this.utils.applyInfix(value, infix, value2));
+                // Caching Arrays of Alternatives
+                // https://sap.github.io/chevrotain/docs/guide/performance.html#caching-arrays-of-alternatives
+                infixes.push($.OR($.c1 ||
+                    (
+                        $.c1 = [
+                            {ALT: () => $.CONSUME(GtOp).image},
+                            {ALT: () => $.CONSUME(EqOp).image},
+                            {ALT: () => $.CONSUME(LtOp).image},
+                            {ALT: () => $.CONSUME(NeqOp).image},
+                            {ALT: () => $.CONSUME(GteOp).image},
+                            {ALT: () => $.CONSUME(LteOp).image},
+                            {ALT: () => $.CONSUME(ConcatOp).image},
+                            {ALT: () => $.CONSUME(PlusOp).image},
+                            {ALT: () => $.CONSUME(MinOp).image},
+                            {ALT: () => $.CONSUME(MulOp).image},
+                            {ALT: () => $.CONSUME(DivOp).image},
+                            {ALT: () => $.CONSUME(ExOp).image}
+                        ]
+                    )));
+                values.push($.SUBRULE2($.formulaWithPercentOp));
             });
-            return value;
-        });
+            $.ACTION(() => {
+                // evaluate
+                for (const ops of this.binaryOperatorsPrecedence) {
+                    for (let index = 0, length = infixes.length; index < length; index++) {
+                        const infix = infixes[index];
+                        if (!ops.includes(infix)) continue;
+                        infixes.splice(index, 1);
+                        values.splice(index, 2, this.utils.applyInfix(values[index], infix, values[index + 1]));
+                        index--;
+                        length--;
+                    }
+                }
+            });
 
-        $.RULE('binaryOp', () => $.OR([
-            {ALT: () => $.CONSUME(GtOp).image},
-            {ALT: () => $.CONSUME(EqOp).image},
-            {ALT: () => $.CONSUME(LtOp).image},
-            {ALT: () => $.CONSUME(NeqOp).image},
-            {ALT: () => $.CONSUME(GteOp).image},
-            {ALT: () => $.CONSUME(LteOp).image},
-            {ALT: () => $.CONSUME(ConcatOp).image},
-            {ALT: () => $.CONSUME(PlusOp).image},
-            {ALT: () => $.CONSUME(MinOp).image},
-            {ALT: () => $.CONSUME(MulOp).image},
-            {ALT: () => $.CONSUME(DivOp).image},
-            {ALT: () => $.CONSUME(ExOp).image}
-        ]));
+            return values[0];
+        });
 
         $.RULE('plusMinusOp', () => $.OR([
             {ALT: () => $.CONSUME(PlusOp).image},

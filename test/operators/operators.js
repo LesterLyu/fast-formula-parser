@@ -43,10 +43,13 @@ describe('Operators', function () {
             const formulas = Object.keys(TestCase[fun]);
             formulas.forEach(formula => {
                 const expected = TestCase[fun][formula];
-                let result = parser.parse(formula);
+                let result = parser.parse(formula, {row: 1, col: 1});
                 if (result.result) result = result.result;
-                // console.log(`Testing ${formula}`);
-                expect(result, `${formula} should equal ${expected}\n`).to.equal(expected);
+                if (typeof result === "number" && typeof expected === "number") {
+                    expect(result, `${formula} should equal ${expected}\n`).to.closeTo(expected, 0.00000001);
+                } else {
+                    expect(result, `${formula} should equal ${expected}\n`).to.equal(expected);
+                }
             })
         });
     });
