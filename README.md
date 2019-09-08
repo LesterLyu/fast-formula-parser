@@ -1,3 +1,4 @@
+[![Coverage Status](https://coveralls.io/repos/github/LesterLyu/fast-formula-parser/badge.svg?branch=master)](https://coveralls.io/github/LesterLyu/fast-formula-parser?branch=master)
 ## [A Fast Excel Formula Parser](https://github.com/LesterLyu/fast-formula-parser)
 > **This project is under developments and not ready to publish.**
 
