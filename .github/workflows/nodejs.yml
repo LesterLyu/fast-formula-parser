@@ -25,6 +25,6 @@ jobs:
       env:
         CI: true
     - name: docs
-      if: github.ref == 'master' && matrix.node == '12.x'
+      if: github.ref == 'master'
       run: npm run publish:docs
       
