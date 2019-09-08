@@ -115,7 +115,7 @@ class FormulaHelpers {
             }
 
         } else {
-            // throw Error('Unknown type in FormulaHelpers.acceptNumber')
+            throw Error('Unknown type in FormulaHelpers.acceptNumber')
         }
         return number;
     }
