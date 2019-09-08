@@ -37,6 +37,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: npm install, publish docs
       run: |
+        mkdir docs
         npm install
         npm run publish:docs
      
