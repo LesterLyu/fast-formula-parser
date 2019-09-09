@@ -16,15 +16,15 @@ Note: The grammar in my implementation is different from theirs. My implementati
 ### What is not supported:
  - [External reference](https://support.office.com/en-ie/article/create-an-external-reference-link-to-a-cell-range-in-another-workbook-c98d1803-dd75-4668-ac6a-d7cca2a9b95f)
     - Anything with `[` and `]`
- - Ambigious old styles
+ - Ambiguous old styles
     - Sheet name contains `:`, e.g. `SUM('1003:1856'!D6)`
     - Sheet name with space that is not quoted, e.g. `I am a sheet!A1`
  - `SUM(Sheet2:Sheet3!A1:C3)`
  - You tell me
     
 ### Performance
-  - The expected performace is at least 3x faster than my optimized [formula-parser](https://github.com/LesterLyu/formula-parser)
-  with *more syntax suppoort*.
+  - The expected performance is at least 3x faster than my optimized [formula-parser](https://github.com/LesterLyu/formula-parser)
+  with *more syntax support*.
   
 ### Dependency
   - [Chevrotain](https://github.com/SAP/chevrotain) , thanks to this great parser building toolkit.
