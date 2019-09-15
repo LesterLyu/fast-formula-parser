@@ -43,7 +43,7 @@ const MathFunctions = {
         text = H.accept(text, Types.STRING).toUpperCase();
         // Credits: Rafa? Kukawski
         if (!/^M*(?:D?C{0,3}|C[MD])(?:L?X{0,3}|X[CL])(?:V?I{0,3}|I[XV])$/.test(text)) {
-            throw FormulaError.VALUE;
+            throw new FormulaError('#VALUE!', 'Invalid roman numeral in ARABIC evaluation.');
         }
         let r = 0;
         text.replace(/[MDLV]|C[MD]?|X[CL]?|I[XV]?/g, function (i) {

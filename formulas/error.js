@@ -3,8 +3,21 @@
  */
 class FormulaError {
 
-    constructor(error) {
-        this._error = error;
+    /**
+     * @param {string} error - error code, i.e. #NUM!
+     * @param {string} [msg] - detailed error message
+     * @returns {FormulaError}
+     */
+    constructor(error, msg) {
+        if (msg == null && FormulaError.errorMap.has(error))
+            return FormulaError.errorMap.get(error);
+        else if (msg == null) {
+            this._error = error;
+            FormulaError.errorMap.set(error, this);
+        } else {
+            this._error = error;
+            this._msg = msg;
+        }
     }
 
     /**
@@ -37,7 +50,7 @@ class FormulaError {
      * @returns {boolean} if two errors are same.
      */
     equals(err) {
-        return err._error === this._error;
+        return err instanceof FormulaError && err._error === this._error;
     }
 
     /**
@@ -48,6 +61,8 @@ class FormulaError {
         return this._error;
     }
 }
+
+FormulaError.errorMap = new Map();
 
 /**
  * DIV0 error
