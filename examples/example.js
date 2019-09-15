@@ -1,4 +1,5 @@
-const FormulaParser = require('fast-formula-parser');
+// const FormulaParser = require('fast-formula-parser');
+const FormulaParser = require('../index');
 const {FormulaHelpers, Types, FormulaError, MAX_ROW, MAX_COLUMN} = FormulaParser;
 
 const data = [
@@ -67,5 +68,14 @@ const parser = new FormulaParser({
     }
 });
 
-console.log(parser.parse('SUM(A:C)'));
+// parse the formula, the position of where the formula is located is required
+// for some functions.
+console.log(parser.parse('SUM(A:C)', {sheet: 'Sheet 1', row: 1, col: 1}));
+// print 21
 
+// you can specify if the return value can be an array, this is helpful when dealing
+// with an array formula
+console.log(parser.parse('MMULT({1,5;2,3},{1,2;2,3})', {sheet: 'Sheet 1', row: 1, col: 1}, true));
+// print [ [ 11, 17 ], [ 8, 13 ] ]
+
+console.log(parser.parse('SUM(1, "3q")', {sheet: 'Sheet 1', row: 1, col: 1}));

@@ -1,3 +1,4 @@
+const FormulaError = require('../../../formulas/error');
 module.exports = {
     DATE: {
         'DATE(108,1,2)': 39449,
@@ -7,8 +8,8 @@ module.exports = {
         'DATE(2008,-3,2)': 39327,
         'DATE(2008,1,35)': 39482,
         'DATE(2008,1,-15)': 39432,
-        'DATE(-1,1,2)': '#NUM!',
-        'DATE(10000,1,2)': '#NUM!',
+        'DATE(-1,1,2)': FormulaError.NUM,
+        'DATE(10000,1,2)': FormulaError.NUM,
     },
 
     DATEDIF: {
@@ -37,7 +38,7 @@ module.exports = {
         'DATEDIF("8/15/2001","8/15/2003","YD")': 0,
         'DATEDIF("8/14/2001","8/15/2003","YD")': 1,
 
-        'DATEDIF("8/14/2005","8/15/2003","YD")': '#NUM!',
+        'DATEDIF("8/14/2005","8/15/2003","YD")': FormulaError.NUM,
 
     },
 
@@ -73,13 +74,13 @@ module.exports = {
 
         'DATEVALUE("1900/1/1")': 1,
         'DATEVALUE("4:48:18 PM")': 0,
-        'DATEVALUE("10000/12/1")': '#VALUE!',
+        'DATEVALUE("10000/12/1")': FormulaError.VALUE,
     },
 
     DAY: {
         'DAY(DATEVALUE("15-Apr-11"))': 15,
         'DAY("15-Apr-11")': 15,
-        'DAY(-12)': '#VALUE!',
+        'DAY(-12)': FormulaError.VALUE,
     },
 
     DAYS: {
@@ -150,8 +151,8 @@ module.exports = {
         'NETWORKDAYS.INTL(DATE(2006,2,28),DATE(2006,1,31), "1111111")': 0,
         'NETWORKDAYS.INTL(DATE(2006,1,1),DATE(2006,2,1),7,{"2006/1/2","2006/1/16"})': 22,
         'NETWORKDAYS.INTL(DATE(2006,1,1),DATE(2006,2,1),"0010001",{"2006/1/2","2006/1/16"})': 20,
-        'NETWORKDAYS.INTL(DATE(2006,1,1),DATE(2006,1,31), "1")': '#VALUE!',
-        'NETWORKDAYS.INTL(DATE(2006,2,28),DATE(2006,1,31), "01111111")': '#VALUE!',
+        'NETWORKDAYS.INTL(DATE(2006,1,1),DATE(2006,1,31), "1")': FormulaError.VALUE,
+        'NETWORKDAYS.INTL(DATE(2006,2,28),DATE(2006,1,31), "01111111")': FormulaError.VALUE,
     },
 
     NOW: {
@@ -168,7 +169,7 @@ module.exports = {
     TIME: {
         'TIME(12,0,0)': 0.5,
         'TIME(16,48,10)': 0.7001157407407408,
-        'TIME(-12,0,0)': '#NUM!',
+        'TIME(-12,0,0)': FormulaError.NUM,
     },
 
     TIMEVALUE: {
@@ -185,7 +186,7 @@ module.exports = {
         'WEEKDAY("2/14/2008", 2)': 4,
         'WEEKDAY("2/14/2008", "2")': 4,
         'WEEKDAY("2/14/2008", 3)': 3,
-        'WEEKDAY("2/14/2008", 5)': '#NUM!',
+        'WEEKDAY("2/14/2008", 5)': FormulaError.NUM,
     },
 
     WEEKNUM: {
@@ -206,12 +207,12 @@ module.exports = {
     },
 
     'WORKDAY.INTL': {
-        'WORKDAY.INTL(DATE(2012,1,1),30,0)': '#NUM!',
-        'WORKDAY.INTL(DATE(2012,1,1),30,"1")': '#VALUE!',
+        'WORKDAY.INTL(DATE(2012,1,1),30,0)': FormulaError.NUM,
+        'WORKDAY.INTL(DATE(2012,1,1),30,"1")': FormulaError.VALUE,
         'WORKDAY.INTL(DATE(2012,1,1),1,11)': 40910,
         'WORKDAY.INTL(DATE(2012,1,1),1,"0000011")': 40910,
-        'WORKDAY.INTL(DATE(2012,1,1),1,"1111111")': '#VALUE!',
-        'WORKDAY.INTL(DATE(2012,1,1),1,"011111")': '#VALUE!',
+        'WORKDAY.INTL(DATE(2012,1,1),1,"1111111")': FormulaError.VALUE,
+        'WORKDAY.INTL(DATE(2012,1,1),1,"011111")': FormulaError.VALUE,
         'WORKDAY.INTL(DATE(2012,1,1),90,11)': 41013,
         'WORKDAY.INTL(DATE(2012,1,1),30,17)': 40944,
         'TEXT(WORKDAY.INTL(DATE(2012,1,1),30,17),"m/dd/yyyy")': '2/05/2012'
@@ -243,6 +244,6 @@ module.exports = {
         'YEARFRAC("1/1/2012","7/30/2012", 4)': 0.58055556,
         'YEARFRAC("2012/1/1","2013/7/30",4)': 1.580555556,
 
-        'YEARFRAC("2012/1/1","2012/7/30", 5)': '#VALUE!',
+        'YEARFRAC("2012/1/1","2012/7/30", 5)': FormulaError.VALUE,
     },
 };

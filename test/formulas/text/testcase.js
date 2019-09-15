@@ -1,3 +1,4 @@
+const FormulaError = require('../../../formulas/error');
 module.exports = {
 
     ASC: {
@@ -23,7 +24,7 @@ module.exports = {
 
     CODE: {
         'CODE("C")': 67,
-        'CODE("")': '#VALUE!',
+        'CODE("")': FormulaError.VALUE,
     },
 
     CONCAT: {
@@ -53,12 +54,12 @@ module.exports = {
     },
 
     EXACT: {
-        'EXACT("hello", "hElLo")': "FALSE",
-        'EXACT("HELLO","HELLO")': "TRUE"
+        'EXACT("hello", "hElLo")': false,
+        'EXACT("HELLO","HELLO")': true
     },
 
     FIND: {
-        'FIND("h","Hello")': "#VALUE!",
+        'FIND("h","Hello")': FormulaError.VALUE,
         'FIND("o", "hello")': 5
     },
 
@@ -92,8 +93,8 @@ module.exports = {
         'MID("Fluid Flow",1,5)': "Fluid",
         'MID("Foo",5,1)': "",
         'MID("Foo",1,5)': "Foo",
-        'MID("Foo",-1,5)': "#VALUE!",
-        'MID("Foo",1,-5)': "#VALUE!"
+        'MID("Foo",-1,5)': FormulaError.VALUE,
+        'MID("Foo",1,-5)': FormulaError.VALUE
     },
 
     NUMBERVALUE: {
@@ -104,14 +105,14 @@ module.exports = {
         'NUMBERVALUE("3 50")': 350,
         'NUMBERVALUE("$3 50")': 350,
         'NUMBERVALUE("($3 50)")': -350,
-        'NUMBERVALUE("-($3 50)")': '#VALUE!',
-        'NUMBERVALUE("($-3 50)")': '#VALUE!',
-        'NUMBERVALUE("2500,.27",",",".")': '#VALUE!',
+        'NUMBERVALUE("-($3 50)")': FormulaError.VALUE,
+        'NUMBERVALUE("($-3 50)")': FormulaError.VALUE,
+        'NUMBERVALUE("2500,.27",",",".")': FormulaError.VALUE,
         // group separator occurs after the decimal separator
-        'NUMBERVALUE("3.5%",".",".")': '#VALUE!',
-        'NUMBERVALUE("3.5%",,)': '#VALUE!',
+        'NUMBERVALUE("3.5%",".",".")': FormulaError.VALUE,
+        'NUMBERVALUE("3.5%",,)': FormulaError.VALUE,
         // decimal separator is used more than once
-        'NUMBERVALUE("3..5")': '#VALUE!',
+        'NUMBERVALUE("3..5")': FormulaError.VALUE,
 
     },
 
@@ -131,10 +132,10 @@ module.exports = {
     },
 
     SEARCH: {
-        'SEARCH(",", "abcdef")': '#VALUE!',
+        'SEARCH(",", "abcdef")': FormulaError.VALUE,
         'SEARCH("b", "abcdef")': 2,
         'SEARCH("c*f", "abcdef")': 3,
-        'SEARCH("c?f", "abcdef")': '#VALUE!',
+        'SEARCH("c?f", "abcdef")': FormulaError.VALUE,
         'SEARCH("c?e", "abcdef")': 3,
         'SEARCH("c\\b", "abcabcac\\bacb", 6)': 8,
     },
@@ -155,14 +156,14 @@ module.exports = {
     UNICHAR: {
         'UNICHAR(32)': " ",
         'UNICHAR(66)': "B",
-        'UNICHAR(0)': "#VALUE!",
+        'UNICHAR(0)': FormulaError.VALUE,
         'UNICHAR(3333)': 'അ',
     },
 
     UNICODE: {
         'UNICODE(" ")': 32,
         'UNICODE("B")': 66,
-        'UNICODE("")': '#VALUE!',
+        'UNICODE("")': FormulaError.VALUE,
     }
 
 };

@@ -20,9 +20,11 @@ class FormulaParser {
 
     /**
      * @param {{functions: {}, onVariable: function, onCell: function, onRange: function}} [config]
+     * @param isTest - is in testing environment
      */
-    constructor(config) {
+    constructor(config, isTest = false) {
         this.logs = [];
+        this.isTest = isTest;
         this.utils = new Utils(this);
         config = Object.assign({
             functions: {},
@@ -196,15 +198,22 @@ class FormulaParser {
                 }
             }
             if (res === undefined) {
-                if (!this.logs.includes(name)) this.logs.push(name);
                 // console.log(`Function ${name} may be not implemented.`);
-                return {value: 0, ref: {}};
+                if (this.isTest) {
+                    if (!this.logs.includes(name)) this.logs.push(name);
+                    return {value: 0, ref: {}};
+                }
+                throw FormulaError.NOT_IMPLEMENTED(name);
             }
             return FormulaHelpers.checkFunctionResult(res);
         } else {
-            if (!this.logs.includes(name)) this.logs.push(name);
+
             // console.log(`Function ${name} is not implemented`);
-            return {value: 0, ref: {}};
+            if (this.isTest) {
+                if (!this.logs.includes(name)) this.logs.push(name);
+                return {value: 0, ref: {}};
+            }
+            throw FormulaError.NOT_IMPLEMENTED(name);
         }
     }
 
@@ -247,9 +256,7 @@ class FormulaParser {
                 return FormulaError.NUM;
             }
             result += 0; // make -0 to 0
-        } else if (type === 'boolean')
-            result = result ? 'TRUE' : 'FALSE';
-        else if (type === 'object') {
+        } else if (type === 'object') {
             if (result instanceof FormulaError)
                 return result;
             if (allowReturnArray) {
@@ -285,7 +292,7 @@ class FormulaParser {
     }
 
     /**
-     * Parse a excel formula.
+     * Parse an excel formula.
      * @param inputText
      * @param {{row: number, col: number}} [position] - The position of the parsed formula
      *              e.g. {row: 1, col: 1}
@@ -303,7 +310,7 @@ class FormulaParser {
             res = this.parser.formulaWithBinaryOp();
             res = this.checkFormulaResult(res, allowReturnArray);
             if (res instanceof FormulaError) {
-                return {result: res.toString(), detail: ''};
+                return res;
             }
         } catch (e) {
             // console.log(e);

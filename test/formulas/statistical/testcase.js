@@ -1,3 +1,4 @@
+const FormulaError = require('../../../formulas/error');
 const tests = {
 
     AVEDEV: {
@@ -11,23 +12,23 @@ const tests = {
         'AVERAGE({TRUE,1,2,"12"}, 3)': 2,
         'AVERAGE((A7, B7), 3)': 2,
         'AVERAGE(TRUE, "3")': 2,
-        'AVERAGE(TRUE, "3a")': '#VALUE!',
+        'AVERAGE(TRUE, "3a")': FormulaError.VALUE,
     },
 
     AVERAGEA: {
         'AVERAGEA({TRUE,1,2,"12"}, 3)': 1.5,
         'AVERAGEA((A7, B7), 3)': 2,
         'AVERAGEA(TRUE, "3")': 2,
-        'AVERAGEA(TRUE, "3a")': '#VALUE!',
+        'AVERAGEA(TRUE, "3a")': FormulaError.VALUE,
         'AVERAGEA({TRUE,1,2,"3",""}, 3, TRUE, "1", 0)': 1,
-        'AVERAGEA("", 1)': '#VALUE!'
+        'AVERAGEA("", 1)': FormulaError.VALUE
     },
 
     AVERAGEIF: {
         // Example 1
         'AVERAGEIF(B8:B11,"<23000")': 14000,
         'AVERAGEIF(A8:A11,"<250000")': 150000,
-        'AVERAGEIF(A8:A11,"<95000")': '#DIV/0!',
+        'AVERAGEIF(A8:A11,"<95000")': FormulaError.DIV0,
         'AVERAGEIF(A8:A11,">250000",B8:B11)': 24500,
         // Example 2
         'AVERAGEIF(A12:A16,"=*West",B12:B16)': 16733.5,
@@ -112,7 +113,7 @@ const distributions = {
     },
 
     'CHISQ.TEST': {
-        'CHISQ.TEST({58,35;11,25;10,23},{43.35,47.65;17.56,18.44;16.09,0})': '#DIV/0!',
+        'CHISQ.TEST({58,35;11,25;10,23},{43.35,47.65;17.56,18.44;16.09,0})': FormulaError.DIV0,
         'CHISQ.TEST({58,35;11,25;10,23},{43.35,47.65;17.56,18.44;16.09,16.91})': 0.0001513457663,
         'CHISQ.TEST({58,35;11,25;10,23},{43.35,47.65;17.56,18.44;16.09,"16.91"})': 0.000453139,
     },
@@ -136,7 +137,7 @@ const distributions = {
     },
 
     'COVARIANCE.S': {
-        'COVARIANCE.S(3,9)': '#DIV/0!',
+        'COVARIANCE.S(3,9)': FormulaError.DIV0,
         'COVARIANCE.S({2,4,8},{5,11,12})': 9.666666666667,
         'COVARIANCE.S({3,2,4,5,6},{9,7,12,15,17})': 6.5,
         'COVARIANCE.S({3,2,4,5,6},{9,7,12,15,"17"})': 4.5,
@@ -151,9 +152,9 @@ const distributions = {
     'EXPON.DIST': {
         'EXPON.DIST(0.2,10,TRUE)': 0.864664716763387,
         'EXPON.DIST(0.2,10,FALSE)': 1.353352832366130,
-        'EXPON.DIST(0.-2,10,FALSE)': '#NUM!',
-        'EXPON.DIST(0.2,-10,FALSE)': '#NUM!',
-        'EXPON.DIST(0.2,0.0,FALSE)': '#NUM!',
+        'EXPON.DIST(0.-2,10,FALSE)': FormulaError.NUM,
+        'EXPON.DIST(0.2,-10,FALSE)': FormulaError.NUM,
+        'EXPON.DIST(0.2,0.0,FALSE)': FormulaError.NUM,
     },
 
     // David
@@ -162,64 +163,64 @@ const distributions = {
         'F.DIST(15,6.1,4,TRUE)': 0.989741952394019000,
         'F.DIST(15,6.9,4.8,TRUE)': 0.989741952394019000,
         'F.DIST(15,6,4,FALSE)': 0.001271447,
-        'F.DIST(-0.5,6,4,TRUE)': '#NUM!',
-        'F.DIST(15.6,0.9,4,TRUE)': '#NUM!',
-        'F.DIST(15.6,6,0.4,TRUE)': '#NUM!',
+        'F.DIST(-0.5,6,4,TRUE)': FormulaError.NUM,
+        'F.DIST(15.6,0.9,4,TRUE)': FormulaError.NUM,
+        'F.DIST(15.6,6,0.4,TRUE)': FormulaError.NUM,
     },
 
     'F.DIST.RT': {
         'F.DIST.RT(15.2068649, 6, 4)': 0.01,
         'F.DIST.RT(15.2068649, 6.5, 4)': 0.01,
         'F.DIST.RT(15.2068649, 6, 4.4)': 0.01,
-        'F.DIST.RT(-0.5, 6, 4)': '#NUM!',
-        'F.DIST.RT(15.6, 0.9, 4)': '#NUM!',
-        'F.DIST.RT(15.6, 6, 0.4)': '#NUM!',
+        'F.DIST.RT(-0.5, 6, 4)': FormulaError.NUM,
+        'F.DIST.RT(15.6, 0.9, 4)': FormulaError.NUM,
+        'F.DIST.RT(15.6, 6, 0.4)': FormulaError.NUM,
     },
 
     'F.INV': {
         'F.INV(0.01,  6,  4)': 0.109309914,
         'F.INV(0.01,  6.9,  4.9)': 0.109309914,
-        'F.INV(-0.01,  6,  4)': '#NUM!',
-        'F.INV(1.01,  6,  4)': '#NUM!',
-        'F.INV(1.01,  0.6,  4)': '#NUM!',
-        'F.INV(0.01,  6,  0.4)': '#NUM!',
-        'F.INV(1.01,  -6,  -4)': '#NUM!',
+        'F.INV(-0.01,  6,  4)': FormulaError.NUM,
+        'F.INV(1.01,  6,  4)': FormulaError.NUM,
+        'F.INV(1.01,  0.6,  4)': FormulaError.NUM,
+        'F.INV(0.01,  6,  0.4)': FormulaError.NUM,
+        'F.INV(1.01,  -6,  -4)': FormulaError.NUM,
     },
     'F.INV.RT': {
         'F.INV.RT(0.01, 6, 4)': 15.20686486,
         'F.INV.RT(0.01, 6.9, 4.8)': 15.20686486,
-        'F.INV.RT(-0.01, 6.9, 4.8)': '#NUM!',
-        'F.INV.RT(1.01, 6.9, 4.8)': '#NUM!',
-        'F.INV.RT(0.01, 0.9, 4)': '#NUM!',
-        'F.INV.RT(0.01, 6.9, 0.4)': '#NUM!',
-        'F.INV.RT(0.01, 1000000000000, 4)': '#NUM!',
-        'F.INV.RT(0.01, 6.9, 1000000000000)': '#NUM!',
+        'F.INV.RT(-0.01, 6.9, 4.8)': FormulaError.NUM,
+        'F.INV.RT(1.01, 6.9, 4.8)': FormulaError.NUM,
+        'F.INV.RT(0.01, 0.9, 4)': FormulaError.NUM,
+        'F.INV.RT(0.01, 6.9, 0.4)': FormulaError.NUM,
+        'F.INV.RT(0.01, 1000000000000, 4)': FormulaError.NUM,
+        'F.INV.RT(0.01, 6.9, 1000000000000)': FormulaError.NUM,
     },
 
     'F.TEST': {
         'F.TEST({6,7,9,15,21}, {20,1})': 0.200507085811744,
         'F.TEST({6,7,9,15,21}, {20,28,31,38,40})': 0.648317846786174,
         'F.TEST({6,7,9,15,21}, {20,28,31,38,"40"})': 0.732034211877256,
-        'F.TEST({6}, {20})': '#DIV/0!'
+        'F.TEST({6}, {20})': FormulaError.DIV0
     },
 
     FISHER: {
         'FISHER(0.75)': 0.97295507452765700,
         'FISHER(0.5)': 0.54930614433405500,
-        'FISHER(-1.1)': '#NUM!',
-        'FISHER(1.1)': '#NUM!'
+        'FISHER(-1.1)': FormulaError.NUM,
+        'FISHER(1.1)': FormulaError.NUM
     },
 
     FISHERINV: {
         'FISHERINV(0.972955)': 0.749999967,
-        'FISHERINV("string")': '#VALUE!',
+        'FISHERINV("string")': FormulaError.VALUE,
     },
 
     FORECAST: {
         'FORECAST(30,{6,7,9,15,21},{20,28,31,38,40})': 10.60725308642,
-        'FORECAST(30,{6,6},{2,"1"})': '#DIV/0!',
+        'FORECAST(30,{6,6},{2,"1"})': FormulaError.DIV0,
         'FORECAST(30,{6,6,4},{2,1,3})': -22.66666666667,
-        'FORECAST(30,{6,6,4},{2,1})': '#N/A',
+        'FORECAST(30,{6,6,4},{2,1})': FormulaError.NA,
     },
 
     // 'FORECAST.ETS': {},
@@ -232,9 +233,9 @@ const distributions = {
 
     'FORECAST.LINEAR': {
         'FORECAST.LINEAR(30,{6,7,9,15,21},{20,28,31,38,40})': 10.60725308642,
-        'FORECAST.LINEAR(30,{6,6},{2,"1"})': '#DIV/0!',
+        'FORECAST.LINEAR(30,{6,6},{2,"1"})': FormulaError.DIV0,
         'FORECAST.LINEAR(30,{6,6,4},{2,1,3})': -22.66666666667,
-        'FORECAST.LINEAR(30,{6,6,4},{2,1})': '#N/A',
+        'FORECAST.LINEAR(30,{6,6,4},{2,1})': FormulaError.NA,
     },
 
     FREQUENCY: {
@@ -249,40 +250,40 @@ const distributions = {
         'GAMMA(2.5)': 1.329340388,
         // 'GAMMA(-3.75)': 0.267866128861417,  // Error: precise problem
         'GAMMA(-2.5)': -0.94530872048,
-        'GAMMA(0)': '#NUM!',
-        'GAMMA(-2)': '#NUM!',
+        'GAMMA(0)': FormulaError.NUM,
+        'GAMMA(-2)': FormulaError.NUM,
     },
 
     'GAMMA.DIST': {
-        'GAMMA.DIST(-10.00001131, 9, 2, FALSE)': '#NUM!',
-        'GAMMA.DIST(10.00001131, -9, 2, TRUE)': '#NUM!',
-        'GAMMA.DIST(10.00001131, 9, -2, FALSE)': '#NUM!',
+        'GAMMA.DIST(-10.00001131, 9, 2, FALSE)': FormulaError.NUM,
+        'GAMMA.DIST(10.00001131, -9, 2, TRUE)': FormulaError.NUM,
+        'GAMMA.DIST(10.00001131, 9, -2, FALSE)': FormulaError.NUM,
         'GAMMA.DIST(10.00001131, 9, 2, TRUE)': 0.068094004,
         'GAMMA.DIST(10.00001131, 9, 2, FALSE)': 0.03263913,
     },
 
     'GAMMA.INV': {
         'GAMMA.INV(0.068094,9,2)': 10.00001119,
-        'GAMMA.INV(-0.1,9,2)': '#NUM!',
-        'GAMMA.INV(11.1,9,2)': '#NUM!',
-        'GAMMA.INV(0.5,-0.9,2)': '#NUM!',
-        'GAMMA.INV(0.5,9,-0.2)': '#NUM!',
+        'GAMMA.INV(-0.1,9,2)': FormulaError.NUM,
+        'GAMMA.INV(11.1,9,2)': FormulaError.NUM,
+        'GAMMA.INV(0.5,-0.9,2)': FormulaError.NUM,
+        'GAMMA.INV(0.5,9,-0.2)': FormulaError.NUM,
     },
 
     GAMMALN: {
         'GAMMALN(4)': 1.791759469,
-        'GAMMALN("string")': '#VALUE!',
-        'GAMMALN(-4)': '#NUM!',
+        'GAMMALN("string")': FormulaError.VALUE,
+        'GAMMALN(-4)': FormulaError.NUM,
     },
 
     'GAMMALN.PRECISE': {
         'GAMMALN.PRECISE(4)': 1.791759469,
-        'GAMMALN.PRECISE("string")': '#VALUE!',
-        'GAMMALN.PRECISE(-4)': '#NUM!',
+        'GAMMALN.PRECISE("string")': FormulaError.VALUE,
+        'GAMMALN.PRECISE(-4)': FormulaError.NUM,
     },
     GAUSS: {
         'GAUSS(2)': 0.477249868,
-        'GAUSS("string")': '#VALUE!',
+        'GAUSS("string")': FormulaError.VALUE,
     },
 
     GEOMEAN: {
@@ -293,8 +294,8 @@ const distributions = {
 
     GROWTH: {
         'GROWTH({33100,47300,69000,102000,150000,220000})': 32618.2037735398,
-        'GROWTH({33100,47300,69000,102000,150000,"220000"})': '#VALUE!',
-        'GROWTH({33100,47300,69000,102000,150000,220000}, {11,12,13,14,15})': '#REF!',
+        'GROWTH({33100,47300,69000,102000,150000,"220000"})': FormulaError.VALUE,
+        'GROWTH({33100,47300,69000,102000,150000,220000}, {11,12,13,14,15})': FormulaError.REF,
         'GROWTH({33100,47300,69000,102000,150000,220000}, {11,12,13,14,15,16})': 32618.2037735398,
         'SUM(GROWTH({33100,47300,69000,102000,150000,220000}, {11,12,13,14,15,16}))': 620750.363577979,
         'GROWTH({33100,47300,69000,102000,150000,220000}, {11,12,13,14,15,16},{1;2})': 724.76739866295,
@@ -313,29 +314,29 @@ const distributions = {
         'HYPGEOM.DIST(1,4,8,20,FALSE)': 0.363261093911,
         // if ( sample_s < 0  || number_sample <= 0 || population_s <= 0 || number_pop <= 0 )
         'HYPGEOM.DIST(0,4,8,20,TRUE)': 0.102167183,
-        'HYPGEOM.DIST(-1,4,8,20,TRUE)': '#NUM!',
-        'HYPGEOM.DIST(1,0.0,8,20,TRUE)': '#NUM!',
-        'HYPGEOM.DIST(1,-4,8,20,TRUE)': '#NUM!',
-        'HYPGEOM.DIST(1,4,0,20,TRUE)': '#NUM!',
-        'HYPGEOM.DIST(1,4,-8,20,TRUE)': '#NUM!',
-        'HYPGEOM.DIST(1,4,8,0.0,TRUE)': '#NUM!',
-        'HYPGEOM.DIST(1,4,8,-20,TRUE)': '#NUM!',
+        'HYPGEOM.DIST(-1,4,8,20,TRUE)': FormulaError.NUM,
+        'HYPGEOM.DIST(1,0.0,8,20,TRUE)': FormulaError.NUM,
+        'HYPGEOM.DIST(1,-4,8,20,TRUE)': FormulaError.NUM,
+        'HYPGEOM.DIST(1,4,0,20,TRUE)': FormulaError.NUM,
+        'HYPGEOM.DIST(1,4,-8,20,TRUE)': FormulaError.NUM,
+        'HYPGEOM.DIST(1,4,8,0.0,TRUE)': FormulaError.NUM,
+        'HYPGEOM.DIST(1,4,8,-20,TRUE)': FormulaError.NUM,
 
         // if (number_sample > number_pop)
-        'HYPGEOM.DIST(1,21,8,20,TRUE)': '#NUM!',
+        'HYPGEOM.DIST(1,21,8,20,TRUE)': FormulaError.NUM,
 
         // if (population_s > number_pop)
-        'HYPGEOM.DIST(1,4,8,7,TRUE)': '#NUM!',
+        'HYPGEOM.DIST(1,4,8,7,TRUE)': FormulaError.NUM,
 
         // If sample_s is less than the larger of 0 or (number_sample - number_population + population_s), HYPGEOM.DIST returns the #NUM! error value.
-        'HYPGEOM.DIST(1,4,8,10,FALSE)': '#NUM!',
+        'HYPGEOM.DIST(1,4,8,10,FALSE)': FormulaError.NUM,
 
         // if (number_sample < sample_s || population_s < sample_s)
-        'HYPGEOM.DIST(5,4,8,20,TRUE)': '#NUM!',
-        'HYPGEOM.DIST(9,15,8,20,TRUE)': '#NUM!',
-        'HYPGEOM.DIST(8,15,8,14,TRUE)': '#NUM!',
-        'HYPGEOM.DIST(1,8,8,7,FALSE)': '#NUM!',
-        'HYPGEOM.DIST(1,4,21,20,FALSE)': '#NUM!',
+        'HYPGEOM.DIST(5,4,8,20,TRUE)': FormulaError.NUM,
+        'HYPGEOM.DIST(9,15,8,20,TRUE)': FormulaError.NUM,
+        'HYPGEOM.DIST(8,15,8,14,TRUE)': FormulaError.NUM,
+        'HYPGEOM.DIST(1,8,8,7,FALSE)': FormulaError.NUM,
+        'HYPGEOM.DIST(1,4,21,20,FALSE)': FormulaError.NUM,
 
     },
 
@@ -355,15 +356,15 @@ const distributions = {
     'LOGNORM.DIST': {
         'LOGNORM.DIST(4,3.5,1.2,TRUE)': 0.0390835557068,
         'LOGNORM.DIST(4,3.5,1.2,FALSE)': 0.0176175966818,
-        'LOGNORM.DIST(-4,3.5,1.2,TRUE)': '#NUM!',
-        'LOGNORM.DIST(4,3.5,-1.2,TRUE)': '#NUM!',
+        'LOGNORM.DIST(-4,3.5,1.2,TRUE)': FormulaError.NUM,
+        'LOGNORM.DIST(4,3.5,-1.2,TRUE)': FormulaError.NUM,
     },
 
     'LOGNORM.INV': {
         'LOGNORM.INV(0.039084, 3.5, 1.2)': 4.0000252186806,
-        'LOGNORM.INV(-0.039084, 3.5, 1.2)': '#NUM!',
-        'LOGNORM.INV( 1.039084, 3.5, 1.2)': '#NUM!',
-        'LOGNORM.INV(0.039084, 3.5, -1.2)': '#NUM!',
+        'LOGNORM.INV(-0.039084, 3.5, 1.2)': FormulaError.NUM,
+        'LOGNORM.INV( 1.039084, 3.5, 1.2)': FormulaError.NUM,
+        'LOGNORM.INV(0.039084, 3.5, -1.2)': FormulaError.NUM,
     },
 
     'MODE.MULT': {},
@@ -374,29 +375,29 @@ const distributions = {
         // number_f, number_s,probability_s,cumulative
         'NEGBINOM.DIST(10, 5, 0.25,TRUE)': 0.3135140584782,
         'NEGBINOM.DIST(10, 5, 0.25,FALSE)': 0.0550486603752,
-        'NEGBINOM.DIST(10, 5, -0.25,FALSE)': '#NUM!',
-        'NEGBINOM.DIST(10, 5, 1.25,FALSE)': '#NUM!',
-        'NEGBINOM.DIST(-10, 5, 0.25,FALSE)': '#NUM!',
-        'NEGBINOM.DIST(10, 0.5, 0.25,FALSE)': '#NUM!',
+        'NEGBINOM.DIST(10, 5, -0.25,FALSE)': FormulaError.NUM,
+        'NEGBINOM.DIST(10, 5, 1.25,FALSE)': FormulaError.NUM,
+        'NEGBINOM.DIST(-10, 5, 0.25,FALSE)': FormulaError.NUM,
+        'NEGBINOM.DIST(10, 0.5, 0.25,FALSE)': FormulaError.NUM,
     },
 
     'NORM.DIST': {
         'NORM.DIST(42, 40, 1.5, TRUE)': 0.90878878,
         'NORM.DIST(42, 40, 1.5, FALSE)': 0.10934005,
         'NORM.DIST(1.333333, 0, 1, TRUE)': 0.908788726, // the same to NORM.S.DIST
-        'NORM.DIST(42, 40, 0, TRUE)': '#NUM!',
-        'NORM.DIST(42, 40, -1.1, TRUE)': '#NUM!',
+        'NORM.DIST(42, 40, 0, TRUE)': FormulaError.NUM,
+        'NORM.DIST(42, 40, -1.1, TRUE)': FormulaError.NUM,
     },
 
     'NORM.INV': {
         'NORM.INV(0.908789, 40, 1.5)': 42.00000201,
         'NORM.INV(0.908789, 0, 1)': 1.333334673,  // the same to NORM.S.INV
-        'NORM.INV(-1.0, 40, 1.5)': '#NUM!',
-        'NORM.INV(0.0, 40, 1.5)': '#NUM!',
-        'NORM.INV(1.1, 40, 1.5)': '#NUM!',
-        'NORM.INV(1.0, 40, 1.5)': '#NUM!',
-        'NORM.INV(0.9, 40, -1.5)': '#NUM!',
-        'NORM.INV(0.9, 40, 0.0)': '#NUM!',
+        'NORM.INV(-1.0, 40, 1.5)': FormulaError.NUM,
+        'NORM.INV(0.0, 40, 1.5)': FormulaError.NUM,
+        'NORM.INV(1.1, 40, 1.5)': FormulaError.NUM,
+        'NORM.INV(1.0, 40, 1.5)': FormulaError.NUM,
+        'NORM.INV(0.9, 40, -1.5)': FormulaError.NUM,
+        'NORM.INV(0.9, 40, 0.0)': FormulaError.NUM,
     },
 
     'NORM.S.DIST': {
@@ -406,10 +407,10 @@ const distributions = {
 
     'NORM.S.INV': {
         'NORM.S.INV(0.908789)': 1.333334673,
-        'NORM.S.INV(-1)': '#NUM!',
-        'NORM.S.INV(0)': '#NUM!',
-        'NORM.S.INV(1)': '#NUM!',
-        'NORM.S.INV(1.1)': '#NUM!',
+        'NORM.S.INV(-1)': FormulaError.NUM,
+        'NORM.S.INV(0)': FormulaError.NUM,
+        'NORM.S.INV(1)': FormulaError.NUM,
+        'NORM.S.INV(1.1)': FormulaError.NUM,
     },
 
     PEARSON: {},
@@ -433,8 +434,8 @@ const distributions = {
     'POISSON.DIST': {
         'POISSON.DIST(2,5,TRUE)': 0.124652019,
         'POISSON.DIST(2,5,FALSE)': 0.084224337,
-        'POISSON.DIST(-0.5,5,FALSE)': '#NUM!',
-        'POISSON.DIST(2,-0.5,FALSE)': '#NUM!',
+        'POISSON.DIST(-0.5,5,FALSE)': FormulaError.NUM,
+        'POISSON.DIST(2,-0.5,FALSE)': FormulaError.NUM,
     },
 
     'PROB': {},
@@ -457,8 +458,8 @@ const distributions = {
 
     STANDARDIZE: {
         'STANDARDIZE(42, 40,1.5)': 1.333333333333,
-        'STANDARDIZE(42, 40, 0.0)': '#NUM!',
-        'STANDARDIZE(42, 40, -0.5)': '#NUM!',
+        'STANDARDIZE(42, 40, 0.0)': FormulaError.NUM,
+        'STANDARDIZE(42, 40, -0.5)': FormulaError.NUM,
     },
 
     'STDEV.P': {},
@@ -475,39 +476,39 @@ const distributions = {
         'T.DIST(60,1,TRUE)': 0.994695326367,
         'T.DIST(8,3,TRUE)': 0.9979617112,
         'T.DIST(8,3,FALSE)': 0.000736906521,
-        'T.DIST(60,0.9,TRUE)': '#NUM!',
-        'T.DIST(60,0,TRUE)': '#NUM!',
+        'T.DIST(60,0.9,TRUE)': FormulaError.NUM,
+        'T.DIST(60,0,TRUE)': FormulaError.NUM,
     },
 
     'T.DIST.2T': {
         'T.DIST.2T(1.959999998,60)': 0.0546449299759,
-        'T.DIST.2T(-0.959999998,60)': '#NUM!',
-        'T.DIST.2T(1.959999998,0.6)': '#NUM!',
+        'T.DIST.2T(-0.959999998,60)': FormulaError.NUM,
+        'T.DIST.2T(1.959999998,0.6)': FormulaError.NUM,
     },
 
     'T.DIST.RT': {
         'T.DIST.RT(1.959999998, 60)': 0.0273224649880,
-        'T.DIST.RT(1.959999998, 0.6)': '#NUM!',
+        'T.DIST.RT(1.959999998, 0.6)': FormulaError.NUM,
     },
 
     'T.INV': {
         'T.INV(0.75, 2)': 0.816496581,
         'T.INV(0.75, 2.1)': 0.816496581,
         'T.INV(0.75, 2.9)': 0.816496581,
-        'T.INV(0.0, 2)': '#NUM!',
-        'T.INV(-0.75, 2)': '#NUM!',
-        'T.INV(1.75, 2)': '#NUM!',
-        'T.INV(0.75, 0.92)': '#NUM!',
+        'T.INV(0.0, 2)': FormulaError.NUM,
+        'T.INV(-0.75, 2)': FormulaError.NUM,
+        'T.INV(1.75, 2)': FormulaError.NUM,
+        'T.INV(0.75, 0.92)': FormulaError.NUM,
     },
 
     'T.INV.2T': {
         'T.INV.2T(0.546449, 60)': 0.606533076,
         'T.INV.2T(0.546449, 60.1)': 0.606533076,
         'T.INV.2T(0.546449, 60.9)': 0.606533076,
-        'T.INV.2T(0.0, 60)': '#NUM!',
-        'T.INV.2T(-0.546449, 60)': '#NUM!',
-        'T.INV.2T(1.546449, 60)': '#NUM!',
-        'T.INV.2T(0.546449, 0.6)': '#NUM!',
+        'T.INV.2T(0.0, 60)': FormulaError.NUM,
+        'T.INV.2T(-0.546449, 60)': FormulaError.NUM,
+        'T.INV.2T(1.546449, 60)': FormulaError.NUM,
+        'T.INV.2T(0.546449, 0.6)': FormulaError.NUM,
     },
 
     'T.TEST': {},
@@ -527,11 +528,11 @@ const distributions = {
     'WEIBULL.DIST': {
         'WEIBULL.DIST(105, 20, 100,TRUE)': 0.92958139,
         'WEIBULL.DIST(105, 20, 100,FALSE)': 0.035588864,
-        'WEIBULL.DIST(-105, 20, 100,FALSE)': '#NUM!',
-        'WEIBULL.DIST(105, 0.0, 100,FALSE)': '#NUM!',
-        'WEIBULL.DIST(105, -20, 100,FALSE)': '#NUM!',
-        'WEIBULL.DIST(105, 20, 0.0,FALSE)': '#NUM!',
-        'WEIBULL.DIST(105, 20, -100,FALSE)': '#NUM!',
+        'WEIBULL.DIST(-105, 20, 100,FALSE)': FormulaError.NUM,
+        'WEIBULL.DIST(105, 0.0, 100,FALSE)': FormulaError.NUM,
+        'WEIBULL.DIST(105, -20, 100,FALSE)': FormulaError.NUM,
+        'WEIBULL.DIST(105, 20, 0.0,FALSE)': FormulaError.NUM,
+        'WEIBULL.DIST(105, 20, -100,FALSE)': FormulaError.NUM,
     },
 
     'Z.TEST': {}

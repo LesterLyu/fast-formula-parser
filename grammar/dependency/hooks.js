@@ -162,6 +162,12 @@ class DepParser {
         this.retrieveRef(result);
     }
 
+    /**
+     * Parse an excel formula and return the dependencies
+     * @param inputText
+     * @param position
+     * @returns {Array.<{}>}
+     */
     parse(inputText, position) {
         if (inputText.length === 0) throw Error('Input must not be empty.');
         this.data = [];

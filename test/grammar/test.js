@@ -1,5 +1,6 @@
 const chai = require('chai');
 const expect = require('chai').expect;
+const FormulaError = require('../../formulas/error');
 const {FormulaParser} = require('../../grammar/hooks');
 const {DepParser} = require('../../grammar/dependency/hooks');
 
@@ -87,7 +88,7 @@ describe('Parser allows returning array or range', () => {
 
     it('should not parse unions', function () {
         let actual = parser.parse('(A1:C1, A2:E9)', position, true);
-        expect(actual.result).to.eq('#VALUE!');
+        expect(actual).to.eq(FormulaError.VALUE);
     });
 
 });

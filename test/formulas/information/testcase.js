@@ -1,3 +1,4 @@
+const FormulaError = require('../../../formulas/error');
 module.exports = {
     'ERROR.TYPE': {
         'ERROR.TYPE(#NULL!)': 1,
@@ -10,81 +11,81 @@ module.exports = {
     },
 
     ISBLANK: {
-        'ISBLANK(A1)': 'TRUE',
-        'ISBLANK(A2)': 'FALSE',
-        'ISBLANK("")': 'FALSE',
+        'ISBLANK(A1)': true,
+        'ISBLANK(A2)': false,
+        'ISBLANK("")': false,
     },
 
     ISERR: {
-        'ISERR(1/0)': 'TRUE',
-        'ISERR(#DIV/0!)': 'TRUE',
-        'ISERR(#N/A)': 'FALSE',
+        'ISERR(1/0)': true,
+        'ISERR(#DIV/0!)': true,
+        'ISERR(#N/A)': false,
     },
 
     ISERROR: {
-        'ISERROR(1/0)': 'TRUE',
-        'ISERROR(#DIV/0!)': 'TRUE',
-        'ISERROR(#N/A)': 'TRUE',
-        'ISERROR(#VALUE!)': 'TRUE',
-        'ISERROR(#REF!)': 'TRUE',
-        'ISERROR(#NUM!)': 'TRUE',
-        'ISERROR(#NAME?)': 'TRUE',
+        'ISERROR(1/0)': true,
+        'ISERROR(#DIV/0!)': true,
+        'ISERROR(#N/A)': true,
+        'ISERROR(#VALUE!)': true,
+        'ISERROR(#REF!)': true,
+        'ISERROR(#NUM!)': true,
+        'ISERROR(#NAME?)': true,
     },
 
     ISEVEN: {
-        'ISEVEN(2)': 'TRUE',
-        'ISEVEN(-2)': 'TRUE',
-        'ISEVEN(2.5)': 'TRUE',
-        'ISEVEN(3)': 'FALSE',
+        'ISEVEN(2)': true,
+        'ISEVEN(-2)': true,
+        'ISEVEN(2.5)': true,
+        'ISEVEN(3)': false,
     },
 
     ISLOGICAL: {
-        'ISLOGICAL(TRUE)': 'TRUE',
-        'ISLOGICAL(FALSE)': 'TRUE',
-        'ISLOGICAL("TRUE")': 'FALSE'
+        'ISLOGICAL(TRUE)': true,
+        'ISLOGICAL(FALSE)': true,
+        'ISLOGICAL("TRUE")': false
     },
 
     ISNA: {
-        'ISNA(#N/A)': 'TRUE',
-        'ISNA(#NAME?)': 'FALSE',
+        'ISNA(#N/A)': true,
+        'ISNA(#NAME?)': false,
     },
 
     ISNONTEXT: {
-        'ISNONTEXT(123)': 'TRUE',
+        'ISNONTEXT(123)': true,
 
     },
 
     ISNUMBER: {
-        'ISNUMBER(123)': 'TRUE',
-        'ISNUMBER(A1)': 'FALSE',
-        'ISNUMBER(B1)': 'TRUE',
+        'ISNUMBER(123)': true,
+        'ISNUMBER(A1)': false,
+        'ISNUMBER(B1)': true,
     },
 
     ISREF: {
-        'ISREF(B2)': 'TRUE',
-        'ISREF(123)': 'FALSE',
-        'ISREF("A1")': 'FALSE',
-        'ISREF(#REF!)': 'FALSE',
-        'ISREF(XYZ1)': 'FALSE',
-        'ISREF(A1:XYZ1)': 'FALSE',
-        'ISREF(XYZ1:A1)': 'FALSE'
+        'ISREF(B2)': true,
+        'ISREF(123)': false,
+        'ISREF("A1")': false,
+        'ISREF(#REF!)': false,
+        'ISREF(XYZ1)': false,
+        'ISREF(A1:XYZ1)': false,
+        'ISREF(XYZ1:A1)': false
     },
 
     ISTEXT: {
-        'ISTEXT(123)': 'FALSE',
-        'ISTEXT("123")': 'TRUE',
+        'ISTEXT(123)': false,
+        'ISTEXT("123")': true,
     },
 
     N: {
         'N(1)': 1,
         'N(TRUE)': 1,
         'N(FALSE)': 0,
-        'N(1/0)': '#DIV/0!',
+        'N(1/0)': FormulaError.DIV0,
         'N("123")': 0,
     },
 
     NA: {
-        'NA()': '#N/A',
+        'NA()': FormulaError.NA,
     },
 
     TYPE: {

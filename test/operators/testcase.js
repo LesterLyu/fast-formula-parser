@@ -1,3 +1,4 @@
+const FormulaError = require('../../formulas/error');
 module.exports = {
     'unaryOp': {
         '+1': 1,
@@ -7,8 +8,8 @@ module.exports = {
         '+"A"': 'A',
         '+++"A"': 'A',
         '+++{"A"}': 'A',
-        '++-+"A"': '#VALUE!',
-        '-"A"': '#VALUE!',
+        '++-+"A"': FormulaError.VALUE,
+        '-"A"': FormulaError.VALUE,
         '+++{1,2,3}': 1,
         '+A1': 1,
         '+A6': 'string',
@@ -20,14 +21,14 @@ module.exports = {
     },
 
     'binaryOp': {
-        '1>2': 'FALSE',
-        '1<2': 'TRUE',
-        '1=1': 'TRUE',
-        '1=2': 'FALSE',
-        '1<>1': 'FALSE',
-        '1<>2': 'TRUE',
-        '1>=2': 'FALSE',
-        '1<=2': 'TRUE',
+        '1>2': false,
+        '1<2': true,
+        '1=1': true,
+        '1=2': false,
+        '1<>1': false,
+        '1<>2': true,
+        '1>=2': false,
+        '1<=2': true,
         '"a" & "b"': 'ab',
         '1&2': '12',
     },

@@ -104,7 +104,16 @@ Note: The grammar in my implementation is different from theirs. My implementati
             return arr;
         }
     });
-    console.log(parser.parse('SUM(A:C)'));
+    
+    // parse the formula, the position of where the formula is located is required
+    // for some functions.
+    console.log(parser.parse('SUM(A:C)', {sheet: 'Sheet 1', row: 1, col: 1}));
+    // print 21
+    
+    // you can specify if the return value can be an array, this is helpful when dealing
+    // with an array formula
+    console.log(parser.parse('MMULT({1,5;2,3},{1,2;2,3})', {sheet: 'Sheet 1', row: 1, col: 1}, true));
+    // print [ [ 11, 17 ], [ 8, 13 ] ]
     ```
   - Formula data types in JavaScript
     - Number (date uses number): `1234`
@@ -134,4 +143,11 @@ Note: The grammar in my implementation is different from theirs. My implementati
         }
         ```
     - [Union](https://github.com/LesterLyu/fast-formula-parser/blob/master/grammar/type/collection.js)
-    
+    - [FormulaError](https://lesterlyu.github.io/fast-formula-parser/FormulaError.html)
+      - `FormulaError.DIV0`: #DIV/0!
+      - `FormulaError.NA`: #N/A
+      - `FormulaError.NAME`: #NAME?
+      - `FormulaError.NULL`: #NULL!
+      - `FormulaError.NUM`: #NUM!
+      - `FormulaError.REF`: #REF!
+      - `FormulaError.VALUE`: #VALUE!

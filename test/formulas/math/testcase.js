@@ -1,3 +1,4 @@
+const FormulaError = require('../../../formulas/error');
 module.exports = {
 
     ABS: {
@@ -7,7 +8,7 @@ module.exports = {
     ARABIC: {
         'ARABIC("LVII")': 57,
         'ARABIC("")': 0,
-        'ARABIC("LVIIA")': '#VALUE!',
+        'ARABIC("LVIIA")': FormulaError.VALUE,
     },
 
     BASE: {
@@ -16,14 +17,14 @@ module.exports = {
         'BASE(15,2,10)': '0000001111',
         'BASE(2^53-1,36)': '2GOSA7PA2GV',
 
-        'BASE(-1,2)': '#NUM!',
+        'BASE(-1,2)': FormulaError.NUM,
         'BASE(2^53-1,2)': '11111111111111111111111111111111111111111111111111111',
-        'BASE(2^53,2)': '#NUM!',
+        'BASE(2^53,2)': FormulaError.NUM,
 
-        'BASE(7,1)': '#NUM!',
-        'BASE(7,37)': '#NUM!',
+        'BASE(7,1)': FormulaError.NUM,
+        'BASE(7,37)': FormulaError.NUM,
 
-        'BASE(7,2,-1)': '#NUM!',
+        'BASE(7,2,-1)': FormulaError.NUM,
         'BASE(7,2,0)': '111',
         'BASE(7,2,2)': '111',
         'BASE(7,2,5)': '00111',
@@ -36,7 +37,7 @@ module.exports = {
         'CEILING(1.5, 0.1)': 1.5,
         'CEILING(0.234, 0.01)': 0.24,
         'CEILING(1.5, 0)': 0,
-        'CEILING(2^1024, 1)': '#NUM!',
+        'CEILING(2^1024, 1)': FormulaError.NUM,
     },
 
     'CEILING.MATH': {
@@ -58,18 +59,18 @@ module.exports = {
 
     COMBINE: {
         'COMBIN(8,2)': 28,
-        'COMBIN(-1,2)': '#NUM!',
-        'COMBIN(1,2)': '#NUM!',
-        'COMBIN(1,-2)': '#NUM!',
+        'COMBIN(-1,2)': FormulaError.NUM,
+        'COMBIN(1,2)': FormulaError.NUM,
+        'COMBIN(1,-2)': FormulaError.NUM,
     },
 
     COMBINA: {
         'COMBINA(4,3)': 20,
         'COMBINA(0,0)': 1,
         'COMBINA(1,0)': 1,
-        'COMBINA(-1,2)': '#NUM!',
+        'COMBINA(-1,2)': FormulaError.NUM,
         'COMBINA(1,2)': 1,
-        'COMBINA(1,-2)': '#NUM!',
+        'COMBINA(1,-2)': FormulaError.NUM,
     },
 
     DECIMAL: {
@@ -77,9 +78,9 @@ module.exports = {
         'DECIMAL("8000000000",16)': 549755813888,
         'DECIMAL(111,2)': 7,
         'DECIMAL("zap",36)': 45745,
-        'DECIMAL("zap",2)': '#NUM!',
-        'DECIMAL("zap",37)': '#NUM!',
-        'DECIMAL("zap",1)': '#NUM!',
+        'DECIMAL("zap",2)': FormulaError.NUM,
+        'DECIMAL("zap",37)': FormulaError.NUM,
+        'DECIMAL("zap",1)': FormulaError.NUM,
     },
 
     EVEN: {
@@ -99,7 +100,7 @@ module.exports = {
         'FACT(150) + 1': 5.7133839564458575e+262 + 1, // memorization
         'FACT(1.9)': 1,
         'FACT(0)': 1,
-        'FACT(-1)': '#NUM!',
+        'FACT(-1)': FormulaError.NUM,
         'FACT(1)': 1,
     },
 
@@ -109,7 +110,7 @@ module.exports = {
         'FACTDOUBLE(7)': 105,
         'FACTDOUBLE(0)': 1,
         'FACTDOUBLE(-1)': 1,
-        'FACTDOUBLE(-2)': '#NUM!',
+        'FACTDOUBLE(-2)': FormulaError.NUM,
         'FACTDOUBLE(1)': 1,
     },
 
@@ -119,7 +120,7 @@ module.exports = {
         'FLOOR(3.7,2)': 2,
         'FLOOR(-2.5,-2)': -2,
         'FLOOR(-2.5,2)': -4,
-        'FLOOR(2.5,-2)': '#NUM!',
+        'FLOOR(2.5,-2)': FormulaError.NUM,
         'FLOOR(1.58,0.1)': 1.5,
         'FLOOR(0.234,0.01)': 0.23,
         'FLOOR(-8.1,2)': -10,
@@ -160,16 +161,16 @@ module.exports = {
         'GCD(123, 0)': 123,
         'GCD(128, 80, 44)': 4,
         'GCD(128, 80, 44,)': 4,
-        'GCD(128, 80, 44, 2 ^ 53)': '#NUM!', // excel parse this as #NUM!
-        'GCD("a")': '#VALUE!',
+        'GCD(128, 80, 44, 2 ^ 53)': FormulaError.NUM, // excel parse this as #NUM!
+        'GCD("a")': FormulaError.VALUE,
         'GCD(5, 2, (A1))': 1,
         'GCD(5, 2, A1:E1)': 1,
         'GCD(5, 2, (A1:E1))': 1,
-        'GCD(5, 2, (A1, A2))': '#VALUE!', // does not support union
+        'GCD(5, 2, (A1, A2))': FormulaError.VALUE, // does not support union
         'GCD(5, 2, {3, 7})': 1,
         'GCD(5, 2, {3, "7"})': 1,
-        'GCD(5, 2, {3, "7a"})': '#VALUE!',
-        'GCD(5, 2, {3, "7"}, TRUE)': '#VALUE!',
+        'GCD(5, 2, {3, "7a"})': FormulaError.VALUE,
+        'GCD(5, 2, {3, "7"}, TRUE)': FormulaError.VALUE,
     },
 
     INT: {
@@ -188,20 +189,20 @@ module.exports = {
     },
 
     LCM: {
-        'LCM("a")': '#VALUE!',
+        'LCM("a")': FormulaError.VALUE,
         'LCM(5, 2)': 10,
         'LCM(24, 36)': 72,
         'LCM(50,56,100)': 1400,
         'LCM(50,56,100,)': 1400,
-        'LCM(128, 80, 44, 2 ^ 53)': '#NUM!', // excel parse this as #NUM!
+        'LCM(128, 80, 44, 2 ^ 53)': FormulaError.NUM, // excel parse this as #NUM!
         'LCM(5, 2, (A1))': 10,
         'LCM(5, 2, A1:E1)': 60,
         'LCM(5, 2, (A1:E1))': 60,
-        'LCM(5, 2, (A1, A2))': '#VALUE!', // does not support union
+        'LCM(5, 2, (A1, A2))': FormulaError.VALUE, // does not support union
         'LCM(5, 2, {3, 7})': 210,
         'LCM(5, 2, {3, "7"})': 210,
-        'LCM(5, 2, {3, "7a"})': '#VALUE!',
-        'LCM(5, 2, {3, "7"}, TRUE)': '#VALUE!',
+        'LCM(5, 2, {3, "7a"})': FormulaError.VALUE,
+        'LCM(5, 2, {3, "7"}, TRUE)': FormulaError.VALUE,
     },
 
     LN: {
@@ -227,14 +228,14 @@ module.exports = {
         'MDETERM({3,6,1;1,1,0;3,10,2})': 1,
         'MDETERM({3,6;1,1})': -3,
         'MDETERM({6})': 6,
-        'MDETERM({1,3,8,5;1,3,6,1})': '#VALUE!'
+        'MDETERM({1,3,8,5;1,3,6,1})': FormulaError.VALUE
     },
 
     MMULT: {
         'MMULT({1,3;7,2}, {2,0;0,2})': 2,
-        'MMULT({1,3;7,2;1,1}, {2,0;0,2})': '#VALUE!',
-        'MMULT({1,3;"r",2}, {2,0;0,2})': '#VALUE!',
-        'MMULT({1,3;7,2}, {2,0;"0",2})': '#VALUE!',
+        'MMULT({1,3;7,2;1,1}, {2,0;0,2})': 2,
+        'MMULT({1,3;"r",2}, {2,0;0,2})': FormulaError.VALUE,
+        'MMULT({1,3;7,2}, {2,0;"0",2})': FormulaError.VALUE,
     },
 
     MOD: {
@@ -242,7 +243,7 @@ module.exports = {
         'MOD(-3, 2)': 1,
         'MOD(3, -2)': -1,
         'MOD(-3, -2)': -1,
-        'MOD(-3, 0)': '#DIV/0!'
+        'MOD(-3, 0)': FormulaError.DIV0
     },
 
     MROUND: {
@@ -251,7 +252,7 @@ module.exports = {
         'MROUND(10, 0)': 0,
         'MROUND(-10, -3)': -9,
         'MROUND(1.3, 0.2)': 1.4,
-        'MROUND(5, -2)': '#NUM!',
+        'MROUND(5, -2)': FormulaError.NUM,
         'MROUND(6.05,0.1)': 6.0, // same as excel, differ from google sheets
         'MROUND(7.05,0.1)': 7.1,
     },
@@ -259,7 +260,7 @@ module.exports = {
     MULTINOMIAL: {
         'MULTINOMIAL({1,2}, E1, A1:D1)': 92626934400,
         'MULTINOMIAL(2, 3, 4)': 1260,
-        'MULTINOMIAL(2, 3, -4)': '#NUM!',
+        'MULTINOMIAL(2, 3, -4)': FormulaError.NUM,
     },
 
     MUNIT: {
@@ -308,11 +309,11 @@ module.exports = {
     },
 
     RAND: {
-        'RAND() > 0': 'TRUE',
+        'RAND() > 0': true,
     },
 
     RANDBETWEEN: {
-        'RANDBETWEEN(-1,1) >= -1': 'TRUE',
+        'RANDBETWEEN(-1,1) >= -1': true,
     },
 
     ROMAN: {
@@ -348,7 +349,7 @@ module.exports = {
 
     SERIESSUM: {
         'SERIESSUM(PI()/4,0,2,{1, -0.5, 0.041666667, -0.001388889})': 0.707103215,
-        'SERIESSUM(PI()/4,0,2,{1, -0.5, 0.041666667, "12"})': '#VALUE!',
+        'SERIESSUM(PI()/4,0,2,{1, -0.5, 0.041666667, "12"})': FormulaError.VALUE,
     },
 
     SIGN: {
@@ -359,14 +360,14 @@ module.exports = {
 
     SQRT: {
         'SQRT(16)': 4,
-        'SQRT(-16)': '#NUM!',
+        'SQRT(-16)': FormulaError.NUM,
         'SQRT(ABS(-16))': 4,
     },
 
     SQRTPI: {
         'SQRTPI(1)': 1.772453851,
         'SQRTPI(2)': 2.506628275,
-        'SQRTPI(-1)': '#NUM!',
+        'SQRTPI(-1)': FormulaError.NUM,
     },
     // TODO: Start from here.
 
@@ -404,7 +405,7 @@ module.exports = {
         'SUMPRODUCT({1,"12";7,2}, {2,1;5,2})': 41,
         'SUMPRODUCT({1,12;7,2}, {2,1;5,2})': 53,
         'SUMPRODUCT({1,12;7,2}, {2,1;5,"2"})': 49,
-        'SUMPRODUCT({1,12;7,2}, {2,1;5,2;1,1})': '#VALUE!'
+        'SUMPRODUCT({1,12;7,2}, {2,1;5,2;1,1})': FormulaError.VALUE
     },
 
     SUMSQ: {
@@ -417,21 +418,21 @@ module.exports = {
         'SUMX2MY2(A14:G14,A15:G15)': -55,
         'SUMX2MY2({2, 3, 9, 1, 8, 7, 5}, {6, 5, 11, 7, 5, 4, 4})': -55,
         'SUMX2MY2({"2",3,9,1,8,7,5}, {6,5,11,7,5,4,4})': -23,
-        'SUMX2MY2(A14:G13,A15:G15)': '#N/A',
+        'SUMX2MY2(A14:G13,A15:G15)': FormulaError.NA,
     },
 
     SUMX2PY2: {
         'SUMX2PY2(A14:G14,A15:G15)': 521,
         'SUMX2PY2({2,3,9,1,8,7,5}, {6,5,11,7,5,4,4})': 521,
         'SUMX2PY2({"2",3,9,1,8,7,5}, {6,5,11,7,5,4,4})': 481,
-        'SUMX2PY2(A14:G13,A15:G15)': '#N/A',
+        'SUMX2PY2(A14:G13,A15:G15)': FormulaError.NA,
     },
 
     SUMXMY2: {
         'SUMXMY2(A14:G14,A15:G15)': 79,
         'SUMXMY2({2,3,9,1,8,7,5}, {6,5,11,7,5,4,4})': 79,
         'SUMXMY2({"2",3,9,1,8,7,5}, {6,5,11,7,5,4,4})': 63,
-        'SUMXMY2(A14:G13,A15:G15)': '#N/A',
+        'SUMXMY2(A14:G13,A15:G15)': FormulaError.NA,
     },
 
     TRUNC: {
