@@ -355,29 +355,26 @@ const MathFunctions = {
     MMULT: (array1, array2) => {
         array1 = H.accept(array1, Types.ARRAY, undefined, false, true);
         array2 = H.accept(array2, Types.ARRAY, undefined, false, true);
-        if (array1[0].length !== array1.length)
+
+        const aNumRows = array1.length, aNumCols = array1[0].length,
+            bNumRows = array2.length, bNumCols = array2[0].length,
+            m = new Array(aNumRows);  // initialize array of rows
+
+        if (aNumCols !== bNumRows)
             throw FormulaError.VALUE;
-        // https://github.com/numbers/numbers.js/blob/master/lib/numbers/matrix.js#L233
-        const result = [];
 
-        for (let x = 0; x < array1.length; x++) {
-            result[x] = [];
-        }
-
-        const array2_T = ReferenceFunctions.TRANSPOSE(array2);
-
-        for (let i = 0; i < array1.length; i++) {
-            for (let j = 0; j < array2[i].length; j++) {
-                array1[i].forEach(val => {
-                    if (typeof val !== "number") throw FormulaError.VALUE
-                });
-                array2_T[j].forEach(val => {
-                    if (typeof val !== "number") throw FormulaError.VALUE
-                });
-                result[i][j] = MathFunctions.SUMPRODUCT([array1[i]], [array2_T[j]]);
+        for (let r = 0; r < aNumRows; r++) {
+            m[r] = new Array(bNumCols); // initialize the current row
+            for (let c = 0; c < bNumCols; c++) {
+                m[r][c] = 0;             // initialize the current cell
+                for (let i = 0; i < aNumCols; i++) {
+                    const v1 = array1[r][i], v2 = array2[i][c];
+                    if (typeof v1 !== "number" || typeof v2 !== "number") throw FormulaError.VALUE;
+                    m[r][c] += array1[r][i] * array2[i][c];
+                }
             }
         }
-        return result;
+        return m;
     },
 
     MOD: (number, divisor) => {
