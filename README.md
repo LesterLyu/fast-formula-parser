@@ -145,10 +145,10 @@ Note: The grammar in my implementation is different from theirs. My implementati
         ```
     - [Union](https://github.com/LesterLyu/fast-formula-parser/blob/master/grammar/type/collection.js)
     - [FormulaError](https://lesterlyu.github.io/fast-formula-parser/FormulaError.html)
-      - `FormulaError.DIV0`: #DIV/0!
-      - `FormulaError.NA`: #N/A
-      - `FormulaError.NAME`: #NAME?
-      - `FormulaError.NULL`: #NULL!
-      - `FormulaError.NUM`: #NUM!
-      - `FormulaError.REF`: #REF!
-      - `FormulaError.VALUE`: #VALUE!
+      - `FormulaError.DIV0`: `#DIV/0!`
+      - `FormulaError.NA`: `#N/A`
+      - `FormulaError.NAME`: `#NAME?`
+      - `FormulaError.NULL`: `#NULL!`
+      - `FormulaError.NUM`: `#NUM!`
+      - `FormulaError.REF`: `#REF!`
+      - `FormulaError.VALUE`: `#VALUE!`
