@@ -38,6 +38,12 @@ module.exports = {
         '1>=TRUE': false,
         '"2">3': true,
         '#N/A>1': FormulaError.NA,
+        '1&TRUE': '1TRUE',
+        '1&FALSE': '1FALSE',
+        'TRUE&1': 'TRUE1',
+        'FALSE&1': 'FALSE1',
+        '{1,2,3}&{TRUE;FALSE}': '1TRUE',
+        '1&#REF!': FormulaError.REF,
     },
     'Operator Precedence': {
         // '1+2*2': 5,

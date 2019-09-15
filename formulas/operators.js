@@ -67,11 +67,6 @@ const Infix = {
             value2 = value2[0][0];
         }
 
-        if (value1 instanceof FormulaError)
-            return value1;
-        if (value2 instanceof FormulaError)
-            return value2;
-
         const type1 = typeof value1, type2 = typeof value2;
 
         if (type1 === type2) {
@@ -120,11 +115,6 @@ const Infix = {
         if (isArray2) {
             value2 = value2[0][0];
         }
-
-        if (value1 instanceof FormulaError)
-            return value1;
-        if (value2 instanceof FormulaError)
-            return value2;
 
         const type1 = typeof value1, type2 = typeof value2;
         // convert boolean to string
