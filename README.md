@@ -34,7 +34,7 @@ Note: The grammar in my implementation is different from theirs. My implementati
  - Install
     ```sh
     npm i fast-formula-parser
-    // or
+    # or using yarn
     yarn add fast-formula-parser
     ```
  - Import
