@@ -1,6 +1,6 @@
 {
   "name": "fast-formula-parser",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "fast excel formula parser",
   "main": "index.js",
   "scripts": {
@@ -14,6 +14,7 @@
     "coverage:f": "nyc -n \"formulas/functions/**\" -n \"formulas/operators.js\" --reporter=html --reporter=text mocha test/formulas",
     "coverage:server": "nyc -x ssf -x test --reporter=text-lcov --report-dir=docs/coverage mocha | coveralls"
   },
+  "keywords": ["excel", "formula", "spreadsheet", "javascript", "js", "parser", "excel-formulas"],
   "author": "Lester(Dishu) Lyu",
   "license": "MIT",
   "dependencies": {
