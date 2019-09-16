@@ -31,6 +31,12 @@ Note: The grammar in my implementation is different from theirs. My implementati
   - [Chevrotain](https://github.com/SAP/chevrotain) , thanks to this great parser building toolkit.
   
 ### [Examples](https://github.com/LesterLyu/fast-formula-parser/blob/master/examples/example.js)
+ - Install
+    ```sh
+    npm i fast-formula-parser
+    // or
+    yarn add fast-formula-parser
+    ```
  - Import
     ```js
     const FormulaParser = require('fast-formula-parser');
