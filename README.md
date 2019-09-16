@@ -1,4 +1,5 @@
 ![GitHub](https://img.shields.io/github/license/lesterlyu/fast-formula-parser)
+![npm (tag)](https://img.shields.io/npm/v/fast-formula-parser/latest)
 [![Coverage Status](https://coveralls.io/repos/github/LesterLyu/fast-formula-parser/badge.svg?branch=master)](https://coveralls.io/github/LesterLyu/fast-formula-parser?branch=master)
 [![Build Status](https://travis-ci.com/LesterLyu/fast-formula-parser.svg?branch=master)](https://travis-ci.com/LesterLyu/fast-formula-parser)
 ## [A Fast Excel Formula Parser](https://github.com/LesterLyu/fast-formula-parser)
