@@ -2,7 +2,7 @@
 ![npm (tag)](https://img.shields.io/npm/v/fast-formula-parser/latest)
 ![npm](https://img.shields.io/npm/dt/fast-formula-parser)
 [![Coverage Status](https://coveralls.io/repos/github/LesterLyu/fast-formula-parser/badge.svg?branch=master)](https://coveralls.io/github/LesterLyu/fast-formula-parser?branch=master)
-[![Build Status](https://travis-ci.com/LesterLyu/fast-formula-parser.svg?branch=master)](https://travis-ci.com/LesterLyu/fast-formula-parser)
+[![Build Status](https://travis-ci.com/LesterLyu/fast-formula-parser.svg?branch=master)](https://travis-ci.com/LesterLyu/fast-formula-parser) [![Greenkeeper badge](https://badges.greenkeeper.io/LesterLyu/fast-formula-parser.svg)](https://greenkeeper.io/)
 ## [A Fast Excel Formula Parser](https://github.com/LesterLyu/fast-formula-parser)
 > **This project is under development.**
 
