@@ -151,7 +151,7 @@ Note: The grammar in my implementation is different from theirs. My implementati
             col: Number,
         }
         ```
-    - [Union](https://github.com/LesterLyu/fast-formula-parser/blob/master/grammar/type/collection.js)
+    - [Union (e.g. (A1:C3, E1:G6))](https://github.com/LesterLyu/fast-formula-parser/blob/master/grammar/type/collection.js)
     - [FormulaError](https://lesterlyu.github.io/fast-formula-parser/FormulaError.html)
       - `FormulaError.DIV0`: `#DIV/0!`
       - `FormulaError.NA`: `#N/A`
