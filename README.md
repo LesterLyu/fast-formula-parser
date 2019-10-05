@@ -46,6 +46,10 @@ Note: The grammar in my implementation is different from theirs. My implementati
     // or
     import FormulaParser, {FormulaHelpers, Types, FormulaError, MAX_ROW, MAX_COLUMN} from 'fast-formula-parser';
     ```
+    UMD minified build is also provides:
+    ```html
+    <script src="/node_modules/fast-formula-parser/build/parser.min.js"> </script> 
+    ```
   - Usage
     ```js
     const data = [

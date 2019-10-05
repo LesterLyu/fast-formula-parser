@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "fast-formula-parser": "git+https://github.com/LesterLyu/fast-formula-parser.git"
+    "fast-formula-parser": "latest"
   }
 }

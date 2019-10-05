@@ -3,6 +3,7 @@
 .nyc_output
 .jsdoc.json
 .travis.yml
+greenkeeper.json
 coverage
 docs
 examples
