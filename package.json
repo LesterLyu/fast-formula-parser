@@ -1,6 +1,6 @@
 {
   "name": "fast-formula-parser",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "fast excel formula parser",
   "repository": "https://github.com/LesterLyu/fast-formula-parser",
   "main": "index.js",
@@ -15,13 +15,21 @@
     "coverage:f": "nyc -n \"formulas/functions/**\" -n \"formulas/operators.js\" --reporter=html --reporter=text mocha test/formulas",
     "coverage:server": "nyc -x ssf -x test --reporter=text-lcov --report-dir=docs/coverage mocha | coveralls"
   },
-  "keywords": ["excel", "formula", "spreadsheet", "javascript", "js", "parser", "excel-formula"],
+  "keywords": [
+    "excel",
+    "formula",
+    "spreadsheet",
+    "javascript",
+    "js",
+    "parser",
+    "excel-formula"
+  ],
   "author": "Lester(Dishu) Lyu",
   "license": "MIT",
   "dependencies": {
     "bahttext": "^1.1.0",
     "bessel": "^1.0.2",
-    "chevrotain": "^6.2.0",
+    "chevrotain": "^6.5.0",
     "jstat": "^1.9.1"
   },
   "devDependencies": {
@@ -35,7 +43,6 @@
     "terser-webpack-plugin": "^2.1.2",
     "webpack": "^4.30.0",
     "webpack-bundle-analyzer": "^3.3.2",
-    "webpack-cli": "^3.3.0",
-    "xlsx-populate": "git+https://github.com/LesterLyu/xlsx-populate.git#formula-support"
+    "webpack-cli": "^3.3.0"
   }
 }
