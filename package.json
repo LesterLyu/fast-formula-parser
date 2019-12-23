@@ -39,7 +39,7 @@
     "gh-pages": "^2.1.1",
     "jsdoc": "^3.6.3",
     "mocha": "^6.1.4",
-    "nyc": "^14.0.0",
+    "nyc": "^15.0.0",
     "terser-webpack-plugin": "^2.1.2",
     "webpack": "^4.30.0",
     "webpack-bundle-analyzer": "^3.3.2",
