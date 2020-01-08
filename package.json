@@ -30,7 +30,7 @@
     "bahttext": "^1.1.0",
     "bessel": "^1.0.2",
     "chevrotain": "^6.5.0",
-    "jstat": "^1.9.1"
+    "jstat": "^1.9.2"
   },
   "devDependencies": {
     "chai": "^4.2.0",
@@ -38,8 +38,8 @@
     "docdash": "^1.1.1",
     "gh-pages": "^2.1.1",
     "jsdoc": "^3.6.3",
-    "mocha": "^6.1.4",
-    "nyc": "^14.0.0",
+    "mocha": "^7.0.0",
+    "nyc": "^15.0.0",
     "terser-webpack-plugin": "^2.1.2",
     "webpack": "^4.30.0",
     "webpack-bundle-analyzer": "^3.3.2",
