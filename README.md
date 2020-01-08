@@ -7,7 +7,8 @@
 > **This project is under development.**
 
 Aim to be the fastest and the most reliable excel formula parser in javascript. Using **LL(1)** parser.
-### [Documentation](https://lesterlyu.github.io/fast-formula-parser/)
+### [Demo](https://lesterlyu.github.io/demo/fast-formula-parser)
+### [Documentation](https://lesterlyu.github.io/fast-formula-parser/index.html)
 ### [Grammar Diagram](https://lesterlyu.github.io/fast-formula-parser/generated_diagrams.html)
 ### Background
 
