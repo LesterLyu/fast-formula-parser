@@ -29,7 +29,7 @@
   "dependencies": {
     "bahttext": "^1.1.0",
     "bessel": "^1.0.2",
-    "chevrotain": "^6.5.0",
+    "chevrotain": "^7.0.1",
     "jstat": "^1.9.2"
   },
   "devDependencies": {
