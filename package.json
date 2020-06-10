@@ -1,6 +1,6 @@
 {
   "name": "fast-formula-parser",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "fast excel formula parser",
   "repository": "https://github.com/LesterLyu/fast-formula-parser",
   "main": "index.js",
@@ -29,7 +29,7 @@
   "dependencies": {
     "bahttext": "^1.1.0",
     "bessel": "^1.0.2",
-    "chevrotain": "^6.5.0",
+    "chevrotain": "^7.0.1",
     "jstat": "^1.9.2"
   },
   "devDependencies": {
