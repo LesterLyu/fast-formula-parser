@@ -165,3 +165,6 @@ Note: The grammar in my implementation is different from theirs. My implementati
       - `FormulaError.NUM`: `#NUM!`
       - `FormulaError.REF`: `#REF!`
       - `FormulaError.VALUE`: `#VALUE!`
+
+### Thanks
+- [![JetBrains](https://raw.githubusercontent.com/LesterLyu/fast-formula-parser/master/logos/jetbrains-variant-4.svg)](https://www.jetbrains.com/?from=fast-formula-parser)
