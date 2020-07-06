@@ -24,7 +24,6 @@ class Utils {
         // console.log('parseCellAddress', cellAddress);
         return {
             ref: {
-                address: res[0],
                 col: this.columnNameToNumber(res[2]),
                 row: +res[4]
             },
@@ -278,7 +277,7 @@ class Utils {
     /**
      * Parse an error.
      * @param {string} error
-     * @return {string}
+     * @return {FormulaError}
      */
     toError(error) {
         return new FormulaError(error.toUpperCase());
