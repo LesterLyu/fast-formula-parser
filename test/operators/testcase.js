@@ -1,6 +1,6 @@
 const FormulaError = require('../../formulas/error');
 module.exports = {
-    'unaryOp': {
+    unaryOp: {
         '+1': 1,
         '-1': -1,
         '--1': 1,
@@ -11,16 +11,17 @@ module.exports = {
         '++-+"A"': FormulaError.VALUE,
         '-"A"': FormulaError.VALUE,
         '+++{1,2,3}': 1,
-        '+A1': 1,
         '+A6': 'string',
+        '-A13': 0,
+        '++{#VALUE!; 2; 3}': FormulaError.VALUE,
     },
 
-    'reference': {
+    reference: {
         'A1': 1,
         'A1+2': 3,
     },
 
-    'binaryOp': {
+    compareOp: {
         '1>2': false,
         '1<2': true,
         '1=1': true,
@@ -38,12 +39,23 @@ module.exports = {
         '1>=TRUE': false,
         '"2">3': true,
         '#N/A>1': FormulaError.NA,
+        'A13>0': false,
+        '0>A13': false,
+        '{1;2;3} > 5': false,
+    },
+    concatOp: {
         '1&TRUE': '1TRUE',
         '1&FALSE': '1FALSE',
         'TRUE&1': 'TRUE1',
         'FALSE&1': 'FALSE1',
         '{1,2,3}&{TRUE;FALSE}': '1TRUE',
         '1&#REF!': FormulaError.REF,
+        'A13&"HELLO"': 'HELLO',
+        '"HELLO"&A13': 'HELLO'
+    },
+    mathOp: {
+        '1+A13': 1,
+        'A13+1': 1
     },
     'Operator Precedence': {
         // '1+2*2': 5,

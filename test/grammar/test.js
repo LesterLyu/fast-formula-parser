@@ -23,9 +23,9 @@ const position = {row: 1, col: 1, sheet: 'Sheet1'};
 describe('Dependency parser', () => {
     it('should parse single cell', () => {
         let actual = depParser.parse('A1', position);
-        expect(actual).to.deep.eq([Object.assign({address: 'A1'}, position)]);
+        expect(actual).to.deep.eq([position]);
         actual = depParser.parse('A1+1', position);
-        expect(actual).to.deep.eq([Object.assign({address: 'A1'}, position)]);
+        expect(actual).to.deep.eq( [position]);
     });
 
     it('should parse ranges', () => {
@@ -42,11 +42,40 @@ describe('Dependency parser', () => {
         expect(actual).to.deep.eq([{sheet: 'Sheet1', from: {row: 1, col: 1}, to: {row: 2, col: 2}}]);
     });
 
+    it('should parse basic formulas', function () {
+
+        // data types
+        let actual = depParser.parse('TRUE+A1+#VALUE!+{1}', position);
+        expect(actual).to.deep.eq([{sheet: 'Sheet1', row: 1, col: 1}]);
+
+        // function without args
+        actual = depParser.parse('A1+FUN()', position);
+        expect(actual).to.deep.eq([{sheet: 'Sheet1', row: 1, col: 1}]);
+
+        // prefix
+        actual = depParser.parse('++A1', position);
+        expect(actual).to.deep.eq([{sheet: 'Sheet1', row: 1, col: 1}]);
+
+        // postfix
+        actual = depParser.parse('A1%', position);
+        expect(actual).to.deep.eq([{sheet: 'Sheet1', row: 1, col: 1}]);
+
+        // intersect
+        actual = depParser.parse('A1:A3 A3:B3', position);
+        expect(actual).to.deep.eq([{sheet: 'Sheet1', row: 3, col: 1}]);
+
+        // union
+        actual = depParser.parse('(A1:C1, A2:E9)', position);
+        expect(actual).to.deep.eq([
+            {sheet: 'Sheet1', from: {row: 1, col: 1}, to: {row: 1, col: 3}},
+            {sheet: 'Sheet1', from: {row: 2, col: 1}, to: {row: 9, col: 5}}
+        ]);
+    });
+
     it('should parse complex formula', () => {
         let actual = depParser.parse('IF(MONTH($K$1)<>MONTH($K$1-(WEEKDAY($K$1,1)-(start_day-1))-IF((WEEKDAY($K$1,1)-(start_day-1))<=0,7,0)+(ROW(O5)-ROW($K$3))*7+(COLUMN(O5)-COLUMN($K$3)+1)),"",$K$1-(WEEKDAY($K$1,1)-(start_day-1))-IF((WEEKDAY($K$1,1)-(start_day-1))<=0,7,0)+(ROW(O5)-ROW($K$3))*7+(COLUMN(O5)-COLUMN($K$3)+1))', position);
         expect(actual).to.deep.eq([
             {
-                "address": "$K$1",
                 "col": 11,
                 "row": 1,
                 "sheet": "Sheet1",
@@ -57,13 +86,11 @@ describe('Dependency parser', () => {
                 "sheet": "Sheet1",
             },
             {
-                "address": "O5",
                 "col": 15,
                 "row": 5,
                 "sheet": "Sheet1",
             },
             {
-                "address": "$K$3",
                 "col": 11,
                 "row": 3,
                 "sheet": "Sheet1",

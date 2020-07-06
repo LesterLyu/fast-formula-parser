@@ -1,6 +1,7 @@
 const {FormulaParser} = require('../../grammar/hooks');
 const TestCase = require('./testcase');
 const {generateTests} = require('../utils');
+const FormulaError = require('../../formulas/error');
 
 const data = [
     [1, 2, 3, 4, 5],
@@ -14,9 +15,11 @@ const data = [
     ['Vegetables', 'Celery', 5500, 5, 6], // row 8
     ['Fruits', 'Oranges', 800, 5, 6], // row 9
     ['', 'Butter', 400, 5, 6], // row 10
-    ['Vegetables', 'Carrots',4200, 5, 6], // row 11
+    ['Vegetables', 'Carrots', 4200, 5, 6], // row 11
     ['Fruits', 'Apples', 1200, 5, 6], // row 12
+    [undefined, true, false, FormulaError.DIV0, 0] // row 13
 ];
+
 const parser = new FormulaParser({
     onCell: ref => {
         return data[ref.row - 1][ref.col - 1];
