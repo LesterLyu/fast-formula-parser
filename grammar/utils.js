@@ -343,6 +343,15 @@ class Utils {
     isFormulaError(obj) {
         return obj instanceof FormulaError;
     }
+
+    formatChevrotainError(error, inputText) {
+        const line = error.previousToken.startLine, column = error.previousToken.startColumn + 1;
+        let msg = '\n' + inputText.split('\n')[line - 1] + '\n';
+        msg += Array(column - 1).fill(' ').join('') + '^\n';
+        error.message = msg + `Error at position ${line}:${column}\n` + error.message;
+        return error;
+    }
+
 }
 
 module.exports = Utils;
