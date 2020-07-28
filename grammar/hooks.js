@@ -311,7 +311,7 @@ class FormulaParser {
 
     /**
      * Parse an excel formula.
-     * @param inputText
+     * @param {string} inputText
      * @param {{row: number, col: number}} [position] - The position of the parsed formula
      *              e.g. {row: 1, col: 1}
      * @param {boolean} [allowReturnArray] - If the formula can return an array. Useful when parsing array formulas,
@@ -341,6 +341,16 @@ class FormulaParser {
         return res;
     }
 
+    /**
+     * Parse an excel formula asynchronously.
+     * Use when providing custom async functions.
+     * @param {string} inputText
+     * @param {{row: number, col: number}} [position] - The position of the parsed formula
+     *              e.g. {row: 1, col: 1}
+     * @param {boolean} [allowReturnArray] - If the formula can return an array. Useful when parsing array formulas,
+     *                                      or data validation formulas.
+     * @returns {*}
+     */
     async parseAsync(inputText, position, allowReturnArray = false) {
         if (inputText.length === 0) throw Error('Input must not be empty.');
         this.position = position;
