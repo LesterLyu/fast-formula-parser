@@ -11,6 +11,6 @@ module.exports = {
         libraryTarget: "umd",
     },
     plugins: [
-        new BundleAnalyzerPlugin(),
+        // new BundleAnalyzerPlugin(),
     ],
 };
