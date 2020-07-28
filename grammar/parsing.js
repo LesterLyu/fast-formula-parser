@@ -413,6 +413,5 @@ class Parsing extends EmbeddedActionsParser {
 }
 
 module.exports = {
-    allTokens: Object.values(tokenVocabulary),
     Parser: Parsing,
 };
