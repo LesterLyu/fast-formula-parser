@@ -25,7 +25,7 @@ describe('Dependency parser', () => {
         let actual = depParser.parse('A1', position);
         expect(actual).to.deep.eq([position]);
         actual = depParser.parse('A1+1', position);
-        expect(actual).to.deep.eq( [position]);
+        expect(actual).to.deep.eq([position]);
     });
 
     it('should parse ranges', () => {
@@ -119,3 +119,42 @@ describe('Parser allows returning array or range', () => {
     });
 
 });
+
+describe('Custom async function', () => {
+    it('should parse and evaluate', async () => {
+        const parser = new FormulaParser({
+                onCell: ref => {
+                    return 1;
+                },
+                functions: {
+                    IMPORT_CSV: async () => {
+                        return [[1,2,3],[4,5,6]];
+                    }
+                },
+            }
+        );
+
+        let actual = await parser.parseAsync('A1 + IMPORT_CSV()', position);
+        expect(actual).to.eq(2);
+        actual = await parser.parseAsync('-IMPORT_CSV()', position);
+        expect(actual).to.eq(-1);
+        actual = await parser.parseAsync('IMPORT_CSV()%', position);
+        expect(actual).to.eq(0.01);
+
+    });
+    it('should support custom function with context', async function () {
+        const parser = new FormulaParser({
+                onCell: ref => {
+                    return 1;
+                },
+                functionsNeedContext: {
+                    ROW_PLUS_COL: (context) => {
+                        return context.position.row + context.position.col;
+                    }
+                }
+            }
+        );
+        const actual = await parser.parseAsync('SUM(ROW_PLUS_COL(), 1)', position);
+        expect(actual).to.eq(3);
+    });
+})
