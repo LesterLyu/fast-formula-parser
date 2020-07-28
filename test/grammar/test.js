@@ -140,6 +140,8 @@ describe('Custom async function', () => {
         expect(actual).to.eq(-1);
         actual = await parser.parseAsync('IMPORT_CSV()%', position);
         expect(actual).to.eq(0.01);
+        actual = await parser.parseAsync('SUM(IMPORT_CSV(), 1)', position);
+        expect(actual).to.eq(22);
 
     });
     it('should support custom function with context', async function () {
