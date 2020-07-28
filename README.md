@@ -1,8 +1,8 @@
 ![GitHub](https://img.shields.io/github/license/lesterlyu/fast-formula-parser)
-![npm (tag)](https://img.shields.io/npm/v/fast-formula-parser/latest)
-![npm](https://img.shields.io/npm/dt/fast-formula-parser)
+[![npm (tag)](https://img.shields.io/npm/v/fast-formula-parser/latest)](https://www.npmjs.com/package/fast-formula-parser)
+[![npm](https://img.shields.io/npm/dt/fast-formula-parser)](https://www.npmjs.com/package/fast-formula-parser)
 [![Coverage Status](https://coveralls.io/repos/github/LesterLyu/fast-formula-parser/badge.svg?branch=master)](https://coveralls.io/github/LesterLyu/fast-formula-parser?branch=master)
-[![Build Status](https://travis-ci.com/LesterLyu/fast-formula-parser.svg?branch=master)](https://travis-ci.com/LesterLyu/fast-formula-parser) [![Greenkeeper badge](https://badges.greenkeeper.io/LesterLyu/fast-formula-parser.svg)](https://greenkeeper.io/)
+[![Build Status](https://travis-ci.com/LesterLyu/fast-formula-parser.svg?branch=master)](https://travis-ci.com/LesterLyu/fast-formula-parser)
 ## [A Fast Excel Formula Parser & Evaluator](https://github.com/LesterLyu/fast-formula-parser)
 
 A fast and reliable excel formula parser in javascript. Using **LL(1)** parser.
@@ -55,7 +55,7 @@ Note: The grammar in my implementation is different from theirs. My implementati
     ```html
     <script src="/node_modules/fast-formula-parser/build/parser.min.js"> </script> 
     ```
-  - Usage
+  - Basic Usage
     ```js
     const data = [
       // A  B  C
@@ -72,10 +72,11 @@ Note: The grammar in my implementation is different from theirs. My implementati
                 if (number > 255 || number < 1)
                     throw FormulaError.VALUE;
                 return String.fromCharCode(number);
-            },
+            }
         },
     
         // Variable used in formulas (defined name)
+        // Should only return range reference or cell reference
         onVariable: (name, sheetName) => {
             // range reference (A1:B2)
             return {
@@ -123,21 +124,111 @@ Note: The grammar in my implementation is different from theirs. My implementati
         }
     });
     
+    // position is required for evaluating certain formulas, e.g. ROW()
+    const position = {row: 1, col: 1, sheet: 'Sheet1'};
+    
     // parse the formula, the position of where the formula is located is required
     // for some functions.
-    console.log(parser.parse('SUM(A:C)', {sheet: 'Sheet 1', row: 1, col: 1}));
+    console.log(parser.parse('SUM(A:C)', position));
     // print 21
     
     // you can specify if the return value can be an array, this is helpful when dealing
     // with an array formula
-    console.log(parser.parse('MMULT({1,5;2,3},{1,2;2,3})', {sheet: 'Sheet 1', row: 1, col: 1}, true));
+    console.log(parser.parse('MMULT({1,5;2,3},{1,2;2,3})', position, true));
     // print [ [ 11, 17 ], [ 8, 13 ] ]
     ```
+    
+  - Custom Async functions
+    > Remember to use `await parser.parseAsync(...)` instead of `parser.parse(...)`
+    ```js
+    const position = {row: 1, col: 1, sheet: 'Sheet1'};
+    const parser = new FormulaParser({
+        onCell: ref => {
+            return 1;
+        },
+        functions: {
+            DEMO_FUNC: async () => {
+                return [[1,2,3],[4,5,6]];
+            }
+        },
+    });
+    console.log(await parser.parseAsync('A1 + IMPORT_CSV())', position));
+    // print 2
+    console.log(await parser.parseAsync('SUM(DEMO_FUNC(), 1))', position));
+    // print 22
+    ```
+  - Custom function requires parser context (e.g. location of the formula)
+    ```js
+    const position = {row: 1, col: 1, sheet: 'Sheet1'};
+    const parser = new FormulaParser({
+        functionsNeedContext: {
+            // the first argument is the context
+            // the followings are the arguments passed to the function
+            ROW_PLUS_COL: (context, ...args) => {
+                 return context.position.row + context.position.col;
+            }
+        },
+    });
+    console.log(await parser.parseAsync('SUM(ROW_PLUS_COL(), 1)', position));
+    // print 3
+    ```
+    
+  - Parse Formula Dependency
+    > This is helpful for building `dependency graph/tree`.
+    ```js
+    import {DepParser} from 'fast-formula-parser';
+    const depParser = new DepParser({
+        // onVariable is the only thing you need provide if the formula contains variables
+        onVariable: variable => {
+            return 'VAR1' === variable ? {from: {row: 1, col: 1}, to: {row: 2, col: 2}} : {row: 1, col: 1};
+        }
+    });
+    
+    // position of the formula should be provided
+    const position = {row: 1, col: 1, sheet: 'Sheet1'};
+    
+    // Return an array of references (range reference or cell reference)
+    // This gives [{row: 1, col: 1, sheet: 'Sheet1'}]
+    depParser.parse('A1+1', position);
+    
+    // This gives [{sheet: 'Sheet1', from: {row: 1, col: 1}, to: {row: 3, col: 3}}]
+    depParser.parse('A1:C3', position);
+    
+    // This gives [{from: {row: 1, col: 1}, to: {row: 2, col: 2}}]
+    depParser.parse('VAR1 + 1', position);
+    
+    // Complex formula
+    depParser.parse('IF(MONTH($K$1)<>MONTH($K$1-(WEEKDAY($K$1,1)-(start_day-1))-IF((WEEKDAY($K$1,1)-(start_day-1))<=0,7,0)+(ROW(O5)-ROW($K$3))*7+(COLUMN(O5)-COLUMN($K$3)+1)),"",$K$1-(WEEKDAY($K$1,1)-(start_day-1))-IF((WEEKDAY($K$1,1)-(start_day-1))<=0,7,0)+(ROW(O5)-ROW($K$3))*7+(COLUMN(O5)-COLUMN($K$3)+1))', position);
+    // This gives the following result
+    const result = [
+        {
+            "col": 11,
+            "row": 1,
+            "sheet": "Sheet1",
+        },
+        {
+            "col": 1,
+            "row": 1,
+            "sheet": "Sheet1",
+        },
+        {
+            "col": 15,
+            "row": 5,
+            "sheet": "Sheet1",
+        },
+        {
+            "col": 11,
+            "row": 3,
+            "sheet": "Sheet1",
+        },
+    ];
+    ```
+    
   - Formula data types in JavaScript
     - Number (date uses number): `1234`
     - String: `'some string'`
     - Boolean: `true`, `false`
-    - Array: `[1, 2, true, 'str']`
+    - Array: `[[1, 2, true, 'str']]`
     - Range Reference: (1-based index)
         ```js
         const ref = {
@@ -169,6 +260,9 @@ Note: The grammar in my implementation is different from theirs. My implementati
       - `FormulaError.NUM`: `#NUM!`
       - `FormulaError.REF`: `#REF!`
       - `FormulaError.VALUE`: `#VALUE!`
+      
+  - Types Definition
+    > Comming soon
 
 ### Thanks
 - [![JetBrains](https://raw.githubusercontent.com/LesterLyu/fast-formula-parser/master/logos/jetbrains-variant-4.svg)](https://www.jetbrains.com/?from=fast-formula-parser)
