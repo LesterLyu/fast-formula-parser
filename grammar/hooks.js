@@ -19,7 +19,7 @@ const Utils = require('./utils');
 class FormulaParser {
 
     /**
-     * @param {{functions: {}, onVariable: function, onCell: function, onRange: function}} [config]
+     * @param {{functions: {}, functionsNeedContext: {}, onVariable: function, onCell: function, onRange: function}} [config]
      * @param isTest - is in testing environment
      */
     constructor(config, isTest = false) {
@@ -28,6 +28,7 @@ class FormulaParser {
         this.utils = new Utils(this);
         config = Object.assign({
             functions: {},
+            functionsNeedContext: {},
             onVariable: () => null,
             onCell: () => 0,
             onRange: () => [[0]],
@@ -35,7 +36,7 @@ class FormulaParser {
 
         this.onVariable = config.onVariable;
         this.functions = Object.assign({}, DateFunctions, StatisticalFunctions, InformationFunctions, ReferenceFunctions,
-            EngFunctions, LogicalFunctions, TextFunctions, MathFunctions, TrigFunctions, config.functions);
+            EngFunctions, LogicalFunctions, TextFunctions, MathFunctions, TrigFunctions, config.functions, config.functionsNeedContext);
         this.onRange = config.onRange;
         this.onCell = config.onCell;
 
@@ -50,7 +51,7 @@ class FormulaParser {
 
         // functions need context and don't need to retrieve references
         this.funsNeedContextAndNoDataRetrieve = ['ROW', 'ROWS', 'COLUMN', 'COLUMNS', 'SUMIF', 'INDEX', 'AVERAGEIF'];
-        this.funsNeedContext = [];
+        this.funsNeedContext = Object.keys(config.functionsNeedContext);
         this.funsPreserveRef = Object.keys(InformationFunctions);
 
         this.parser = new Parser(this, this.utils);
