@@ -156,7 +156,7 @@ class FormulaParser {
      * @param args - Arguments that pass to the function.
      * @return {*}
      */
-    callFunction(name, args) {
+    _callFunction(name, args) {
         if (name.indexOf('_xlfn.') === 0)
             name = name.slice(6);
         name = name.toUpperCase();
@@ -186,7 +186,7 @@ class FormulaParser {
         if (this.functions[name]) {
             let res;
             try {
-                if (!this.funsNeedContextAndNoDataRetrieve.includes(name) || this.funsNeedContext.includes(name))
+                if (!this.funsNeedContextAndNoDataRetrieve.includes(name) && !this.funsNeedContext.includes(name))
                     res = (this.functions[name](...args));
                 else
                     res = (this.functions[name](this, ...args));
@@ -206,15 +206,32 @@ class FormulaParser {
                 }
                 throw FormulaError.NOT_IMPLEMENTED(name);
             }
-            return FormulaHelpers.checkFunctionResult(res);
+            return res;
         } else {
-
             // console.log(`Function ${name} is not implemented`);
             if (this.isTest) {
                 if (!this.logs.includes(name)) this.logs.push(name);
                 return {value: 0, ref: {}};
             }
             throw FormulaError.NOT_IMPLEMENTED(name);
+        }
+    }
+
+    async callFunctionAsync(name, args) {
+        const awaitedArgs = [];
+        for (const arg of args) {
+            awaitedArgs.push(await arg);
+        }
+        const res = await this._callFunction(name, awaitedArgs);
+        return FormulaHelpers.checkFunctionResult(res)
+    }
+
+    callFunction(name, args) {
+        if (this.async) {
+            return this.callFunctionAsync(name, args);
+        } else {
+            const res = this._callFunction(name, args);
+            return FormulaHelpers.checkFunctionResult(res);
         }
     }
 
@@ -309,6 +326,30 @@ class FormulaParser {
         let res;
         try {
             res = this.parser.formulaWithBinaryOp();
+            res = this.checkFormulaResult(res, allowReturnArray);
+            if (res instanceof FormulaError) {
+                return res;
+            }
+        } catch (e) {
+            // console.log(e);
+            throw e;
+        }
+        if (this.parser.errors.length > 0) {
+            const error = this.parser.errors[0];
+            throw this.utils.formatChevrotainError(error);
+        }
+        return res;
+    }
+
+    async parseAsync(inputText, position, allowReturnArray = false) {
+        if (inputText.length === 0) throw Error('Input must not be empty.');
+        this.position = position;
+        this.async = true;
+        const lexResult = lexer.lex(inputText);
+        this.parser.input = lexResult.tokens;
+        let res;
+        try {
+            res = await this.parser.formulaWithBinaryOp();
             res = this.checkFormulaResult(res, allowReturnArray);
             if (res instanceof FormulaError) {
                 return res;

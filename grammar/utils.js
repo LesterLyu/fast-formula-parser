@@ -1,5 +1,5 @@
 const FormulaError = require('../formulas/error');
-const {FormulaHelpers, Types, Address} = require('../formulas/helpers');
+const {Address} = require('../formulas/helpers');
 const {Prefix, Postfix, Infix, Operators} = require('../formulas/operators');
 const Collection = require('./type/collection');
 const MAX_ROW = 1048576, MAX_COLUMN = 16384;
@@ -87,6 +87,18 @@ class Utils {
         }
     }
 
+
+    _applyPrefix(prefixes, val, isArray) {
+        if (this.isFormulaError(val))
+            return val;
+        return Prefix.unaryOp(prefixes, val, isArray);
+    }
+
+    async applyPrefixAsync(prefixes, value) {
+        const {val, isArray} = this.extractRefValue(await value);
+        return this._applyPrefix(prefixes, val, isArray);
+    }
+
     /**
      * Apply + or - unary prefix.
      * @param {Array.<string>} prefixes
@@ -95,24 +107,37 @@ class Utils {
      */
     applyPrefix(prefixes, value) {
         // console.log('applyPrefix', prefixes, value);
-        const {val, isArray} = this.extractRefValue(value);
-        if (this.isFormulaError(val))
-            return val;
-        return Prefix.unaryOp(prefixes, val, isArray);
+        if (this.context.async) {
+            return this.applyPrefixAsync(prefixes, value);
+        } else {
+            const {val, isArray} = this.extractRefValue(value);
+            return this._applyPrefix(prefixes, val, isArray);
+        }
     }
 
-    applyPostfix(value, postfix) {
-        // console.log('applyPostfix', value, postfix);
-        const {val, isArray} = this.extractRefValue(value);
+    _applyPostfix(val, isArray, postfix) {
         if (this.isFormulaError(val))
             return val;
         return Postfix.percentOp(val, postfix, isArray);
     }
 
-    applyInfix(value1, infix, value2) {
-        const res1 = this.extractRefValue(value1);
+    async applyPostfixAsync(value, postfix) {
+        const {val, isArray} = this.extractRefValue(await value);
+        return this._applyPostfix(val, isArray, postfix);
+    }
+
+    applyPostfix(value, postfix) {
+        // console.log('applyPostfix', value, postfix);
+        if (this.context.async) {
+            return this.applyPostfixAsync(value, postfix);
+        } else {
+            const {val, isArray} = this.extractRefValue(value);
+            return this._applyPostfix(val, isArray, postfix)
+        }
+    }
+
+    _applyInfix(res1, infix, res2) {
         const val1 = res1.val, isArray1 = res1.isArray;
-        const res2 = this.extractRefValue(value2);
         const val2 = res2.val, isArray2 = res2.isArray;
         if (this.isFormulaError(val1))
             return val1;
@@ -126,6 +151,22 @@ class Utils {
             return Infix.mathOp(val1, infix, val2, isArray1, isArray2);
         else
             throw new Error(`Unrecognized infix: ${infix}`);
+    }
+
+    async applyInfixAsync(value1, infix, value2) {
+        const res1 = this.extractRefValue(await value1);
+        const res2 = this.extractRefValue(await value2);
+        return this._applyInfix(res1, infix, res2)
+    }
+
+    applyInfix(value1, infix, value2) {
+        if (this.context.async) {
+            return this.applyInfixAsync(value1, infix, value2)
+        } else {
+            const res1 = this.extractRefValue(value1);
+            const res2 = this.extractRefValue(value2);
+            return this._applyInfix(res1, infix, res2)
+        }
     }
 
     applyIntersect(refs) {
