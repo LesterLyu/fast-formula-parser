@@ -224,45 +224,46 @@ Note: The grammar in my implementation is different from theirs. My implementati
     ];
     ```
     
-  - Formula data types in JavaScript
-    - Number (date uses number): `1234`
-    - String: `'some string'`
-    - Boolean: `true`, `false`
-    - Array: `[[1, 2, true, 'str']]`
-    - Range Reference: (1-based index)
-        ```js
-        const ref = {
-            sheet: String,
-            from: {
-                row: Number,
-                col: Number,
-            },
-            to: {
-                row: Number,
-                col: Number,
-            },
-        }
-        ```
-    - Cell Reference: (1-based index)
-        ```js
-        const ref = {
-            sheet: String,
-            row: Number,
-            col: Number,
-        }
-        ```
-    - [Union (e.g. (A1:C3, E1:G6))](https://github.com/LesterLyu/fast-formula-parser/blob/master/grammar/type/collection.js)
-    - [FormulaError](https://lesterlyu.github.io/fast-formula-parser/FormulaError.html)
-      - `FormulaError.DIV0`: `#DIV/0!`
-      - `FormulaError.NA`: `#N/A`
-      - `FormulaError.NAME`: `#NAME?`
-      - `FormulaError.NULL`: `#NULL!`
-      - `FormulaError.NUM`: `#NUM!`
-      - `FormulaError.REF`: `#REF!`
-      - `FormulaError.VALUE`: `#VALUE!`
+### Formula data types in JavaScript
+> The following data types are used in excel formulas and these are the only valid data types a formula or a function can return.
+   - Number (date uses number): `1234`
+   - String: `'some string'`
+   - Boolean: `true`, `false`
+   - Array: `[[1, 2, true, 'str']]`
+   - Range Reference: (1-based index)
+       ```js
+       const ref = {
+           sheet: String,
+           from: {
+               row: Number,
+               col: Number,
+           },
+           to: {
+               row: Number,
+               col: Number,
+           },
+       }
+       ```
+   - Cell Reference: (1-based index)
+       ```js
+       const ref = {
+           sheet: String,
+           row: Number,
+           col: Number,
+       }
+       ```
+   - [Union (e.g. (A1:C3, E1:G6))](https://github.com/LesterLyu/fast-formula-parser/blob/master/grammar/type/collection.js)
+   - [FormulaError](https://lesterlyu.github.io/fast-formula-parser/FormulaError.html)
+     - `FormulaError.DIV0`: `#DIV/0!`
+     - `FormulaError.NA`: `#N/A`
+     - `FormulaError.NAME`: `#NAME?`
+     - `FormulaError.NULL`: `#NULL!`
+     - `FormulaError.NUM`: `#NUM!`
+     - `FormulaError.REF`: `#REF!`
+     - `FormulaError.VALUE`: `#VALUE!`
       
-  - Types Definition
-    > Comming soon
+### Types Definition
+> Comming soon
 
 ### Thanks
 - [![JetBrains](https://raw.githubusercontent.com/LesterLyu/fast-formula-parser/master/logos/jetbrains-variant-4.svg)](https://www.jetbrains.com/?from=fast-formula-parser)
