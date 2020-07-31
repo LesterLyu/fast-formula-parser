@@ -7,6 +7,8 @@ const {DepParser} = require('../../grammar/dependency/hooks');
 
 const parser = new FormulaParser({
         onCell: ref => {
+            if (ref.row === 5 && ref.col === 5)
+                return null
             return 1;
         },
         onRange: ref => {
@@ -107,6 +109,11 @@ describe('Dependency parser', () => {
 });
 
 describe('Basic parse', () => {
+    it('should parse null', function () {
+        let actual = parser.parse('E5', position);
+        expect(actual).to.deep.eq(null);
+    });
+
     it('should parse whole column', function () {
         let actual = parser.parse('SUM(A:A)', position);
         expect(actual).to.deep.eq(6);
@@ -116,6 +123,7 @@ describe('Basic parse', () => {
         let actual = parser.parse('SUM(1:1)', position);
         expect(actual).to.deep.eq(1);
     });
+
 })
 
 describe('Parser allows returning array or range', () => {
@@ -141,6 +149,19 @@ describe('Parser allows returning array or range', () => {
         expect(actual).to.eq(1);
     });
 
+    it('should return single value', function () {
+        let actual = parser.parse('E5', position, true);
+        expect(actual).to.eq(null);
+    });
+});
+
+describe('async parse', () => {
+    it('should return single value', async function () {
+        let actual = await parser.parseAsync('A1', position, true);
+        expect(actual).to.eq(1);
+        actual = await parser.parseAsync('E5', position, true);
+        expect(actual).to.eq(null);
+    });
 });
 
 describe('Custom async function', () => {

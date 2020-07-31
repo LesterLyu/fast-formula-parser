@@ -283,7 +283,7 @@ class FormulaParser {
                 }
                 // Disallow union, and other unknown data types.
                 // e.g. `=(A1:C1, A2:E9)` -> #VALUE!
-                if (typeof result === 'object' && !Array.isArray(result)) {
+                if (typeof result === 'object' && !Array.isArray(result) && result != null) {
                     return FormulaError.VALUE;
                 }
 
