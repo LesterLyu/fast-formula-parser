@@ -281,9 +281,9 @@ class FormulaParser {
                 if (result.ref) {
                     result = this.retrieveRef(result);
                 }
-                if (Array.isArray(result)) {
-                    return result;
-                } else {
+                // Disallow union, and other unknown data types.
+                // e.g. `=(A1:C1, A2:E9)` -> #VALUE!
+                if (typeof result === 'object' && !Array.isArray(result)) {
                     return FormulaError.VALUE;
                 }
 
