@@ -1,4 +1,5 @@
 const assert = require('assert');
+const expect = require('chai').expect;
 const {FormulaParser} = require('../grammar/hooks');
 const parser = new FormulaParser(undefined, true);
 
@@ -90,6 +91,11 @@ describe('Parsing Formulas 2', () => {
     });
 
 });
+
+describe('Get supported formulas', () => {
+    const number = parser.supportedFunctions().length;
+    expect(number).to.greaterThan(200);
+})
 
 require('./grammar/test');
 require('./formulas');

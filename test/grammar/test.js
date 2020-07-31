@@ -2,6 +2,7 @@ const chai = require('chai');
 const expect = require('chai').expect;
 const FormulaError = require('../../formulas/error');
 const {FormulaParser} = require('../../grammar/hooks');
+const {MAX_ROW, MAX_COLUMN} = require('../../index');
 const {DepParser} = require('../../grammar/dependency/hooks');
 
 const parser = new FormulaParser({
@@ -9,6 +10,11 @@ const parser = new FormulaParser({
             return 1;
         },
         onRange: ref => {
+            if (ref.to.row === MAX_ROW) {
+                return [[1, 2, 3]];
+            } else if (ref.to.col === MAX_COLUMN) {
+                return [[1], [0]]
+            }
             return [[1, 2, 3], [0, 0, 0]]
         },
     }
@@ -100,6 +106,18 @@ describe('Dependency parser', () => {
 
 });
 
+describe('Basic parse', () => {
+    it('should parse whole column', function () {
+        let actual = parser.parse('SUM(A:A)', position);
+        expect(actual).to.deep.eq(6);
+    });
+
+    it('should parse whole row', function () {
+        let actual = parser.parse('SUM(1:1)', position);
+        expect(actual).to.deep.eq(1);
+    });
+})
+
 describe('Parser allows returning array or range', () => {
     it('should parse array', function () {
         let actual = parser.parse('{1,2,3}', position, true);
@@ -118,6 +136,11 @@ describe('Parser allows returning array or range', () => {
         expect(actual).to.eq(FormulaError.VALUE);
     });
 
+    it('should return single value', function () {
+        let actual = parser.parse('A1', position, true);
+        expect(actual).to.eq(1);
+    });
+
 });
 
 describe('Custom async function', () => {
@@ -128,7 +151,7 @@ describe('Custom async function', () => {
                 },
                 functions: {
                     IMPORT_CSV: async () => {
-                        return [[1,2,3],[4,5,6]];
+                        return [[1, 2, 3], [4, 5, 6]];
                     }
                 },
             }
