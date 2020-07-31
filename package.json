@@ -1,6 +1,6 @@
 {
   "name": "fast-formula-parser",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "fast excel formula parser",
   "repository": "https://github.com/LesterLyu/fast-formula-parser",
   "main": "index.js",
