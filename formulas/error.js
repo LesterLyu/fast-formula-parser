@@ -109,11 +109,11 @@ FormulaError.VALUE = new FormulaError("#VALUE!");
 /**
  * NOT_IMPLEMENTED error
  * @param {string} functionName - the name of the not implemented function
- * @returns {Error}
+ * @returns {FormulaError}
  * @constructor
  */
 FormulaError.NOT_IMPLEMENTED = (functionName) => {
-    return new Error(`Function ${functionName} is not implemented.`)
+    return new FormulaError("#NAME?", `Function ${functionName} is not implemented.`)
 };
 
 /**
@@ -123,17 +123,17 @@ FormulaError.NOT_IMPLEMENTED = (functionName) => {
  * @constructor
  */
 FormulaError.TOO_MANY_ARGS = (functionName) => {
-    return new Error(`Function ${functionName} has too many arguments.`)
+    return new FormulaError("#N/A", `Function ${functionName} has too many arguments.`)
 };
 
 /**
  * ARG_MISSING error
  * @param args - the name of the errored function
- * @returns {Error}
+ * @returns {FormulaError}
  * @constructor
  */
 FormulaError.ARG_MISSING = (args) => {
-    return new Error(`Argument type ${args.join(', ')} is missing.`)
+    return new FormulaError("#N/A", `Argument type ${args.join(', ')} is missing.`)
 };
 
 module.exports = FormulaError;
