@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">87.93% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>51/58</span>
+                <span class='fraction'>60/60</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/2</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">89.47% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>51/57</span>
+                <span class='fraction'>59/59</span>
             </div>
         
             
@@ -348,7 +348,10 @@
 <a name='L289'></a><a href='#L289'>289</a>
 <a name='L290'></a><a href='#L290'>290</a>
 <a name='L291'></a><a href='#L291'>291</a>
-<a name='L292'></a><a href='#L292'>292</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L292'></a><a href='#L292'>292</a>
+<a name='L293'></a><a href='#L293'>293</a>
+<a name='L294'></a><a href='#L294'>294</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -625,21 +628,23 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">114253x</span>
+<span class="cline-any cline-yes">111416x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">114253x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">111416x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">114253x</span>
+<span class="cline-any cline-yes">111415x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const {createToken, Lexer} = require('chevrotain');
+const FormulaError = require('../formulas/error')
 &nbsp;
 // the vocabulary will be exported and used in the Parser definition.
 const tokenVocabulary = {};
@@ -918,13 +923,14 @@ module.exports = {
     lex: function (inputText) {
         const lexingResult = SelectLexer.tokenize(inputText)
 &nbsp;
-        <span class="missing-if-branch" title="if path not taken" >I</span>if (lexingResult.errors.length &gt; 0) {
-            const error = <span class="cstat-no" title="statement not covered" >lexingResult.errors[0];</span>
-            const line = <span class="cstat-no" title="statement not covered" >error.line,</span> column = <span class="cstat-no" title="statement not covered" >error.column;</span>
-            let msg = <span class="cstat-no" title="statement not covered" >'\n' + inputText.split('\n')[line - 1] + '\n';</span>
-<span class="cstat-no" title="statement not covered" >            msg += Array(column - 1).fill(' ').join('') + '^\n';</span>
-<span class="cstat-no" title="statement not covered" >            error.message = msg + `Error at position ${line}:${column}\n` + error.message;</span>
-<span class="cstat-no" title="statement not covered" >            throw Error(error.message)</span>
+        if (lexingResult.errors.length &gt; 0) {
+            const error = lexingResult.errors[0];
+            const line = error.line, column = error.column;
+            let msg = '\n' + inputText.split('\n')[line - 1] + '\n';
+            msg += Array(column - 1).fill(' ').join('') + '^\n';
+            error.message = msg + `Error at position ${line}:${column}\n` + error.message;
+            error.errorLocation = {line, column};
+            throw FormulaError.ERROR(error.message, error);
         }
 &nbsp;
         return lexingResult
@@ -937,7 +943,7 @@ module.exports = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Sun Aug 02 2020 13:32:11 GMT-0400 (Eastern Daylight Time)
+                at Mon Aug 03 2020 19:43:19 GMT-0400 (Eastern Daylight Time)
             </div>
         </div>
         <script src="../../prettify.js"></script>
