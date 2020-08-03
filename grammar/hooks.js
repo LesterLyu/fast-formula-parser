@@ -320,19 +320,18 @@ class FormulaParser {
      */
     parse(inputText, position, allowReturnArray = false) {
         if (inputText.length === 0) throw Error('Input must not be empty.');
-        this.position = position;
-        const lexResult = lexer.lex(inputText);
-        this.parser.input = lexResult.tokens;
+        this.position = position;        
         let res;
         try {
+            const lexResult = lexer.lex(inputText);
+            this.parser.input = lexResult.tokens;
             res = this.parser.formulaWithBinaryOp();
             res = this.checkFormulaResult(res, allowReturnArray);
             if (res instanceof FormulaError) {
                 return res;
             }
         } catch (e) {
-            // console.log(e);
-            throw e;
+            throw new FormulaError('#ERROR!', e.toString())
         }
         if (this.parser.errors.length > 0) {
             const error = this.parser.errors[0];
@@ -354,19 +353,18 @@ class FormulaParser {
     async parseAsync(inputText, position, allowReturnArray = false) {
         if (inputText.length === 0) throw Error('Input must not be empty.');
         this.position = position;
-        this.async = true;
-        const lexResult = lexer.lex(inputText);
-        this.parser.input = lexResult.tokens;
+        this.async = true;        
         let res;
         try {
+            const lexResult = lexer.lex(inputText);
+            this.parser.input = lexResult.tokens;
             res = await this.parser.formulaWithBinaryOp();
             res = this.checkFormulaResult(res, allowReturnArray);
             if (res instanceof FormulaError) {
                 return res;
             }
         } catch (e) {
-            // console.log(e);
-            throw e;
+            throw new FormulaError('#ERROR!', e.toString())
         }
         if (this.parser.errors.length > 0) {
             const error = this.parser.errors[0];
