@@ -1,4 +1,5 @@
 const {createToken, Lexer} = require('chevrotain');
+const FormulaError = require('../formulas/error')
 
 // the vocabulary will be exported and used in the Parser definition.
 const tokenVocabulary = {};
@@ -283,7 +284,8 @@ module.exports = {
             let msg = '\n' + inputText.split('\n')[line - 1] + '\n';
             msg += Array(column - 1).fill(' ').join('') + '^\n';
             error.message = msg + `Error at position ${line}:${column}\n` + error.message;
-            throw Error(error.message)
+            error.errorLocation = {line, column};
+            throw FormulaError.ERROR(error.message, error);
         }
 
         return lexingResult

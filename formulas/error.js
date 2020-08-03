@@ -1,46 +1,35 @@
 /**
  * Formula Error.
  */
-class FormulaError {
+class FormulaError extends Error {
 
     /**
      * @param {string} error - error code, i.e. #NUM!
      * @param {string} [msg] - detailed error message
+     * @param {object|Error} [details]
      * @returns {FormulaError}
      */
-    constructor(error, msg) {
-        if (msg == null && FormulaError.errorMap.has(error))
+    constructor(error, msg, details) {
+        super(msg);
+        if (msg == null && details == null && FormulaError.errorMap.has(error))
             return FormulaError.errorMap.get(error);
-        else if (msg == null) {
+        else if (msg == null && details == null) {
             this._error = error;
             FormulaError.errorMap.set(error, this);
         } else {
             this._error = error;
-            this._msg = msg;
         }
+        this.details = details;
     }
 
     /**
-     * Get the error message.
-     * @returns {*}
-     */
-    get message() {
-        return this._msg;
-    }
-
-    /**
-     * Set the error message.
-     * @param {string} msg
-     */
-    set message(msg) {
-        this._msg = msg;
-    }
-
-    /**
-     * Get the error.
+     * Get the error name.
      * @returns {string} formula error
      */
     get error() {
+        return this._error;
+    }
+    get name() {
         return this._error;
     }
 
@@ -119,7 +108,7 @@ FormulaError.NOT_IMPLEMENTED = (functionName) => {
 /**
  * TOO_MANY_ARGS error
  * @param functionName - the name of the errored function
- * @returns {Error}
+ * @returns {FormulaError}
  * @constructor
  */
 FormulaError.TOO_MANY_ARGS = (functionName) => {
@@ -135,5 +124,17 @@ FormulaError.TOO_MANY_ARGS = (functionName) => {
 FormulaError.ARG_MISSING = (args) => {
     return new FormulaError("#N/A", `Argument type ${args.join(', ')} is missing.`)
 };
+
+/**
+ * #ERROR!
+ * Parse/Lex error or other unexpected errors
+ * @param {string} msg
+ * @param {object|Error} [details]
+ * @return {FormulaError}
+ * @constructor
+ */
+FormulaError.ERROR = (msg, details) => {
+    return new FormulaError('#ERROR!', msg, details);
+}
 
 module.exports = FormulaError;

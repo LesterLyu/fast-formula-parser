@@ -331,12 +331,11 @@ class FormulaParser {
                 return res;
             }
         } catch (e) {
-            // console.log(e);
-            throw e;
+            throw FormulaError.ERROR(e.message, e);
         }
         if (this.parser.errors.length > 0) {
             const error = this.parser.errors[0];
-            throw this.utils.formatChevrotainError(error);
+            throw this.utils.formatChevrotainError(error, inputText);
         }
         return res;
     }
@@ -365,12 +364,11 @@ class FormulaParser {
                 return res;
             }
         } catch (e) {
-            // console.log(e);
-            throw e;
+            throw FormulaError.ERROR(e.message, e);
         }
         if (this.parser.errors.length > 0) {
             const error = this.parser.errors[0];
-            throw this.utils.formatChevrotainError(error);
+            throw this.utils.formatChevrotainError(error, inputText);
         }
         return res;
     }
