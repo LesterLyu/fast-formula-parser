@@ -110,13 +110,13 @@ describe('Dependency parser', () => {
     });
 
     it('should not throw error', function () {
-        expect((() => depParser.parse('SUM(1))', position, false)))
+        expect((() => depParser.parse('SUM(1))', position, true)))
             .to.not.throw();
 
-        expect((() => depParser.parse('SUM(1+)', position, false)))
+        expect((() => depParser.parse('SUM(1+)', position, true)))
             .to.not.throw();
 
-        expect((() => depParser.parse('SUM(1+)', position, false)))
+        expect((() => depParser.parse('SUM(1+)', position, true)))
             .to.not.throw();
     });
 });
