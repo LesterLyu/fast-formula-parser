@@ -1,4 +1,3 @@
-const chai = require('chai');
 const expect = require('chai').expect;
 const FormulaError = require('../../formulas/error');
 const {FormulaParser} = require('../../grammar/hooks');
@@ -80,3 +79,4 @@ describe('#ERROR! Error handling', () => {
         }
     });
 });
+

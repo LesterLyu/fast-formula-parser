@@ -99,4 +99,6 @@ describe('Get supported formulas', () => {
 
 require('./grammar/test');
 require('./grammar/errors');
+require('./grammar/collection');
+require('./grammar/depParser');
 require('./formulas');
