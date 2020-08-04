@@ -386,7 +386,7 @@ class Utils {
         return obj instanceof FormulaError;
     }
 
-    formatChevrotainError(error, inputText) {
+    static formatChevrotainError(error, inputText) {
         let line, column, msg = '';
         // e.g. SUM(1))
         if (error instanceof NotAllInputParsedException) {

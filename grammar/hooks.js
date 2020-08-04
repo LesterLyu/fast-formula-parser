@@ -335,7 +335,7 @@ class FormulaParser {
         }
         if (this.parser.errors.length > 0) {
             const error = this.parser.errors[0];
-            throw this.utils.formatChevrotainError(error, inputText);
+            throw Utils.formatChevrotainError(error, inputText);
         }
         return res;
     }
@@ -368,7 +368,7 @@ class FormulaParser {
         }
         if (this.parser.errors.length > 0) {
             const error = this.parser.errors[0];
-            throw this.utils.formatChevrotainError(error, inputText);
+            throw Utils.formatChevrotainError(error, inputText);
         }
         return res;
     }
