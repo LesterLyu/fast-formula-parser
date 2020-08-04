@@ -1,5 +1,3 @@
-const LogicalFunctions = require('../../formulas/functions/logical');
-const ReferenceFunctions = require('../../formulas/functions/reference');
 const FormulaError = require('../../formulas/error');
 const {FormulaHelpers} = require('../../formulas/helpers');
 const {Parser} = require('../parsing');
@@ -13,7 +11,6 @@ class DepParser {
      * @param {{onVariable: Function}} [config]
      */
     constructor(config) {
-        this.logs = [];
         this.data = [];
         this.utils = new Utils(this);
         config = Object.assign({
@@ -22,7 +19,7 @@ class DepParser {
         this.utils = new Utils(this);
 
         this.onVariable = config.onVariable;
-        this.functions = Object.assign({}, ReferenceFunctions, LogicalFunctions);
+        this.functions = {}
 
         this.parser = new Parser(this, this.utils);
     }
@@ -111,31 +108,7 @@ class DepParser {
      * @param args - Arguments that pass to the function.
      */
     callRefFunction(name, args) {
-        args.forEach(arg => {
-            this.retrieveRef(arg);
-        });
-        name = name.toUpperCase();
-        if (this.functions[name]) {
-            let res;
-            try {
-                res = (this.functions[name](this, ...args));
-            } catch (e) {
-                // allow functions throw FormulaError, this make functions easier to implement!
-                if (e instanceof FormulaError) {
-                    return e;
-                } else {
-                    throw e;
-                }
-            }
-            if (res === undefined) {
-                return {value: 0, ref: {}};
-            }
-            return FormulaHelpers.checkFunctionResult(res);
-        } else {
-            if (!this.logs.includes(name)) this.logs.push(name);
-            // console.log(`Function ${name} is not implemented`);
-            return {value: 0, ref: {}};
-        }
+        this.callFunction(name, args);
     }
 
     /**
@@ -146,9 +119,9 @@ class DepParser {
      */
     callFunction(name, args) {
         args.forEach(arg => {
-            if (arg === null)
+            if (arg == null)
                 return;
-            this.utils.extractRefValue(arg);
+            this.retrieveRef(arg);
         });
         return {value: 0, ref: {}};
     }
@@ -164,22 +137,32 @@ class DepParser {
 
     /**
      * Parse an excel formula and return the dependencies
-     * @param inputText
-     * @param position
+     * @param {string} inputText
+     * @param {{row: number, col: number, sheet: string}} position
+     * @param {boolean} [printOnError=true] print errors if true.
      * @returns {Array.<{}>}
      */
-    parse(inputText, position) {
+    parse(inputText, position, printOnError = true) {
         if (inputText.length === 0) throw Error('Input must not be empty.');
         this.data = [];
         this.position = position;
         const lexResult = lexer.lex(inputText);
         this.parser.input = lexResult.tokens;
-        let res = this.parser.formulaWithBinaryOp();
-        this.checkFormulaResult(res);
-        if (this.parser.errors.length > 0) {
-            const error = this.parser.errors[0];
-            console.error(this.utils.formatChevrotainError(error));
+        try {
+            let res = this.parser.formulaWithBinaryOp();
+            this.checkFormulaResult(res);
+            if (this.parser.errors.length > 0 && printOnError) {
+                const error = this.parser.errors[0];
+                console.warn(`Error in ${inputText}:`);
+                console.warn(error)
+            }
+        } catch (e) {
+            if (printOnError) {
+                console.warn(`Error in ${inputText}:`);
+                console.warn(e);
+            }
         }
+
         return this.data;
     }
 }
