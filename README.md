@@ -265,5 +265,47 @@ Note: The grammar in my implementation is different from theirs. My implementati
 ### Types Definition
 > Comming soon
 
+### Error handling
+
+ - Lexing/Parsing Error
+    > Error location is available at `error.details.errorLocation`
+    ```js
+    try {
+        parser.parse('SUM(1))', position);
+    } catch (e) {
+        console.log(e);
+        // #ERROR!:
+        // SUM(1))
+        //       ^
+        // Error at position 1:7
+        // Redundant input, expecting EOF but found: )
+   
+        expect(e).to.be.instanceof(FormulaError);
+        expect(e.details.errorLocation.line).to.eq(1);
+        expect(e.details.errorLocation.column).to.eq(7);
+        expect(e.name).to.eq('#ERROR!');
+        expect(e.details.name).to.eq('NotAllInputParsedException');
+    }
+    ```
+ - Error from internal/external functions or unexpected error from the parser
+    > The error will be wrapped into `FormulaError`. The exact error is in `error.details`.
+    ```js
+    const parser = new FormulaParser({
+        functions: {
+            BAD_FN: () => {
+                throw new SyntaxError();
+            }
+        }
+    });
+   
+    try {
+        parser.parse('SUM(1))', position);
+    } catch (e) {
+        expect(e).to.be.instanceof(FormulaError);
+        expect(e.name).to.eq('#ERROR!');
+        expect(e.details.name).to.eq('SyntaxError');
+    }
+    ```
+
 ### Thanks
 - [![JetBrains](https://raw.githubusercontent.com/LesterLyu/fast-formula-parser/master/logos/jetbrains-variant-4.svg)](https://www.jetbrains.com/?from=fast-formula-parser)
