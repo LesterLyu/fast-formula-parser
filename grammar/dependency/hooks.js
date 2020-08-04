@@ -141,6 +141,7 @@ class DepParser {
      * @param {string} inputText
      * @param {{row: number, col: number, sheet: string}} position
      * @param {boolean} [ignoreError=false] if true, throw FormulaError when error occurred.
+     *                                      if false, the parser will return partial dependencies.
      * @returns {Array.<{}>}
      */
     parse(inputText, position, ignoreError = false) {
