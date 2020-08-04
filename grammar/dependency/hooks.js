@@ -140,7 +140,7 @@ class DepParser {
      * Parse an excel formula and return the dependencies
      * @param {string} inputText
      * @param {{row: number, col: number, sheet: string}} position
-     * @param {boolean} [ignoreError=true] print errors if true.
+     * @param {boolean} [ignoreError=false] if true, throw FormulaError when error occurred.
      * @returns {Array.<{}>}
      */
     parse(inputText, position, ignoreError = false) {
