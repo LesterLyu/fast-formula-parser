@@ -3,6 +3,7 @@ const {FormulaHelpers} = require('../../formulas/helpers');
 const {Parser} = require('../parsing');
 const lexer = require('../lexing');
 const Utils = require('./utils');
+const {formatChevrotainError} = require('../utils');
 
 class DepParser {
 
@@ -139,28 +140,26 @@ class DepParser {
      * Parse an excel formula and return the dependencies
      * @param {string} inputText
      * @param {{row: number, col: number, sheet: string}} position
-     * @param {boolean} [printOnError=true] print errors if true.
+     * @param {boolean} [ignoreError=true] print errors if true.
      * @returns {Array.<{}>}
      */
-    parse(inputText, position, printOnError = true) {
+    parse(inputText, position, ignoreError = false) {
         if (inputText.length === 0) throw Error('Input must not be empty.');
         this.data = [];
         this.position = position;
         const lexResult = lexer.lex(inputText);
         this.parser.input = lexResult.tokens;
         try {
-            let res = this.parser.formulaWithBinaryOp();
+            const res = this.parser.formulaWithBinaryOp();
             this.checkFormulaResult(res);
-            if (this.parser.errors.length > 0 && printOnError) {
-                const error = this.parser.errors[0];
-                console.warn(`Error in ${inputText}:`);
-                console.warn(error)
-            }
         } catch (e) {
-            if (printOnError) {
-                console.warn(`Error in ${inputText}:`);
-                console.warn(e);
+            if (!ignoreError) {
+                throw FormulaError.ERROR(e.message, e);
             }
+        }
+        if (this.parser.errors.length > 0 && !ignoreError) {
+            const error = this.parser.errors[0];
+            throw formatChevrotainError(error, inputText);
         }
 
         return this.data;
