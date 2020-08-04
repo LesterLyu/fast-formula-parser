@@ -46,7 +46,7 @@ const {
 class Parsing extends EmbeddedActionsParser {
     /**
      *
-     * @param {FormulaParser} context
+     * @param {FormulaParser|DepParser} context
      * @param {Utils} utils
      */
     constructor(context, utils) {
