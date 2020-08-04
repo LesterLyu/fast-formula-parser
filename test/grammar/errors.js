@@ -37,7 +37,9 @@ describe('#ERROR! Error handling', () => {
             expect(e.details.errorLocation.column).to.eq(7);
             expect(e.name).to.eq('#ERROR!');
             expect(e.details.name).to.eq('NotAllInputParsedException');
+            return;
         }
+        throw Error('Should not reach here.');
     });
 
     it('should handle lexing error', function () {
@@ -48,7 +50,9 @@ describe('#ERROR! Error handling', () => {
             expect(e.details.errorLocation.line).to.eq(1);
             expect(e.details.errorLocation.column).to.eq(7);
             expect(e.name).to.eq('#ERROR!');
+            return;
         }
+        throw Error('Should not reach here.');
     });
 
     it('should handle Parser error []', function () {
@@ -57,7 +61,9 @@ describe('#ERROR! Error handling', () => {
         } catch (e) {
             expect(e).to.be.instanceof(FormulaError);
             expect(e.name).to.eq('#ERROR!');
+            return;
         }
+        throw Error('Should not reach here.');
     });
 
     it('should handle Parser error', function () {
@@ -66,7 +72,9 @@ describe('#ERROR! Error handling', () => {
         } catch (e) {
             expect(e).to.be.instanceof(FormulaError);
             expect(e.name).to.eq('#ERROR!');
+            return;
         }
+        throw Error('Should not reach here.');
     });
 
     it('should handle error from functions', function () {
@@ -76,7 +84,20 @@ describe('#ERROR! Error handling', () => {
             expect(e).to.be.instanceof(FormulaError);
             expect(e.name).to.eq('#ERROR!');
             expect(e.details.name).to.eq('SyntaxError');
+            return;
         }
+        throw Error('Should not reach here.');
+    });
+
+    it('should handle errors in async', async function () {
+        try {
+            await parser.parseAsync('SUM(*()', position, true);
+        } catch (e) {
+            expect(e).to.be.instanceof(FormulaError);
+            expect(e.name).to.eq('#ERROR!');
+            return;
+        }
+        throw Error('Should not reach here.');
     });
 });
 
