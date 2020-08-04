@@ -1,13 +1,13 @@
 {
   "name": "fast-formula-parser",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "fast excel formula parser",
   "repository": "https://github.com/LesterLyu/fast-formula-parser",
   "main": "index.js",
   "scripts": {
     "test": "mocha -s 0",
     "test:f": "mocha test/formulas",
-    "prepublishOnly": "yarn run build",
+    "prepublishOnly": "yarn run build && yarn run test",
     "postpublish": "yarn run publish:docs",
     "build": "webpack",
     "diagram": "node grammar/diagram.js",
