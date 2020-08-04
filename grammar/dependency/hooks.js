@@ -108,7 +108,7 @@ class DepParser {
      * @param args - Arguments that pass to the function.
      */
     callRefFunction(name, args) {
-        this.callFunction(name, args);
+       return this.callFunction(name, args);
     }
 
     /**
