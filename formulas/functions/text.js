@@ -219,8 +219,7 @@ const TextFunctions = {
         return leftParenOrMinus ? -number : number;
     },
 
-    PHONETIC: (...params) => {
-        throw FormulaError.NOT_IMPLEMENTED('PHONETIC');
+    PHONETIC: () => {
     },
 
     PROPER: (text) => {

@@ -216,16 +216,13 @@ class FormulaParser {
         const supported = [];
         const functions = Object.keys(this.functions);
         functions.forEach(fun => {
-            let res;
             try {
-                res = this.functions[fun](0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                const res = this.functions[fun](0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 if (res === undefined) return;
                 supported.push(fun);
             } catch (e) {
-                if (e instanceof FormulaError || e instanceof TypeError)
+                if (e instanceof Error)
                     supported.push(fun);
-                // else
-                //     console.log(e)
             }
         });
         return supported.sort();

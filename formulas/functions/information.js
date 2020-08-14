@@ -21,7 +21,6 @@ const InfoFunctions = {
     },
 
     INFO: () => {
-        throw FormulaError.NOT_IMPLEMENTED('INFO');
     },
 
     ISBLANK: (value) => {

@@ -93,8 +93,12 @@ describe('Parsing Formulas 2', () => {
 });
 
 describe('Get supported formulas', () => {
-    const number = parser.supportedFunctions().length;
-    expect(number).to.greaterThan(200);
+    const functionsNames =  parser.supportedFunctions();
+    expect(functionsNames.length).to.greaterThan(275);
+    console.log(`Support ${functionsNames.length} functions:\n${functionsNames.join(', ')}`);
+    expect(functionsNames.includes('IFNA')).to.eq(true);
+    expect(functionsNames.includes('SUMIF')).to.eq(true);
+
 })
 
 require('./grammar/test');
