@@ -11,7 +11,6 @@ const {
     RefError,
     Cell,
     Sheet,
-    ReservedName,
     Name,
     Number,
     Boolean,
@@ -177,7 +176,6 @@ class Parsing extends EmbeddedActionsParser {
         });
 
         $.RULE('formula', () => $.OR9([
-            {ALT: () => $.SUBRULE($.reservedName)},
             {ALT: () => $.SUBRULE($.referenceWithoutInfix)},
             {ALT: () => $.SUBRULE($.paren)},
             {ALT: () => $.SUBRULE($.constant)},
@@ -268,11 +266,6 @@ class Parsing extends EmbeddedActionsParser {
             },
         ]));
 
-        $.RULE('reservedName', () => {
-            const name = $.CONSUME(ReservedName).image;
-            return $.ACTION(() => context.getVariable(name));
-        });
-
         $.RULE('constant', () => $.OR([
             {
                 ALT: () => {
@@ -336,7 +329,6 @@ class Parsing extends EmbeddedActionsParser {
         $.RULE('referenceWithoutInfix', () => $.OR([
 
             {ALT: () => $.SUBRULE($.referenceItem)},
-            {ALT: () => $.SUBRULE($.referenceFunctionCall)},
 
             {
                 // sheet name prefix
@@ -356,19 +348,6 @@ class Parsing extends EmbeddedActionsParser {
             },
 
             // {ALT: () => $.SUBRULE('dynamicDataExchange')},
-        ]));
-
-        $.RULE('referenceFunctionCall', () => {
-            const refFunctionName = $.SUBRULE($.refFunctionName);
-            // console.log('refFunctionName', refFunctionName);
-            const args = $.SUBRULE($.arguments);
-            $.CONSUME2(CloseParen);
-            return $.ACTION(() => context.callRefFunction(refFunctionName, args));
-        });
-
-        $.RULE('refFunctionName', () => $.OR([
-            {ALT: () => $.CONSUME(ExcelRefFunction).image.slice(0, -1)},
-            {ALT: () => $.CONSUME(ExcelConditionalRefFunction).image.slice(0, -1)}
         ]));
 
         $.RULE('referenceItem', () => $.OR([

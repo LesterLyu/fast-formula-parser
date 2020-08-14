@@ -30,16 +30,6 @@ const Function = createToken({
     pattern: /[A-Za-z_]+[A-Za-z_0-9.]*\(/
 });
 
-const ExcelRefFunction = createToken({
-    name: 'ExcelRefFunction',
-    pattern: /(INDEX|OFFSET|INDIRECT)\(/i
-});
-
-const ExcelConditionalRefFunction = createToken({
-    name: 'ExcelConditionalRefFunction',
-    pattern: /(IF|CHOOSE)\(/i
-});
-
 const FormulaErrorT = createToken({
     name: 'FormulaErrorT',
     pattern: /#NULL!|#DIV\/0!|#VALUE!|#NAME\?|#NUM!|#N\/A/
@@ -65,11 +55,6 @@ const Cell = createToken({
     name: 'Cell',
     pattern: /[$]?[A-Za-z]{1,3}[$]?[1-9][0-9]*/,
     longer_alt: Name
-});
-
-const ReservedName = createToken({
-    name: 'ReservedName',
-    pattern: /_xlnm\.[a-zA-Z_]+/
 });
 
 const Number = createToken({
@@ -225,8 +210,6 @@ const allTokens = [
     String,
     SheetQuoted,
     SingleQuotedString,
-    ExcelRefFunction,
-    ExcelConditionalRefFunction,
     Function,
     FormulaErrorT,
     RefError,
@@ -235,7 +218,6 @@ const allTokens = [
     Boolean,
     Column,
     Name,
-    ReservedName,
     Number,
 
     At,

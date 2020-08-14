@@ -28,8 +28,10 @@ const LogicalFunctions = {
         return value.value instanceof FormulaError ? H.accept(valueIfError) : H.accept(value);
     },
 
-    IFNA: (value, valueIfNa) => {
-       return value.value === FormulaError.NA ? H.accept(valueIfNa) : H.accept(value);
+    IFNA: function (value, valueIfNa) {
+        if (arguments.length > 2)
+            throw FormulaError.TOO_MANY_ARGS('IFNA');
+        return  FormulaError.NA.equals(value.value) ? H.accept(valueIfNa) : H.accept(value);
     },
 
     IFS: (...params) => {

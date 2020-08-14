@@ -102,17 +102,6 @@ class DepParser {
     }
 
     /**
-     * The functions that can return a reference instead of a value as normal functions.
-     * Note: Not all functions from "Lookup and reference" category can return a reference.
-     * {@link https://support.office.com/en-ie/article/lookup-and-reference-functions-reference-8aa21a3a-b56a-4055-8257-3ec89df2b23e}
-     * @param name - Reference function name.
-     * @param args - Arguments that pass to the function.
-     */
-    callRefFunction(name, args) {
-       return this.callFunction(name, args);
-    }
-
-    /**
      * Call an excel function.
      * @param name - Function name.
      * @param args - Arguments that pass to the function.
