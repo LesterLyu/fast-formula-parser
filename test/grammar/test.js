@@ -117,3 +117,12 @@ describe('Custom async function', () => {
         expect(actual).to.eq(3);
     });
 })
+
+describe("Github Issues", function () {
+    it('issue-19： Inconsistent results with parse and parseAsync', async function () {
+        let res = parser.parse('IF(20 < 0, "yep", "nope")');
+        expect(res).to.eq('nope');
+        res = await parser.parseAsync('IF(20 < 0, "yep", "nope")');
+        expect(res).to.eq('nope');
+    });
+})
