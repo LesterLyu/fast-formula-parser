@@ -370,16 +370,6 @@
             "definition": [
               {
                 "type": "NonTerminal",
-                "name": "reservedName",
-                "idx": 0
-              }
-            ]
-          },
-          {
-            "type": "Alternative",
-            "definition": [
-              {
-                "type": "NonTerminal",
                 "name": "referenceWithoutInfix",
                 "idx": 0
               }
@@ -626,20 +616,6 @@
   },
   {
     "type": "Rule",
-    "name": "reservedName",
-    "orgText": "",
-    "definition": [
-      {
-        "type": "Terminal",
-        "name": "ReservedName",
-        "label": "ReservedName",
-        "idx": 0,
-        "pattern": "_xlnm\\.[a-zA-Z_]+"
-      }
-    ]
-  },
-  {
-    "type": "Rule",
     "name": "constant",
     "orgText": "",
     "definition": [
@@ -818,16 +794,6 @@
             "definition": [
               {
                 "type": "NonTerminal",
-                "name": "referenceFunctionCall",
-                "idx": 0
-              }
-            ]
-          },
-          {
-            "type": "Alternative",
-            "definition": [
-              {
-                "type": "NonTerminal",
                 "name": "prefixName",
                 "idx": 0
               },
@@ -835,67 +801,6 @@
                 "type": "NonTerminal",
                 "name": "formulaWithRange",
                 "idx": 2
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "type": "Rule",
-    "name": "referenceFunctionCall",
-    "orgText": "",
-    "definition": [
-      {
-        "type": "NonTerminal",
-        "name": "refFunctionName",
-        "idx": 0
-      },
-      {
-        "type": "NonTerminal",
-        "name": "arguments",
-        "idx": 0
-      },
-      {
-        "type": "Terminal",
-        "name": "CloseParen",
-        "label": "CloseParen",
-        "idx": 2,
-        "pattern": "\\)"
-      }
-    ]
-  },
-  {
-    "type": "Rule",
-    "name": "refFunctionName",
-    "orgText": "",
-    "definition": [
-      {
-        "type": "Alternation",
-        "idx": 0,
-        "definition": [
-          {
-            "type": "Alternative",
-            "definition": [
-              {
-                "type": "Terminal",
-                "name": "ExcelRefFunction",
-                "label": "ExcelRefFunction",
-                "idx": 0,
-                "pattern": "(INDEX|OFFSET|INDIRECT)\\("
-              }
-            ]
-          },
-          {
-            "type": "Alternative",
-            "definition": [
-              {
-                "type": "Terminal",
-                "name": "ExcelConditionalRefFunction",
-                "label": "ExcelConditionalRefFunction",
-                "idx": 0,
-                "pattern": "(IF|CHOOSE)\\("
               }
             ]
           }

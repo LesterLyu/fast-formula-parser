@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">69.23% </span>
+                <span class="strong">7.69% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>9/13</span>
+                <span class='fraction'>1/13</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>3/6</span>
+                <span class='fraction'>0/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>5/5</span>
+                <span class='fraction'>0/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">69.23% </span>
+                <span class="strong">7.69% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>9/13</span>
+                <span class='fraction'>1/13</span>
             </div>
         
             
@@ -55,7 +55,7 @@
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
         </p>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -106,9 +106,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">17x</span>
-<span class="cline-any cline-yes">17x</span>
-<span class="cline-any cline-yes">17x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -118,25 +118,25 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">40x</span>
-<span class="cline-any cline-yes">40x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -147,10 +147,10 @@
  */
 class Collection {
 &nbsp;
-    constructor(data, refs) {
-        <span class="missing-if-branch" title="else path not taken" >E</span>if (data == null &amp;&amp; refs == null) {
-            this._data = [];
-            this._refs = [];
+<span class="fstat-no" title="function not covered" >    co</span>nstructor(data, refs) {
+<span class="cstat-no" title="statement not covered" >        if (data == null &amp;&amp; refs == null) {</span>
+<span class="cstat-no" title="statement not covered" >            this._data = [];</span>
+<span class="cstat-no" title="statement not covered" >            this._refs = [];</span>
         } else {
 <span class="cstat-no" title="statement not covered" >            if (data.length !== refs.length)</span>
 <span class="cstat-no" title="statement not covered" >                throw Error('Collection: data length should match references length.');</span>
@@ -159,16 +159,16 @@ class Collection {
         }
     }
 &nbsp;
-    get data() {
-        return this._data;
+<span class="fstat-no" title="function not covered" >    ge</span>t data() {
+<span class="cstat-no" title="statement not covered" >        return this._data;</span>
     }
 &nbsp;
-    get refs() {
-        return this._refs;
+<span class="fstat-no" title="function not covered" >    ge</span>t refs() {
+<span class="cstat-no" title="statement not covered" >        return this._refs;</span>
     }
 &nbsp;
-    get length() {
-        return this._data.length;
+<span class="fstat-no" title="function not covered" >    ge</span>t length() {
+<span class="cstat-no" title="statement not covered" >        return this._data.length;</span>
     }
 &nbsp;
     /**
@@ -176,9 +176,9 @@ class Collection {
      * @param {{}} obj - data
      * @param {{}} ref - reference
      */
-    add(obj, ref) {
-        this._data.push(obj);
-        this._refs.push(ref);
+<span class="fstat-no" title="function not covered" >    ad</span>d(obj, ref) {
+<span class="cstat-no" title="statement not covered" >        this._data.push(obj);</span>
+<span class="cstat-no" title="statement not covered" >        this._refs.push(ref);</span>
     }
 }
 &nbsp;
@@ -190,7 +190,7 @@ module.exports = Collection;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Tue Jul 28 2020 12:50:14 GMT-0400 (Eastern Daylight Time)
+                at Fri Aug 14 2020 15:25:17 GMT-0400 (Eastern Daylight Time)
             </div>
         </div>
         <script src="../../prettify.js"></script>
