@@ -7,3 +7,4 @@ require('./information/information');
 require('./statistical/statistical');
 require('./date/date');
 require('./engineering/engineering');
+require('./logical/logical');

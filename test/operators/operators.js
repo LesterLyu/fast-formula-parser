@@ -34,7 +34,13 @@ const parser = new FormulaParser({
             arr.push(innerArr);
         }
         return arr;
-    }
+    },
+    onVariable: name => {
+        if (name === 'hello')
+            return {row: 2, col: 2};
+        else if (name === '_xlnm.print_titles')
+            return {row: 7, col: 1};
+    },
 });
 
 describe('Operators', function () {
