@@ -327,7 +327,7 @@ const Criteria = {
     /**
      * Parse criteria, support comparison and wild card match.
      * @param {string|number} criteria
-     * @return {{op: string, value: string|number|boolean}} - The parsed criteria.
+     * @return {{op: string, value: string|number|boolean|RegExp, [match]: boolean}} - The parsed criteria.
      */
     parse: (criteria) => {
         const type = typeof criteria;
