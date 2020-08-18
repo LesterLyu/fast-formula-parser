@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>formulas/functions/logical.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Collection.html">Collection</a><ul class='methods'><li data-type='method'><a href="Collection.html#add">add</a></li></ul></li><li><a href="DepParser.html">DepParser</a><ul class='methods'><li data-type='method'><a href="DepParser.html#callFunction">callFunction</a></li><li data-type='method'><a href="DepParser.html#checkFormulaResult">checkFormulaResult</a></li><li data-type='method'><a href="DepParser.html#getCell">getCell</a></li><li data-type='method'><a href="DepParser.html#getRange">getRange</a></li><li data-type='method'><a href="DepParser.html#getVariable">getVariable</a></li><li data-type='method'><a href="DepParser.html#parse">parse</a></li><li data-type='method'><a href="DepParser.html#retrieveRef">retrieveRef</a></li></ul></li><li><a href="FormulaError.html">FormulaError</a><ul class='methods'><li data-type='method'><a href="FormulaError.html#equals">equals</a></li><li data-type='method'><a href="FormulaError.html#toString">toString</a></li></ul></li><li><a href="FormulaError.ARG_MISSING.html">ARG_MISSING</a></li><li><a href="FormulaError.ERROR.html">ERROR</a></li><li><a href="FormulaError.NOT_IMPLEMENTED.html">NOT_IMPLEMENTED</a></li><li><a href="FormulaError.TOO_MANY_ARGS.html">TOO_MANY_ARGS</a></li><li><a href="FormulaHelpers.html">FormulaHelpers</a><ul class='methods'><li data-type='method'><a href="FormulaHelpers.html#accept">accept</a></li><li data-type='method'><a href="FormulaHelpers.html#acceptNumber">acceptNumber</a></li><li data-type='method'><a href="FormulaHelpers.html#flattenDeep">flattenDeep</a></li><li data-type='method'><a href="FormulaHelpers.html#flattenParams">flattenParams</a></li><li data-type='method'><a href="FormulaHelpers.html#retrieveRanges">retrieveRanges</a></li></ul></li><li><a href="FormulaParser.html">FormulaParser</a><ul class='methods'><li data-type='method'><a href="FormulaParser.html#_callFunction">_callFunction</a></li><li data-type='method'><a href="FormulaParser.html#checkFormulaResult">checkFormulaResult</a></li><li data-type='method'><a href="FormulaParser.html#getCell">getCell</a></li><li data-type='method'><a href="FormulaParser.html#getRange">getRange</a></li><li data-type='method'><a href="FormulaParser.html#getVariable">getVariable</a></li><li data-type='method'><a href="FormulaParser.html#parse">parse</a></li><li data-type='method'><a href="FormulaParser.html#parseAsync">parseAsync</a></li><li data-type='method'><a href="FormulaParser.html#retrieveRef">retrieveRef</a></li><li data-type='method'><a href="FormulaParser.html#supportedFunctions">supportedFunctions</a></li></ul></li><li><a href="Parsing.html">Parsing</a></li><li><a href="SSF.html">SSF</a><ul class='methods'><li data-type='method'><a href="SSF.html#.get_table">get_table</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#At">At</a></li><li><a href="global.html#getNumLogicalValue">getNumLogicalValue</a></li><li><a href="global.html#parseTime">parseTime</a></li><li><a href="global.html#toDate">toDate</a></li><li><a href="global.html#toSerial">toSerial</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">formulas/functions/logical.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const FormulaError = require('../error');
+const {FormulaHelpers, Types,} = require('../helpers');
+const H = FormulaHelpers;
+
+/**
+ * Get the number of values that evaluate to true and false.
+ * Cast Number and "TRUE", "FALSE" to boolean.
+ * Ignore unrelated values.
+ * @param {any[]} params
+ * @return {number[]}
+ */
+function getNumLogicalValue(params) {
+    let numTrue = 0, numFalse = 0;
+    H.flattenParams(params, null, true, val => {
+        const type = typeof val;
+        if (type === "string") {
+            if (val === 'TRUE')
+                val = true;
+            else if (val === 'FALSE')
+                val = false;
+        } else if (type === "number")
+            val = Boolean(val);
+
+        if (typeof val === "boolean") {
+            if (val === true)
+                numTrue++;
+            else
+                numFalse++;
+        }
+    });
+    return [numTrue, numFalse];
+}
+
+const LogicalFunctions = {
+    AND: (...params) => {
+        const [numTrue, numFalse] = getNumLogicalValue(params);
+
+        // OR returns #VALUE! if no logical values are found.
+        if (numTrue === 0 &amp;&amp; numFalse === 0)
+            return FormulaError.VALUE;
+
+        return numTrue > 0 &amp;&amp; numFalse === 0;
+    },
+
+    FALSE: () => {
+        return false;
+    },
+
+    // Special
+    IF: (context, logicalTest, valueIfTrue, valueIfFalse) => {
+        logicalTest = H.accept(logicalTest, Types.BOOLEAN);
+        valueIfTrue = H.accept(valueIfTrue); // do not parse type
+        valueIfFalse = H.accept(valueIfFalse, null, false); // do not parse type
+
+        return logicalTest ? valueIfTrue : valueIfFalse;
+    },
+
+    IFERROR: (value, valueIfError) => {
+        return value.value instanceof FormulaError ? H.accept(valueIfError) : H.accept(value);
+    },
+
+    IFNA: function (value, valueIfNa) {
+        if (arguments.length > 2)
+            throw FormulaError.TOO_MANY_ARGS('IFNA');
+        return FormulaError.NA.equals(value.value) ? H.accept(valueIfNa) : H.accept(value);
+    },
+
+    IFS: (...params) => {
+        if (params.length % 2 !== 0)
+            return new FormulaError('#N/A', 'IFS expects all arguments after position 0 to be in pairs.');
+
+        for (let i = 0; i &lt; params.length / 2; i++) {
+            const logicalTest = H.accept(params[i * 2], Types.BOOLEAN);
+            const valueIfTrue = H.accept(params[i * 2 + 1]);
+            if (logicalTest)
+                return valueIfTrue;
+        }
+
+        return FormulaError.NA;
+    },
+
+    NOT: (logical) => {
+        logical = H.accept(logical, Types.BOOLEAN);
+        return !logical;
+    },
+
+    OR: (...params) => {
+        const [numTrue, numFalse] = getNumLogicalValue(params);
+
+        // OR returns #VALUE! if no logical values are found.
+        if (numTrue === 0 &amp;&amp; numFalse === 0)
+            return FormulaError.VALUE;
+
+        return numTrue > 0;
+    },
+
+    SWITCH: (...params) => {
+
+    },
+
+    TRUE: () => {
+        return true;
+    },
+
+    XOR: (...params) => {
+        const [numTrue, numFalse] = getNumLogicalValue(params);
+
+        // XOR returns #VALUE! if no logical values are found.
+        if (numTrue === 0 &amp;&amp; numFalse === 0)
+            return FormulaError.VALUE;
+
+        return numTrue % 2 === 1;
+    },
+};
+
+module.exports = LogicalFunctions;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.5</a> on Tue Aug 18 2020 18:01:20 GMT-0400 (Eastern Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>
