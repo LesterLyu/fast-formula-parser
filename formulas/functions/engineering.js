@@ -4,7 +4,6 @@ const {FormulaHelpers, Types} = require('../helpers');
 const H = FormulaHelpers;
 const bessel = require("bessel");
 const jStat = require("jstat");
-const log = console.log;
 const MAX_OCT = 536870911, // OCT2DEC(3777777777)
     MIN_OCT = -536870912, // OCT2DEC4000000000)
     MAX_HEX = 549755813887,

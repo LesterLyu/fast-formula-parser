@@ -1,6 +1,5 @@
 const FormulaError = require('../error');
-const {FormulaHelpers, Types, Criteria, Address} = require('../helpers');
-const {Infix} = require('../operators');
+const {FormulaHelpers, Types} = require('../helpers');
 const H = FormulaHelpers;
 const jStat = require("jstat");
 const MathFunctions = require('./math');
