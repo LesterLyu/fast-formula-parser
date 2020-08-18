@@ -19,6 +19,14 @@ module.exports = {
         'IF(IF(D1 < D5, A2) = "count", A1, A2)': 'Apples',
     },
 
+    IFS: {
+        'IFS(1=3,"Not me", 1=2, "Me neither", 1=1, "Yes me")': 'Yes me',
+        'IFS(D5<60,"F",D5<70,"D",D5<80,"C",D5<90,"B",D5>=90,"A")': 'F',
+        'IFS(1=3,"Not me", 1=2, "Me neither", 1=4, "Not me")': FormulaError.NA,
+        'IFS("HELLO","Not me", 1=2, "Me neither", 1=4, "Not me")': FormulaError.VALUE,
+        'IFS("HELLO")': FormulaError.NA,
+    },
+
     IFNA: {
         'IFNA(#N/A, 1, 2)': FormulaError.NA,
         'IFNA(#N/A, 1)': 1,

@@ -1,5 +1,5 @@
 const FormulaError = require('../error');
-const {FormulaHelpers, Types, Factorials} = require('../helpers');
+const {FormulaHelpers, Types,} = require('../helpers');
 const H = FormulaHelpers;
 
 /**
@@ -66,7 +66,17 @@ const LogicalFunctions = {
     },
 
     IFS: (...params) => {
+        if (params.length % 2 !== 0)
+            return new FormulaError('#N/A', 'IFS expects all arguments after position 0 to be in pairs.');
 
+        for (let i = 0; i < params.length / 2; i++) {
+            const logicalTest = H.accept(params[i * 2], Types.BOOLEAN);
+            const valueIfTrue = H.accept(params[i * 2 + 1]);
+            if (logicalTest)
+                return valueIfTrue;
+        }
+
+        return FormulaError.NA;
     },
 
     NOT: (logical) => {
@@ -75,7 +85,7 @@ const LogicalFunctions = {
     },
 
     OR: (...params) => {
-       const [numTrue, numFalse] = getNumLogicalValue(params);
+        const [numTrue, numFalse] = getNumLogicalValue(params);
 
         // OR returns #VALUE! if no logical values are found.
         if (numTrue === 0 && numFalse === 0)
