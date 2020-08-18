@@ -2,13 +2,44 @@ const FormulaError = require('../error');
 const {FormulaHelpers, Types, Factorials} = require('../helpers');
 const H = FormulaHelpers;
 
+/**
+ * Get the number of values that evaluate to true and false.
+ * Cast Number and "TRUE", "FALSE" to boolean.
+ * Ignore unrelated values.
+ * @param {*[]} params
+ * @return {number[]}
+ */
+function getNumLogicalValue(params) {
+    let numTrue = 0, numFalse = 0;
+    H.flattenParams(params, null, true, val => {
+        const type = typeof val;
+        if (type === "string") {
+            if (val === 'TRUE')
+                val = true;
+            else if (val === 'FALSE')
+                val = false;
+        } else if (type === "number")
+            val = Boolean(val);
+
+        if (typeof val === "boolean") {
+            if (val === true)
+                numTrue++;
+            else
+                numFalse++;
+        }
+    });
+    return [numTrue, numFalse];
+}
+
 const LogicalFunctions = {
     AND: (...params) => {
-        let result = H.accept(params.shift(), Types.BOOLEAN);
-        params.forEach(param => {
-            result = result && H.accept(param, Types.BOOLEAN);
-        });
-        return result;
+        const [numTrue, numFalse] = getNumLogicalValue(params);
+
+        // OR returns #VALUE! if no logical values are found.
+        if (numTrue === 0 && numFalse === 0)
+            return FormulaError.VALUE;
+
+        return numTrue > 0 && numFalse === 0;
     },
 
     FALSE: () => {
@@ -31,7 +62,7 @@ const LogicalFunctions = {
     IFNA: function (value, valueIfNa) {
         if (arguments.length > 2)
             throw FormulaError.TOO_MANY_ARGS('IFNA');
-        return  FormulaError.NA.equals(value.value) ? H.accept(valueIfNa) : H.accept(value);
+        return FormulaError.NA.equals(value.value) ? H.accept(valueIfNa) : H.accept(value);
     },
 
     IFS: (...params) => {
@@ -44,11 +75,13 @@ const LogicalFunctions = {
     },
 
     OR: (...params) => {
-        let result = H.accept(params.shift(), Types.BOOLEAN);
-        params.forEach(param => {
-            result = result || H.accept(param, Types.BOOLEAN);
-        });
-        return result;
+       const [numTrue, numFalse] = getNumLogicalValue(params);
+
+        // OR returns #VALUE! if no logical values are found.
+        if (numTrue === 0 && numFalse === 0)
+            return FormulaError.VALUE;
+
+        return numTrue > 0;
     },
 
     SWITCH: (...params) => {
@@ -60,7 +93,13 @@ const LogicalFunctions = {
     },
 
     XOR: (...params) => {
+        const [numTrue, numFalse] = getNumLogicalValue(params);
 
+        // XOR returns #VALUE! if no logical values are found.
+        if (numTrue === 0 && numFalse === 0)
+            return FormulaError.VALUE;
+
+        return numTrue % 2 === 1;
     },
 };
 
