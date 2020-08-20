@@ -7,6 +7,7 @@ const ReferenceFunctions = require('../formulas/functions/reference');
 const InformationFunctions = require('../formulas/functions/information');
 const StatisticalFunctions = require('../formulas/functions/statistical');
 const DateFunctions = require('../formulas/functions/date');
+const WebFunctions = require('../formulas/functions/web');
 const FormulaError = require('../formulas/error');
 const {FormulaHelpers} = require('../formulas/helpers');
 const {Parser, allTokens} = require('./parsing');
@@ -36,7 +37,8 @@ class FormulaParser {
 
         this.onVariable = config.onVariable;
         this.functions = Object.assign({}, DateFunctions, StatisticalFunctions, InformationFunctions, ReferenceFunctions,
-            EngFunctions, LogicalFunctions, TextFunctions, MathFunctions, TrigFunctions, config.functions, config.functionsNeedContext);
+            EngFunctions, LogicalFunctions, TextFunctions, MathFunctions, TrigFunctions, WebFunctions,
+            config.functions, config.functionsNeedContext);
         this.onRange = config.onRange;
         this.onCell = config.onCell;
 
@@ -54,7 +56,7 @@ class FormulaParser {
 
         // functions need parser context
         this.funsNeedContext = [...Object.keys(config.functionsNeedContext), ...this.funsNeedContextAndNoDataRetrieve,
-            'INDEX', 'OFFSET', 'INDIRECT', 'IF', 'CHOOSE'];
+            'INDEX', 'OFFSET', 'INDIRECT', 'IF', 'CHOOSE', 'WEBSERVICE'];
 
         // functions preserve reference in arguments
         this.funsPreserveRef = Object.keys(InformationFunctions);
