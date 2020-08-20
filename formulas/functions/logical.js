@@ -6,7 +6,8 @@ const H = FormulaHelpers;
  * Get the number of values that evaluate to true and false.
  * Cast Number and "TRUE", "FALSE" to boolean.
  * Ignore unrelated values.
- * @param {*[]} params
+ * @ignore
+ * @param {any[]} params
  * @return {number[]}
  */
 function getNumLogicalValue(params) {

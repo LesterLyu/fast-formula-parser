@@ -325,10 +325,6 @@ const TextFunctions = {
         return text.replace(/^\s+|\s+$/g, '')
     },
 
-    TEXTJOIN: (...params) => {
-
-    },
-
     UNICHAR: (number) => {
         number = H.accept(number, [Types.NUMBER]);
         if (number <= 0)

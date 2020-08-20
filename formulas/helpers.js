@@ -76,8 +76,7 @@ class FormulaHelpers {
         else if (typeof obj === 'boolean') {
             if (allowBoolean) {
                 number = Number(obj);
-            }
-            else {
+            } else {
                 throw FormulaError.VALUE;
             }
         }
@@ -327,7 +326,7 @@ const Criteria = {
     /**
      * Parse criteria, support comparison and wild card match.
      * @param {string|number} criteria
-     * @return {{op: string, value: string|number|boolean|RegExp, [match]: boolean}} - The parsed criteria.
+     * @return {{op: string, value: string|number|boolean|RegExp, match: boolean|undefined}} - The parsed criteria.
      */
     parse: (criteria) => {
         const type = typeof criteria;
@@ -443,8 +442,6 @@ const Address = {
         }
         return range2;
     },
-
-
 };
 
 module.exports = {
