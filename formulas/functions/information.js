@@ -26,8 +26,8 @@ const InfoFunctions = {
     ISBLANK: (value) => {
         if (!value.ref)
             return false;
-        value = H.accept(value);
-        return typeof value === 'string' && value.length === 0;
+        // null and undefined are also blank
+        return value.value == null || value.value === '';
     },
 
     ISERR: (value) => {

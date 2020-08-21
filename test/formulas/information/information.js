@@ -4,6 +4,7 @@ const {generateTests} = require('../../utils');
 const data = [
     ['', 1,2,3,4],
     ['string', 3,4,5,6],
+    [null, undefined]
 
 ];
 const parser = new FormulaParser({

@@ -14,6 +14,9 @@ module.exports = {
         'ISBLANK(A1)': true,
         'ISBLANK(A2)': false,
         'ISBLANK("")': false,
+        'ISBLANK(A3)': true,
+        'ISBLANK(B3)': true,
+        'ISBLANK({1})': false,
     },
 
     ISERR: {
