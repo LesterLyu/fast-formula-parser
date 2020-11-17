@@ -323,9 +323,6 @@ class Parsing extends EmbeddedActionsParser {
             return args;
         });
 
-        $.RULE('postfixOp', () => $.CONSUME(PercentOp).image);
-
-
         $.RULE('referenceWithoutInfix', () => $.OR([
 
             {ALT: () => $.SUBRULE($.referenceItem)},
