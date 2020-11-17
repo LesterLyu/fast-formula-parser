@@ -86,7 +86,7 @@ Note: The grammar in my implementation is different from theirs. My implementati
         // Variable used in formulas (defined name)
         // Should only return range reference or cell reference
         onVariable: (name, sheetName) => {
-            // range reference (A1:B2)
+            // If it is a range reference (A1:B2)
             return {
                 sheet: 'sheet name',
                 from: {
@@ -98,7 +98,7 @@ Note: The grammar in my implementation is different from theirs. My implementati
                     col: 2,
                 }
             };
-            // cell reference (A1)
+            // If it is a cell reference (A1)
             return {
                 sheet: 'sheet name',
                 row: 1,
