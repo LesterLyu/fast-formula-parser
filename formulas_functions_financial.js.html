@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>ERROR - Documentation</title>
+    <title>formulas/functions/financial.js - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -32,257 +32,77 @@
 
 <div id="main">
     
-    <h1 class="page-title">ERROR</h1>
+    <h1 class="page-title">formulas/functions/financial.js</h1>
     
 
     
 
 
 
-
-<section>
-
-<header>
     
-        <h2>
-            <span class="ancestors"><a href="FormulaError.html">FormulaError</a>.</span>
-        
-        ERROR
-        </h2>
-        
-    
-</header>
-
-<article>
-    
-        <div class="container-overview">
-        
-            
-
-    
-
-    <h4 class="name" id="ERROR"><span class="type-signature"></span>new ERROR<span class="signature">(msg, details<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="FormulaError.html">FormulaError</a>}</span></h4>
-
-    
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="formulas_error.js.html">formulas/error.js</a>, <a href="formulas_error.js.html#line137">line 137</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description usertext">
-    <p>#ERROR!
-Parse/Lex error or other unexpected errors</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>msg</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>details</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-|
-
-<span class="param-type">Error</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const FormulaError = require('../error');
+const {FormulaHelpers: H, Types} = require('../helpers');
+const {DATEVALUE, YEARFRAC} = require('./date');
+
+const FinancialFunctions = {
+    /**
+     * https://support.microsoft.com/en-us/office/accrint-function-fe45d089-6722-4fb3-9379-e1f911d8dc74
+     */
+    ACCRINT: (issue, firstInterest, settlement, rate, par, frequency, basis, calcMethod) => {
+        issue = H.accept(issue);
+        firstInterest = H.accept(firstInterest);
+        settlement = H.accept(settlement);
+
+        // Parse date string to serial
+        if (typeof issue === "string") {
+            firstInterest = DATEVALUE(firstInterest);
+        }
+        if (typeof issue === "string") {
+            issue = DATEVALUE(issue);
+        }
+        if (typeof issue === "string") {
+            settlement = DATEVALUE(settlement);
+        }
+
+        rate = H.accept(rate, Types.NUMBER);
+        par = H.accept(par, Types.NUMBER);
+        frequency = H.accept(frequency, Types.NUMBER);
+        basis = H.accept(basis, Types.NUMBER, 0);
+        calcMethod = H.accept(calcMethod, Types.BOOLEAN, true);
+
+        // Issue, first_interest, settlement, frequency, and basis are truncated to integers
+        issue = Math.trunc(issue);
+        firstInterest = Math.trunc(firstInterest);
+        settlement = Math.trunc(settlement);
+        frequency = Math.trunc(frequency);
+        basis = Math.trunc(basis);
+
+        // If rate ≤ 0 or if par ≤ 0, ACCRINT returns the #NUM! error value.
+        if (rate &lt;= 0 || par &lt;= 0 )
+            return FormulaError.NUM;
+
+        // If frequency is any number other than 1, 2, or 4, ACCRINT returns the #NUM! error value.
+        if (frequency !== 1 &amp;&amp; frequency !== 2 &amp;&amp; frequency !== 4)
+            return FormulaError.NUM;
+
+        // If basis &lt; 0 or if basis > 4, ACCRINT returns the #NUM! error value.
+        if (basis &lt; 0 || basis > 4)
+            return FormulaError.NUM;
+
+        // If issue ≥ settlement, ACCRINT returns the #NUM! error value.
+        if (issue >= settlement)
+            return FormulaError.NUM;
 
         
 
 
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="FormulaError.html">FormulaError</a></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-        </div>
-    
-
-    
-
-    
-
-    
-    
-    
-
-     
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+    }
+};
+</code></pre>
+        </article>
+    </section>
 
 
 
