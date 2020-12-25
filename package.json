@@ -29,7 +29,7 @@
   "author": "Lester(Dishu) Lyu",
   "license": "MIT",
   "dependencies": {
-    "bahttext": "^1.1.0",
+    "bahttext": "^2.0.2",
     "bessel": "^1.0.2",
     "chevrotain": "^7.0.1",
     "jstat": "^1.9.3"

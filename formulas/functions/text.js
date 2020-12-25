@@ -6,7 +6,7 @@ const H = FormulaHelpers;
 const ssf = require('../../ssf/ssf');
 
 // Change number to Thai pronunciation string
-const bahttext = require('bahttext');
+const {bahttext} = require('bahttext');
 
 // full-width and half-width converter
 const charsets = {
