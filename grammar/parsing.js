@@ -1,11 +1,9 @@
-const lexer = require('./lexing');
-const {EmbeddedActionsParser} = require("chevrotain");
+import * as lexer from './lexing';
+import {EmbeddedActionsParser} from "chevrotain";
 const tokenVocabulary = lexer.tokenVocabulary;
 const {
     String,
     SheetQuoted,
-    ExcelRefFunction,
-    ExcelConditionalRefFunction,
     Function,
     FormulaErrorT,
     RefError,
@@ -22,8 +20,8 @@ const {
     Semicolon,
     OpenParen,
     CloseParen,
-    // OpenSquareParen,
-    // CloseSquareParen,
+    OpenSquareParen,
+    CloseSquareParen,
     // ExclamationMark,
     OpenCurlyParen,
     CloseCurlyParen,
@@ -42,7 +40,7 @@ const {
     LtOp
 } = lexer.tokenVocabulary;
 
-class Parsing extends EmbeddedActionsParser {
+export class Parser extends EmbeddedActionsParser {
     /**
      *
      * @param {FormulaParser|DepParser} context
@@ -387,7 +385,3 @@ class Parsing extends EmbeddedActionsParser {
         this.performSelfAnalysis();
     }
 }
-
-module.exports = {
-    Parser: Parsing,
-};

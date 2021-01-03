@@ -1,9 +1,9 @@
-const FormulaError = require('../error');
-const TextFunctions = require('./text');
-const {FormulaHelpers, Types} = require('../helpers');
-const H = FormulaHelpers;
-const bessel = require("bessel");
-const jStat = require("jstat");
+import FormulaError from '../error';
+import TextFunctions from './text';
+import {FormulaHelpers as H, Types} from '../helpers';
+import bessel from "bessel";
+import {erf, erfc} from "jstat";
+
 const MAX_OCT = 536870911, // OCT2DEC(3777777777)
     MIN_OCT = -536870912, // OCT2DEC4000000000)
     MAX_HEX = 549755813887,
@@ -363,12 +363,12 @@ const EngineeringFunctions = {
     ERF: (lowerLimit, upperLimit) => {
         lowerLimit = H.accept(lowerLimit, Types.NUMBER_NO_BOOLEAN);
         upperLimit = H.accept(upperLimit, Types.NUMBER_NO_BOOLEAN, 0);
-        return jStat.erf(lowerLimit);
+        return erf(lowerLimit);
     },
 
     ERFC: (x) => {
         x = H.accept(x, Types.NUMBER_NO_BOOLEAN);
-        return jStat.erfc(x);
+        return erfc(x);
     },
 
     GESTEP: (number, step) => {
@@ -773,4 +773,4 @@ const EngineeringFunctions = {
     },
 };
 
-module.exports = EngineeringFunctions;
+export default EngineeringFunctions;

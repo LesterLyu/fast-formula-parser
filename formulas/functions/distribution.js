@@ -1,11 +1,15 @@
-const FormulaError = require('../error');
-const {FormulaHelpers, Types} = require('../helpers');
-const H = FormulaHelpers;
-const jStat = require("jstat");
-const MathFunctions = require('./math');
+import FormulaError from '../error';
+import {FormulaHelpers as H, Types} from '../helpers';
+import MathFunctions from './math';
+import {
+    beta as jstatBeta, binomial, chisquare, normalci, tci, corrcoeff, mean, covariance,
+    exponential, centralF, gammafn, gamma, gammaln, normal, geomean, stdev, lognormal,
+    negbin, poisson, studentt
+} from "jstat";
+
 const SQRT2PI = 2.5066282746310002;
 
-const DistributionFunctions = {
+export const DistributionFunctions = {
     'BETA.DIST': (x, alpha, beta, cumulative, a, b) => {
         x = H.accept(x, Types.NUMBER);
         alpha = H.accept(alpha, Types.NUMBER);
@@ -17,7 +21,7 @@ const DistributionFunctions = {
             throw FormulaError.NUM;
 
         x = (x - a) / (b - a);
-        return cumulative ? jStat.beta.cdf(x, alpha, beta) : jStat.beta.pdf(x, alpha, beta) / (b - a);
+        return cumulative ? jstatBeta.cdf(x, alpha, beta) : jstatBeta.pdf(x, alpha, beta) / (b - a);
     },
 
     'BETA.INV': (probability, alpha, beta, a, b) => {
@@ -28,7 +32,7 @@ const DistributionFunctions = {
         b = H.accept(b, Types.NUMBER, 1);
         if (alpha <= 0 || beta <= 0 || probability <= 0 || probability > 1)
             throw FormulaError.NUM;
-        return jStat.beta.inv(probability, alpha, beta) * (b - a) + a;
+        return jstatBeta.inv(probability, alpha, beta) * (b - a) + a;
     },
 
     'BINOM.DIST': (numberS, trials, probabilityS, cumulative) => {
@@ -39,8 +43,8 @@ const DistributionFunctions = {
         if (trials < 0 || probabilityS < 0 || probabilityS > 1 || numberS < 0 || numberS > trials)
             throw FormulaError.NUM;
 
-        return cumulative ? jStat.binomial.cdf(numberS, trials, probabilityS)
-            : jStat.binomial.pdf(numberS, trials, probabilityS);
+        return cumulative ? binomial.cdf(numberS, trials, probabilityS)
+            : binomial.pdf(numberS, trials, probabilityS);
     },
 
     'BINOM.DIST.RANGE': (trials, probabilityS, numberS, numberS2) => {
@@ -67,7 +71,7 @@ const DistributionFunctions = {
 
         let x = 0;
         while (x <= trials) {
-            if (jStat.binomial.cdf(x, trials, probabilityS) >= alpha) {
+            if (binomial.cdf(x, trials, probabilityS) >= alpha) {
                 return x;
             }
             x++;
@@ -82,7 +86,7 @@ const DistributionFunctions = {
         if (x < 0 || degFreedom < 1 || degFreedom > 10 ** 10)
             throw FormulaError.NUM;
 
-        return cumulative ? jStat.chisquare.cdf(x, degFreedom) : jStat.chisquare.pdf(x, degFreedom);
+        return cumulative ? chisquare.cdf(x, degFreedom) : chisquare.pdf(x, degFreedom);
     },
 
     'CHISQ.DIST.RT': (x, degFreedom) => {
@@ -92,7 +96,7 @@ const DistributionFunctions = {
         if (x < 0 || degFreedom < 1 || degFreedom > 10 ** 10)
             throw FormulaError.NUM;
 
-        return 1 - jStat.chisquare.cdf(x, degFreedom);
+        return 1 - chisquare.cdf(x, degFreedom);
     },
 
     'CHISQ.INV': (probability, degFreedom) => {
@@ -102,7 +106,7 @@ const DistributionFunctions = {
         if (probability < 0 || probability > 1 || degFreedom < 1 || degFreedom > 10 ** 10)
             throw FormulaError.NUM;
 
-        return jStat.chisquare.inv(probability, degFreedom);
+        return chisquare.inv(probability, degFreedom);
     },
 
     'CHISQ.INV.RT': (probability, degFreedom) => {
@@ -112,7 +116,7 @@ const DistributionFunctions = {
         if (probability < 0 || probability > 1 || degFreedom < 1 || degFreedom > 10 ** 10)
             throw FormulaError.NUM;
 
-        return jStat.chisquare.inv(1 - probability, degFreedom);
+        return chisquare.inv(1 - probability, degFreedom);
     },
 
     'CHISQ.TEST': (actualRange, expectedRange) => {
@@ -167,7 +171,7 @@ const DistributionFunctions = {
         size = Math.trunc(size);
         if (alpha <= 0 || alpha >= 1 || std <= 0 || size < 1)
             throw FormulaError.NUM;
-        return jStat.normalci(1, alpha, std, size)[1] - 1;
+        return normalci(1, alpha, std, size)[1] - 1;
     },
 
     'CONFIDENCE.T': (alpha, std, size) => {
@@ -179,7 +183,7 @@ const DistributionFunctions = {
             throw FormulaError.NUM;
         if (size === 1)
             throw FormulaError.DIV0;
-        return jStat.tci(1, alpha, std, size)[1] - 1;
+        return tci(1, alpha, std, size)[1] - 1;
     },
 
     CORREL: (array1, array2) => {
@@ -199,7 +203,7 @@ const DistributionFunctions = {
         if (filterArr1.length <= 1)
             throw FormulaError.DIV0;
 
-        return jStat.corrcoeff(filterArr1, filterArr2);
+        return corrcoeff(filterArr1, filterArr2);
     },
 
     'COVARIANCE.P': (array1, array2) => {
@@ -216,7 +220,7 @@ const DistributionFunctions = {
             filterArr1.push(array1[i]);
             filterArr2.push(array2[i]);
         }
-        const mean1 = jStat.mean(filterArr1), mean2 = jStat.mean(filterArr2);
+        const mean1 = mean(filterArr1), mean2 = mean(filterArr2);
         let result = 0;
         for (let i = 0; i < filterArr1.length; i++) {
             result += (filterArr1[i] - mean1) * (filterArr2[i] - mean2);
@@ -242,7 +246,7 @@ const DistributionFunctions = {
         if (filterArr1.length <= 1)
             throw FormulaError.DIV0;
 
-        return jStat.covariance(filterArr1, filterArr2);
+        return covariance(filterArr1, filterArr2);
     },
 
     DEVSQ: (...numbers) => {
@@ -268,7 +272,7 @@ const DistributionFunctions = {
         cumulative = H.accept(cumulative, Types.BOOLEAN);
         if (x < 0 || lambda <= 0)
             throw FormulaError.NUM;
-        return cumulative ? jStat.exponential.cdf(x, lambda) : jStat.exponential.pdf(x, lambda);
+        return cumulative ? exponential.cdf(x, lambda) : exponential.pdf(x, lambda);
     },
 
     'F.DIST': (x, d1, d2, cumulative) => {
@@ -288,7 +292,7 @@ const DistributionFunctions = {
         d1 = Math.trunc(d1);
         d2 = Math.trunc(d2);
 
-        return cumulative ? jStat.centralF.cdf(x, d1, d2) : jStat.centralF.pdf(x, d1, d2);
+        return cumulative ? centralF.cdf(x, d1, d2) : centralF.pdf(x, d1, d2);
     },
 
     'F.DIST.RT': (x, d1, d2) => {
@@ -307,7 +311,7 @@ const DistributionFunctions = {
         d1 = Math.trunc(d1);
         d2 = Math.trunc(d2);
 
-        return 1 - jStat.centralF.cdf(x, d1, d2);
+        return 1 - centralF.cdf(x, d1, d2);
     },
 
     'F.INV': (probability, d1, d2) => {
@@ -328,7 +332,7 @@ const DistributionFunctions = {
         d1 = Math.trunc(d1);
         d2 = Math.trunc(d2);
 
-        return jStat.centralF.inv(probability, d1, d2);
+        return centralF.inv(probability, d1, d2);
     },
 
     'F.INV.RT': (probability, d1, d2) => {
@@ -354,7 +358,7 @@ const DistributionFunctions = {
         d1 = Math.trunc(d1);
         d2 = Math.trunc(d2);
 
-        return jStat.centralF.inv(1.0 - probability, d1, d2);
+        return centralF.inv(1.0 - probability, d1, d2);
     },
 
     /**
@@ -392,7 +396,7 @@ const DistributionFunctions = {
         }
         s2 /= x2.length - 1;
         // P(F<=f) one-tail * 2
-        return jStat.centralF.cdf(s1 / s2, x1.length - 1, x2.length - 1) * 2;
+        return centralF.cdf(s1 / s2, x1.length - 1, x2.length - 1) * 2;
     },
 
     FISHER: (x) => {
@@ -434,8 +438,8 @@ const DistributionFunctions = {
         }
         if (xAllEqual)
             throw FormulaError.DIV0;
-        const yMean = jStat.mean(filteredY);
-        const xMean = jStat.mean(filteredX);
+        const yMean = mean(filteredY);
+        const xMean = mean(filteredX);
         let numerator = 0, denominator = 0;
         for (let i = 0; i < filteredY.length; i++) {
             numerator += (filteredX[i] - xMean) * (filteredY[i] - yMean);
@@ -509,7 +513,7 @@ const DistributionFunctions = {
             throw FormulaError.NUM;
         }
 
-        return jStat.gammafn(x);
+        return gammafn(x);
     },
 
     'GAMMA.DIST': (x, alpha, beta, cumulative) => {
@@ -526,7 +530,7 @@ const DistributionFunctions = {
             throw FormulaError.NUM;
         }
 
-        return cumulative ? jStat.gamma.cdf(x, alpha, beta, true) : jStat.gamma.pdf(x, alpha, beta, false);
+        return cumulative ? gamma.cdf(x, alpha, beta, true) : gamma.pdf(x, alpha, beta, false);
     },
 
     'GAMMA.INV': (probability, alpha, beta) => {
@@ -542,7 +546,7 @@ const DistributionFunctions = {
             throw FormulaError.NUM;
         }
 
-        return jStat.gamma.inv(probability, alpha, beta);
+        return gamma.inv(probability, alpha, beta);
     },
 
     GAMMALN: (x) => {
@@ -555,7 +559,7 @@ const DistributionFunctions = {
             throw FormulaError.NUM;
         }
 
-        return jStat.gammaln(x);
+        return gammaln(x);
     },
 
     'GAMMALN.PRECISE': (x) => {
@@ -568,7 +572,7 @@ const DistributionFunctions = {
             throw FormulaError.NUM;
         }
 
-        return jStat.gammaln(x);
+        return gammaln(x);
     },
 
     GAUSS: (z) => {
@@ -577,7 +581,7 @@ const DistributionFunctions = {
         // If z is not a valid data type, GAUSS returns the #VALUE! error value.
         z = H.accept(z, Types.NUMBER);
 
-        return jStat.normal.cdf(z, 0, 1) - 0.5;
+        return normal.cdf(z, 0, 1) - 0.5;
     },
 
     GEOMEAN: (...numbers) => {
@@ -589,7 +593,7 @@ const DistributionFunctions = {
                 filterArr.push(item);
             }
         });
-        return jStat.geomean(filterArr);
+        return geomean(filterArr);
     },
 
     GROWTH: (knownY, knownX, newX, useConst) => {
@@ -752,8 +756,8 @@ const DistributionFunctions = {
         }
         if (filteredY.length <= 1)
             throw FormulaError.DIV0;
-        const yMean = jStat.mean(filteredY);
-        const xMean = jStat.mean(filteredX);
+        const yMean = mean(filteredY);
+        const xMean = mean(filteredX);
         let numerator = 0, denominator = 0;
         for (let i = 0; i < filteredY.length; i++) {
             numerator += (filteredX[i] - xMean) * (filteredY[i] - yMean);
@@ -778,7 +782,7 @@ const DistributionFunctions = {
         for (let i = 0; i < n; i++) {
             sigma += Math.pow(range[i] - mean, 4);
         }
-        sigma = sigma / Math.pow(jStat.stdev(range, true), 4);
+        sigma = sigma / Math.pow(stdev(range, true), 4);
         return ((n * (n + 1)) / ((n - 1) * (n - 2) * (n - 3))) * sigma - 3 * (n - 1) * (n - 1) / ((n - 2) * (n - 3));
     },
 
@@ -801,7 +805,7 @@ const DistributionFunctions = {
             throw FormulaError.NUM;
         }
 
-        return cumulative ? jStat.lognormal.cdf(x, mean, standard_dev) : jStat.lognormal.pdf(x, mean, standard_dev);
+        return cumulative ? lognormal.cdf(x, mean, standard_dev) : lognormal.pdf(x, mean, standard_dev);
     },
 
     'LOGNORM.INV': (probability, mean, standard_dev) => {
@@ -818,7 +822,7 @@ const DistributionFunctions = {
             throw FormulaError.NUM;
         }
 
-        return jStat.lognormal.inv(probability, mean, standard_dev);
+        return lognormal.inv(probability, mean, standard_dev);
     },
 
     'MODE.MULT': () => {
@@ -848,7 +852,7 @@ const DistributionFunctions = {
             throw FormulaError.NUM;
         }
 
-        return cumulative ? jStat.negbin.cdf(number_f, number_s, probability_s) : jStat.negbin.pdf(number_f, number_s, probability_s);
+        return cumulative ? negbin.cdf(number_f, number_s, probability_s) : negbin.pdf(number_f, number_s, probability_s);
     },
 
     'NORM.DIST': (x, mean, standard_dev, cumulative) => {
@@ -863,7 +867,7 @@ const DistributionFunctions = {
             throw FormulaError.NUM;
         }
         // If mean = 0, standard_dev = 1, and cumulative = TRUE, NORM.DIST returns the standard normal distribution, NORM.S.DIST.
-        return cumulative ? jStat.normal.cdf(x, mean, standard_dev) : jStat.normal.pdf(x, mean, standard_dev);
+        return cumulative ? normal.cdf(x, mean, standard_dev) : normal.pdf(x, mean, standard_dev);
 
     },
 
@@ -885,7 +889,7 @@ const DistributionFunctions = {
         // if(mean === 0 && standard_dev === 1){
         // }
 
-        return jStat.normal.inv(probability, mean, standard_dev);
+        return normal.inv(probability, mean, standard_dev);
 
     },
 
@@ -894,7 +898,7 @@ const DistributionFunctions = {
         z = H.accept(z, Types.NUMBER);
         cumulative = H.accept(cumulative, Types.BOOLEAN);
 
-        return (cumulative) ? jStat.normal.cdf(z, 0, 1) : jStat.normal.pdf(z, 0, 1);
+        return (cumulative) ? normal.cdf(z, 0, 1) : normal.pdf(z, 0, 1);
     },
 
     'NORM.S.INV': (probability) => {
@@ -904,7 +908,7 @@ const DistributionFunctions = {
         if (probability <= 0 || probability >= 1) {
             throw FormulaError.NUM;
         }
-        return jStat.normal.inv(probability, 0, 1);
+        return normal.inv(probability, 0, 1);
     },
 
     PEARSON: () => {
@@ -951,7 +955,7 @@ const DistributionFunctions = {
         // If x is not an integer, it is truncated.
         x = Math.trunc(x);
 
-        return cumulative ? jStat.poisson.cdf(x, mean) : jStat.poisson.pdf(x, mean);
+        return cumulative ? poisson.cdf(x, mean) : poisson.pdf(x, mean);
     },
 
     'PROB': () => {
@@ -1032,7 +1036,7 @@ const DistributionFunctions = {
             throw FormulaError.NUM;
         }
 
-        return cumulative ? jStat.studentt.cdf(x, deg_freedom) : jStat.studentt.pdf(x, deg_freedom);
+        return cumulative ? studentt.cdf(x, deg_freedom) : studentt.pdf(x, deg_freedom);
     },
 
     'T.DIST.2T': (x, deg_freedom) => {
@@ -1045,7 +1049,7 @@ const DistributionFunctions = {
             throw FormulaError.NUM;
         }
 
-        return (1 - jStat.studentt.cdf(x, deg_freedom)) * 2;
+        return (1 - studentt.cdf(x, deg_freedom)) * 2;
     },
 
     'T.DIST.RT': (x, deg_freedom) => {
@@ -1057,7 +1061,7 @@ const DistributionFunctions = {
             throw FormulaError.NUM;
         }
 
-        return 1 - jStat.studentt.cdf(x, deg_freedom);
+        return 1 - studentt.cdf(x, deg_freedom);
     },
 
     'T.INV': (probability, deg_freedom) => {
@@ -1073,7 +1077,7 @@ const DistributionFunctions = {
         // If deg_freedom is not an integer, it is truncated.
         deg_freedom = deg_freedom % 1 === 0 ? deg_freedom : Math.trunc(deg_freedom);
 
-        return jStat.studentt.inv(probability, deg_freedom);
+        return studentt.inv(probability, deg_freedom);
     },
 
     'T.INV.2T': (probability, deg_freedom) => {
@@ -1088,7 +1092,7 @@ const DistributionFunctions = {
         // If deg_freedom is not an integer, it is truncated.
         deg_freedom = deg_freedom % 1 === 0 ? deg_freedom : Math.trunc(deg_freedom);
 
-        return Math.abs(jStat.studentt.inv(probability / 2, deg_freedom));
+        return Math.abs(studentt.inv(probability / 2, deg_freedom));
 
     },
 
@@ -1140,9 +1144,4 @@ const DistributionFunctions = {
     'Z.TEST': () => {
 
     }
-};
-
-
-module.exports = {
-    DistributionFunctions,
 };

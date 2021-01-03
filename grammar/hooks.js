@@ -1,18 +1,18 @@
-const TextFunctions = require('../formulas/functions/text');
-const MathFunctions = require('../formulas/functions/math');
-const TrigFunctions = require('../formulas/functions/trigonometry');
-const LogicalFunctions = require('../formulas/functions/logical');
-const EngFunctions = require('../formulas/functions/engineering');
-const ReferenceFunctions = require('../formulas/functions/reference');
-const InformationFunctions = require('../formulas/functions/information');
-const StatisticalFunctions = require('../formulas/functions/statistical');
-const DateFunctions = require('../formulas/functions/date');
-const WebFunctions = require('../formulas/functions/web');
-const FormulaError = require('../formulas/error');
-const {FormulaHelpers} = require('../formulas/helpers');
-const {Parser, allTokens} = require('./parsing');
-const lexer = require('./lexing');
-const Utils = require('./utils');
+import TextFunctions from '../formulas/functions/text';
+import MathFunctions from '../formulas/functions/math';
+import TrigFunctions from '../formulas/functions/trigonometry';
+import LogicalFunctions from '../formulas/functions/logical';
+import EngFunctions from '../formulas/functions/engineering';
+import ReferenceFunctions from '../formulas/functions/reference';
+import InformationFunctions from '../formulas/functions/information';
+import StatisticalFunctions from '../formulas/functions/statistical';
+import DateFunctions from '../formulas/functions/date';
+import WebFunctions from '../formulas/functions/web';
+import FormulaError from '../formulas/error';
+import {FormulaHelpers} from '../formulas/helpers';
+import {Parser} from './parsing';
+import * as lexer from './lexing';
+import Utils from './utils';
 
 /**
  * A Excel Formula Parser & Evaluator
@@ -62,14 +62,6 @@ class FormulaParser {
         this.funsPreserveRef = Object.keys(InformationFunctions);
 
         this.parser = new Parser(this, this.utils);
-    }
-
-    /**
-     * Get all lexing token names. Webpack needs this.
-     * @return {Array.<string>} - All token names that should not be minimized.
-     */
-    static get allTokens() {
-        return allTokens;
     }
 
     /**
@@ -347,7 +339,7 @@ class FormulaParser {
     }
 }
 
-module.exports = {
+export {
     FormulaParser,
     FormulaHelpers,
 };

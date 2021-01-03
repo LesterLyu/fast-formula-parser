@@ -1,6 +1,7 @@
-const FormulaError = require('../error');
-const {FormulaHelpers: H, Types} = require('../helpers');
-const {DATEVALUE, YEARFRAC} = require('./date');
+import FormulaError from '../error';
+import {FormulaHelpers as H, Types} from '../helpers';
+import DateFunctions from './date';
+const {DATEVALUE, YEARFRAC} = DateFunctions;
 
 const FinancialFunctions = {
     /**
@@ -51,7 +52,7 @@ const FinancialFunctions = {
         if (issue >= settlement)
             return FormulaError.NUM;
 
-        
+
 
 
     }

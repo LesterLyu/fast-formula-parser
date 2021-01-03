@@ -1,12 +1,11 @@
-const FormulaError = require('../error');
-const {FormulaHelpers, Types, WildCard} = require('../helpers');
-const H = FormulaHelpers;
+import FormulaError from '../error';
+import {FormulaHelpers as H, Types, WildCard} from '../helpers';
 
 // Spreadsheet number format
-const ssf = require('../../ssf/ssf');
+import ssf from '../../ssf/ssf';
 
 // Change number to Thai pronunciation string
-const {bahttext} = require('bahttext');
+import {bahttext} from 'bahttext';
 
 // full-width and half-width converter
 const charsets = {
@@ -337,4 +336,4 @@ const TextFunctions = {
     },
 };
 
-module.exports = TextFunctions;
+export default TextFunctions;

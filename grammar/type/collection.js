@@ -2,7 +2,7 @@
  * Represents unions.
  * (A1, A1:C5, ...)
  */
-class Collection {
+export default class Collection {
 
     constructor(data, refs) {
         if (data == null && refs == null) {
@@ -38,5 +38,3 @@ class Collection {
         this._refs.push(ref);
     }
 }
-
-module.exports = Collection;

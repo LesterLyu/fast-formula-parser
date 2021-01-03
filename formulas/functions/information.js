@@ -1,6 +1,5 @@
-const FormulaError = require('../error');
-const {FormulaHelpers, Types} = require('../helpers');
-const H = FormulaHelpers;
+import FormulaError from '../error';
+import {FormulaHelpers as H, Types} from '../helpers';
 
 const error2Number = {
     '#NULL!': 1, '#DIV/0!': 2, '#VALUE!': 3, '#REF!': 4, '#NAME?': 5,
@@ -128,5 +127,4 @@ const InfoFunctions = {
     },
 };
 
-
-module.exports = InfoFunctions;
+export default InfoFunctions;

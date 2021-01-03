@@ -1,7 +1,7 @@
 /**
  * Formula Error.
  */
-class FormulaError extends Error {
+export default class FormulaError extends Error {
 
     /**
      * @param {string} error - error code, i.e. #NUM!
@@ -137,5 +137,3 @@ FormulaError.ARG_MISSING = (args) => {
 FormulaError.ERROR = (msg, details) => {
     return new FormulaError('#ERROR!', msg, details);
 }
-
-module.exports = FormulaError;

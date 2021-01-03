@@ -1,8 +1,8 @@
-const {createToken, Lexer} = require('chevrotain');
-const FormulaError = require('../formulas/error')
+import {createToken, Lexer} from 'chevrotain';
+import FormulaError from '../formulas/error';
 
 // the vocabulary will be exported and used in the Parser definition.
-const tokenVocabulary = {};
+export const tokenVocabulary = {};
 
 const WhiteSpace = createToken({
     name: 'WhiteSpace',
@@ -254,22 +254,18 @@ allTokens.forEach(tokenType => {
     tokenVocabulary[tokenType.name] = tokenType
 });
 
-module.exports = {
-    tokenVocabulary: tokenVocabulary,
+export function lex(inputText) {
+    const lexingResult = SelectLexer.tokenize(inputText)
 
-    lex: function (inputText) {
-        const lexingResult = SelectLexer.tokenize(inputText)
-
-        if (lexingResult.errors.length > 0) {
-            const error = lexingResult.errors[0];
-            const line = error.line, column = error.column;
-            let msg = '\n' + inputText.split('\n')[line - 1] + '\n';
-            msg += Array(column - 1).fill(' ').join('') + '^\n';
-            error.message = msg + `Error at position ${line}:${column}\n` + error.message;
-            error.errorLocation = {line, column};
-            throw FormulaError.ERROR(error.message, error);
-        }
-
-        return lexingResult
+    if (lexingResult.errors.length > 0) {
+        const error = lexingResult.errors[0];
+        const line = error.line, column = error.column;
+        let msg = '\n' + inputText.split('\n')[line - 1] + '\n';
+        msg += Array(column - 1).fill(' ').join('') + '^\n';
+        error.message = msg + `Error at position ${line}:${column}\n` + error.message;
+        error.errorLocation = {line, column};
+        throw FormulaError.ERROR(error.message, error);
     }
-};
+
+    return lexingResult;
+}

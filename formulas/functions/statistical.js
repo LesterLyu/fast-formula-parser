@@ -1,8 +1,7 @@
-const FormulaError = require('../error');
-const {FormulaHelpers, Types, Criteria, Address} = require('../helpers');
-const {Infix} = require('../operators');
-const H = FormulaHelpers;
-const {DistributionFunctions} = require('./distribution');
+import FormulaError from '../error';
+import {FormulaHelpers as H, Types, Criteria, Address} from '../helpers';
+import {Infix} from '../operators';
+import {DistributionFunctions} from './distribution';
 
 const StatisticalFunctions = {
     AVEDEV: (...numbers) => {
@@ -172,4 +171,4 @@ const StatisticalFunctions = {
 };
 
 
-module.exports = Object.assign(StatisticalFunctions, DistributionFunctions);
+export default Object.assign(StatisticalFunctions, DistributionFunctions);

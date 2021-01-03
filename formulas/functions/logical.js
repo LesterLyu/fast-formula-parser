@@ -1,6 +1,5 @@
-const FormulaError = require('../error');
-const {FormulaHelpers, Types,} = require('../helpers');
-const H = FormulaHelpers;
+import FormulaError from '../error';
+import {FormulaHelpers as H, Types} from '../helpers';
 
 /**
  * Get the number of values that evaluate to true and false.
@@ -114,4 +113,4 @@ const LogicalFunctions = {
     },
 };
 
-module.exports = LogicalFunctions;
+export default LogicalFunctions;

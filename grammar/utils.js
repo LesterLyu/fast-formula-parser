@@ -1,11 +1,34 @@
-const FormulaError = require('../formulas/error');
-const {Address} = require('../formulas/helpers');
-const {Prefix, Postfix, Infix, Operators} = require('../formulas/operators');
-const Collection = require('./type/collection');
-const MAX_ROW = 1048576, MAX_COLUMN = 16384;
-const {NotAllInputParsedException} = require('chevrotain');
+import FormulaError from '../formulas/error';
+import {Address} from '../formulas/helpers';
+import {Prefix, Postfix, Infix, Operators} from '../formulas/operators';
+import Collection from './type/collection';
+import {NotAllInputParsedException} from 'chevrotain';
 
-class Utils {
+const MAX_ROW = 1048576, MAX_COLUMN = 16384;
+
+export function formatChevrotainError(error, inputText) {
+    let line, column, msg = '';
+    // e.g. SUM(1))
+    if (error instanceof NotAllInputParsedException) {
+        line = error.token.startLine;
+        column = error.token.startColumn;
+    } else {
+        line = error.previousToken.startLine;
+        column = error.previousToken.startColumn + 1;
+    }
+
+    msg += '\n' + inputText.split('\n')[line - 1] + '\n';
+    msg += Array(column - 1).fill(' ').join('') + '^\n';
+    msg += `Error at position ${line}:${column}\n` + error.message;
+    error.errorLocation = {line, column};
+    return FormulaError.ERROR(msg, error);
+}
+
+export default class Utils {
+
+    static formatChevrotainError(...args) {
+        return formatChevrotainError(...args);
+    }
 
     constructor(context) {
         this.context = context;
@@ -385,25 +408,5 @@ class Utils {
     isFormulaError(obj) {
         return obj instanceof FormulaError;
     }
-
-    static formatChevrotainError(error, inputText) {
-        let line, column, msg = '';
-        // e.g. SUM(1))
-        if (error instanceof NotAllInputParsedException) {
-            line = error.token.startLine;
-            column = error.token.startColumn;
-        } else {
-            line = error.previousToken.startLine;
-            column = error.previousToken.startColumn + 1;
-        }
-
-        msg += '\n' + inputText.split('\n')[line - 1] + '\n';
-        msg += Array(column - 1).fill(' ').join('') + '^\n';
-        msg += `Error at position ${line}:${column}\n` + error.message;
-        error.errorLocation = {line, column};
-        return FormulaError.ERROR(msg, error);
-    }
-
 }
 
-module.exports = Utils;

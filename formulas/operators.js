@@ -1,5 +1,5 @@
-const FormulaError = require('../formulas/error');
-const {FormulaHelpers} = require('../formulas/helpers');
+import FormulaError from '../formulas/error';
+import {FormulaHelpers} from '../formulas/helpers';
 
 const Prefix = {
     unaryOp: (prefixes, value, isArray) => {
@@ -158,13 +158,15 @@ const Infix = {
 
 };
 
-module.exports = {
+const Operators = {
+    compareOp: ['<', '>', '=', '<>', '<=', '>='],
+    concatOp: ['&'],
+    mathOp: ['+', '-', '*', '/', '^'],
+}
+
+export {
     Prefix,
     Postfix,
     Infix,
-    Operators: {
-        compareOp: ['<', '>', '=', '<>', '<=', '>='],
-        concatOp: ['&'],
-        mathOp: ['+', '-', '*', '/', '^'],
-    }
+    Operators
 };

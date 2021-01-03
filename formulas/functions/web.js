@@ -1,6 +1,5 @@
-const FormulaError = require('../error');
-const {FormulaHelpers, Types} = require('../helpers');
-const H = FormulaHelpers;
+import FormulaError from '../error';
+import {FormulaHelpers as H, Types} from '../helpers';
 
 const WebFunctions = {
     ENCODEURL: text => {
@@ -32,4 +31,4 @@ const WebFunctions = {
     }
 }
 
-module.exports = WebFunctions;
+export default WebFunctions;

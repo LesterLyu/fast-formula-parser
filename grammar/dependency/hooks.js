@@ -1,9 +1,9 @@
-const FormulaError = require('../../formulas/error');
-const {FormulaHelpers} = require('../../formulas/helpers');
-const {Parser} = require('../parsing');
-const lexer = require('../lexing');
-const Utils = require('./utils');
-const {formatChevrotainError} = require('../utils');
+import FormulaError from '../../formulas/error';
+import {FormulaHelpers} from '../../formulas/helpers';
+import {Parser} from '../parsing';
+import * as lexer from '../lexing';
+import Utils from './utils';
+import {formatChevrotainError} from '../utils';
 
 class DepParser {
 
@@ -156,6 +156,6 @@ class DepParser {
     }
 }
 
-module.exports = {
+export {
     DepParser,
 };

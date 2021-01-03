@@ -1,5 +1,5 @@
-const FormulaError = require('../error');
-const {FormulaHelpers, Types} = require('../helpers');
+import FormulaError from '../error';
+import {FormulaHelpers, Types} from '../helpers';
 const H = FormulaHelpers;
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
@@ -596,4 +596,4 @@ const DateFunctions = {
     },
 };
 
-module.exports = DateFunctions;
+export default DateFunctions;

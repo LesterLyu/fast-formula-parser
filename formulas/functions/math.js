@@ -1,7 +1,6 @@
-const FormulaError = require('../error');
-const {FormulaHelpers, Types, Factorials, Criteria} = require('../helpers');
-const {Infix} = require('../operators');
-const H = FormulaHelpers;
+import FormulaError from '../error';
+import {FormulaHelpers as H, Types, Factorials, Criteria} from '../helpers';
+import {Infix} from '../operators';
 
 // Max number in excel is 2^1024-1, same as javascript, thus I will not check if number is valid in some functions.
 
@@ -744,4 +743,4 @@ const MathFunctions = {
 };
 
 
-module.exports = MathFunctions;
+export default MathFunctions;

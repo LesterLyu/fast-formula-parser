@@ -1,10 +1,10 @@
-const FormulaError = require('../../formulas/error');
-const {FormulaHelpers, Types, Address} = require('../../formulas/helpers');
-const {Prefix, Postfix, Infix, Operators} = require('../../formulas/operators');
-const Collection = require('../type/collection');
+import FormulaError from '../../formulas/error';
+import {Address} from '../../formulas/helpers';
+import Collection from '../type/collection';
+
 const MAX_ROW = 1048576, MAX_COLUMN = 16384;
 
-class Utils {
+export default class Utils {
 
     constructor(context) {
         this.context = context;
@@ -263,7 +263,7 @@ class Utils {
      * @return {string}
      */
     toString(string) {
-        return string.substring(1, string.length - 1) .replace(/""/g, '"');
+        return string.substring(1, string.length - 1).replace(/""/g, '"');
     }
 
     /**
@@ -287,5 +287,3 @@ class Utils {
         return obj instanceof FormulaError;
     }
 }
-
-module.exports = Utils;
