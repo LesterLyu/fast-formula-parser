@@ -1,5 +1,5 @@
 const expect = require('chai').expect;
-const Collection = require('../../grammar/type/collection');
+const {default: Collection} = require('../../grammar/type/collection');
 
 describe('Collection', () => {
     it('should throw error', function () {

@@ -1,4 +1,4 @@
-const FormulaError = require('../../../formulas/error');
+const {default: FormulaError} = require('../../../formulas/error');
 module.exports = {
     'ERROR.TYPE': {
         'ERROR.TYPE(#NULL!)': 1,

@@ -1,4 +1,4 @@
-const FormulaError = require('../../../formulas/error');
+const {default: FormulaError} = require('../../../formulas/error');
 module.exports = {
     ENCODEURL: {
         'ENCODEURL("http://contoso.sharepoint.com/teams/Finance/Documents/April Reports/Profit and Loss Statement.xlsx")':

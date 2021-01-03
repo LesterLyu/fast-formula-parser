@@ -1,5 +1,5 @@
 const expect = require('chai').expect;
-const FormulaError = require('../../formulas/error');
+const {default: FormulaError} = require('../../formulas/error');
 const {FormulaParser} = require('../../grammar/hooks');
 const {MAX_ROW, MAX_COLUMN} = require('../../index');
 
