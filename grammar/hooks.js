@@ -152,7 +152,8 @@ class FormulaParser {
                     value: res.val,
                     isArray: res.isArray,
                     isRangeRef: !!FormulaHelpers.isRangeRef(arg),
-                    isCellRef: !!FormulaHelpers.isCellRef(arg)
+                    isCellRef: !!FormulaHelpers.isCellRef(arg),
+                    position: FormulaHelpers.retrievePositon(arg)
                 };
             });
         }
