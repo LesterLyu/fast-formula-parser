@@ -270,7 +270,7 @@ class FormulaHelpers {
         return param.ref && !param.ref.from;
     }
 
-    retrievePositon(param) {
+    retrievePosition(param) {
         return param.ref
     }
 
