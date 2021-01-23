@@ -2,6 +2,7 @@ const lexer = require('./lexing');
 const {EmbeddedActionsParser} = require("chevrotain");
 const tokenVocabulary = lexer.tokenVocabulary;
 const {
+    At,
     String,
     SheetQuoted,
     ExcelRefFunction,
@@ -22,8 +23,8 @@ const {
     Semicolon,
     OpenParen,
     CloseParen,
-    // OpenSquareParen,
-    // CloseSquareParen,
+    OpenSquareParen,
+    CloseSquareParen,
     // ExclamationMark,
     OpenCurlyParen,
     CloseCurlyParen,
@@ -355,9 +356,15 @@ class Parsing extends EmbeddedActionsParser {
                 }
             },
             {
+                GATE: () => {
+                    const nextToken = $.LA(2);
+                    return nextToken.image !== '['
+                },
                 ALT: () => {
-                    const name = $.CONSUME(Name).image;
-                    return $.ACTION(() => context.getVariable(name))
+                    const name = $.CONSUME(Name).image;                    
+                    return $.ACTION(() => {                        
+                        return context.getVariable(name)
+                    })
                 }
             },
             {
@@ -376,8 +383,39 @@ class Parsing extends EmbeddedActionsParser {
                 }
             },
             // {ALT: () => $.SUBRULE($.udfFunctionCall)},
-            // {ALT: () => $.SUBRULE($.structuredReference)},
+            {ALT: () => $.SUBRULE($.structuredReference)},
         ]));
+
+        $.RULE('structuredReference', () => {
+            let tableName
+            let columnName;
+            let thisRow = false
+            $.OPTION3(() => {
+                tableName = $.CONSUME(Name).image
+            })
+            $.CONSUME(OpenSquareParen);            
+            $.MANY(() => {
+                thisRow = !!$.CONSUME(At).image
+            })
+            let isNested = false
+            $.OPTION2(() => {
+                isNested = !!$.CONSUME(OpenSquareParen).image;
+            })
+            $.AT_LEAST_ONE(() => {
+                columnName = $.CONSUME(Name).image;
+            });
+            $.OPTION({
+                GATE: () => isNested,
+                DEF: () => {
+                    $.CONSUME(CloseSquareParen);
+                }
+            })
+
+            $.CONSUME(CloseSquareParen);
+            return $.ACTION(() => {
+                return context.getStructuredReference(tableName, columnName, thisRow)
+            });
+        })
 
         $.RULE('prefixName', () => $.OR([
             {ALT: () => $.CONSUME(Sheet).image.slice(0, -1)},
