@@ -36,6 +36,7 @@ class FormulaParser {
         }, config);
 
         this.onVariable = config.onVariable;
+        this.onStructuredReference = config.onStructuredReference
         this.functions = Object.assign({}, DateFunctions, StatisticalFunctions, InformationFunctions, ReferenceFunctions,
             EngFunctions, LogicalFunctions, TextFunctions, MathFunctions, TrigFunctions, WebFunctions,
             config.functions, config.functionsNeedContext);
@@ -108,6 +109,13 @@ class FormulaParser {
         if (res.ref == null)
             return FormulaError.NAME;
         return res;
+    }
+
+    getStructuredReference (tableName, columnName, thisRow) {
+        const res = {ref: this.onStructuredReference(tableName, columnName, thisRow, this.position.sheet, this.position)};
+        if (res.ref == null)
+            return FormulaError.NAME;
+        return res
     }
 
     /**
@@ -332,7 +340,7 @@ class FormulaParser {
         let res;
         try {
             res = await this.parser.formulaWithBinaryOp();
-            res = this.checkFormulaResult(res, allowReturnArray);
+            res = this.checkFormulaResult(res, allowReturnArray);            
             if (res instanceof FormulaError) {
                 return res;
             }
