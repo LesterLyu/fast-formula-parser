@@ -1,5 +1,5 @@
-import FormulaError from '../formulas/error';
-import {FormulaHelpers} from '../formulas/helpers';
+import FormulaError from './error';
+import {FormulaHelpers} from './helpers';
 
 const Prefix = {
     unaryOp: (prefixes, value, isArray) => {
