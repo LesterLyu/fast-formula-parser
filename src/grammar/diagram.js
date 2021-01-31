@@ -9,5 +9,8 @@ const serializedGrammar = parserInstance.getSerializedGastProductions();
 // create the HTML Text
 const htmlText = createSyntaxDiagramsCode(serializedGrammar);
 
+if (!fs.existsSync('./docs')){
+    fs.mkdirSync('./docs');
+}
 // Write the HTML file to disk
 fs.writeFileSync("./docs/generated_diagrams.html", htmlText);

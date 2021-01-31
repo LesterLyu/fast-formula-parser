@@ -14,7 +14,7 @@
     "build:umd": "webpack",
     "build": "yarn build:node && yarn build:umd",
     "size": "source-map-explorer build/parser.min.js*",
-    "diagram": "node -r esm src/grammar/diagram.js",
+    "diagram": "node lib/grammar/diagram.js",
     "docs": "yarn run diagram && jsdoc --configure .jsdoc.json --verbose",
     "publish:docs": "yarn run docs && yarn run coverage && gh-pages -d docs",
     "coverage": "nyc -x lib/ssf -x test --reporter=html --reporter=text --report-dir=docs/coverage mocha",
