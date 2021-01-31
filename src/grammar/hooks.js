@@ -271,8 +271,8 @@ class FormulaParser {
     /**
      * Parse an excel formula.
      * @param {string} inputText
-     * @param {{row: number, col: number}} [position] - The position of the parsed formula
-     *              e.g. {row: 1, col: 1}
+     * @param {CellReference} [position] - The position of the parsed formula
+     *              e.g. {row: 1, col: 1, sheet: 'sheet name'}
      * @param {boolean} [allowReturnArray] - If the formula can return an array. Useful when parsing array formulas,
      *                                      or data validation formulas.
      * @returns {*}
@@ -304,7 +304,7 @@ class FormulaParser {
      * Parse an excel formula asynchronously.
      * Use when providing custom async functions.
      * @param {string} inputText
-     * @param {{row: number, col: number}} [position] - The position of the parsed formula
+     * @param {CellReference} [position] - The position of the parsed formula
      *              e.g. {row: 1, col: 1}
      * @param {boolean} [allowReturnArray] - If the formula can return an array. Useful when parsing array formulas,
      *                                      or data validation formulas.
