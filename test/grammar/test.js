@@ -122,7 +122,7 @@ describe('Custom async function', () => {
             },
             functions: {
                 UPDATE_CELL: (arg) => {
-                    return JSON.stringify(arg.position)
+                    return JSON.stringify(arg.ref);
                 }
             }
         });

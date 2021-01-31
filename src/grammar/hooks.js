@@ -58,9 +58,6 @@ class FormulaParser {
         this.funsNeedContext = [...Object.keys(config.functionsNeedContext), ...this.funsNeedContextAndNoDataRetrieve,
             'INDEX', 'OFFSET', 'INDIRECT', 'IF', 'CHOOSE', 'WEBSERVICE'];
 
-        // functions preserve reference in arguments
-        this.funsPreserveRef = Object.keys(InformationFunctions);
-
         this.parser = new Parser(this, this.utils);
     }
 
@@ -137,15 +134,12 @@ class FormulaParser {
                     return {value: nullValue, isArray: false, omitted: true};
                 const res = this.utils.extractRefValue(arg);
 
-                if (this.funsPreserveRef.includes(name)) {
-                    return {value: res.val, isArray: res.isArray, ref: arg.ref};
-                }
                 return {
                     value: res.val,
                     isArray: res.isArray,
                     isRangeRef: !!FormulaHelpers.isRangeRef(arg),
                     isCellRef: !!FormulaHelpers.isCellRef(arg),
-                    position: FormulaHelpers.retrievePosition(arg)
+                    ref: arg.ref
                 };
             });
         }
