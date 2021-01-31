@@ -114,6 +114,24 @@ describe('Custom async function', () => {
         const actual = await parser.parseAsync('SUM(ROW_PLUS_COL(), 1)', position);
         expect(actual).to.eq(3);
     });
+
+    it('should pass cell position in the argument', async () => {
+        const parser = new FormulaParser({
+            onCell: ref => {
+                return 1;
+            },
+            functions: {
+                UPDATE_CELL: (arg) => {
+                    return JSON.stringify(arg.position)
+                }
+            }
+        });
+        let actual = await parser.parseAsync('UPDATE_CELL(A1, "hello world")', position)
+        expect(actual).to.eq('{"address":"A1","col":1,"row":1,"sheet":"Sheet1"}');
+
+        actual = await parser.parseAsync('UPDATE_CELL(A1:A10, "hello world")', position)
+        expect(actual).to.eq('{"from":{"row":1,"col":1},"to":{"row":10,"col":1},"sheet":"Sheet1"}');
+    });
 })
 
 describe("Github Issues", function () {

@@ -270,6 +270,10 @@ class FormulaHelpers {
         return param.ref && !param.ref.from;
     }
 
+    retrievePosition(param) {
+        return param.ref
+    }
+
     /**
      * Helper function for SUMIF, AVERAGEIF,...
      * @param context
