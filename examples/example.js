@@ -1,5 +1,5 @@
-// const FormulaParser = require('fast-formula-parser');
-const FormulaParser = require('../index');
+// const {FormulaParser} = require('fast-formula-parser');
+const {FormulaParser} = require('../lib');
 const {FormulaHelpers, Types, FormulaError, MAX_ROW, MAX_COLUMN} = FormulaParser;
 
 const data = [

@@ -54,7 +54,7 @@ Note: The grammar in my implementation is different from theirs. My implementati
     ```
  - Import
     ```js
-    const FormulaParser = require('fast-formula-parser');
+    const {FormulaParser} = require('fast-formula-parser');
     const {FormulaHelpers, Types, FormulaError, MAX_ROW, MAX_COLUMN} = FormulaParser;
     // or
     import FormulaParser, {FormulaHelpers, Types, FormulaError, MAX_ROW, MAX_COLUMN} from 'fast-formula-parser';
