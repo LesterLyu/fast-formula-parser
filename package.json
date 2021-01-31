@@ -18,7 +18,7 @@
     "publish:docs": "yarn run docs && yarn run coverage && gh-pages -d docs",
     "coverage": "nyc -x lib/ssf -x test --reporter=html --reporter=text --report-dir=docs/coverage mocha",
     "coverage:f": "nyc -n \"lib/formulas/functions/**\" -n \"lib/formulas/operators.js\" --reporter=html --reporter=text mocha test/formulas",
-    "coverage:server": "nyc -x lib/ssf -x test --reporter=text-lcov --report-dir=docs/coverage mocha | coveralls"
+    "coveralls": "nyc -x lib/ssf -x test --reporter=lcovonly --report-dir=coverage mocha"
   },
   "keywords": [
     "excel",

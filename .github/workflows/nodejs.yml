@@ -22,6 +22,7 @@ jobs:
         npm install
         npm run build --if-present
         npm test
+        npm run coveralls
       env:
         CI: true
     - name: Coveralls Parallel
