@@ -1,6 +1,5 @@
-const {FormulaParser} = require('../../../grammar/hooks');
+const {FormulaParser, generateTests} = require('../../utils');
 const TestCase = require('./testcase');
-const {generateTests} = require('../../utils');
 
 const data = [
     [1, 2, 3, 4, 5],

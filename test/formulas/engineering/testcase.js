@@ -1,4 +1,4 @@
-const {default: FormulaError} = require('../../../formulas/error');
+const {FormulaError} = require('../../utils');
 module.exports = {
     BESSELI: {
         'BESSELI("1.5", 1)': 0.981666428,

@@ -1,4 +1,4 @@
-const {default: FormulaError} = require('../../../formulas/error');
+const {FormulaError} = require('../../utils');
 module.exports = {
     ACOS: {
         'ACOS(-0.5)': 2.094395102,

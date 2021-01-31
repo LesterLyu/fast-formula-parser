@@ -1,4 +1,4 @@
-const {default: FormulaError} = require('../../../formulas/error');
+const {FormulaError} = require('../../utils');
 const tests = {
 
     AVEDEV: {

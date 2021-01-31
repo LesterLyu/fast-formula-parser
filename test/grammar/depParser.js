@@ -1,5 +1,5 @@
 const expect = require('chai').expect;
-const {DepParser} = require('../../grammar/dependency/hooks');
+const {DepParser} = require('../utils');
 
 const depParser = new DepParser({
     onVariable: variable => {

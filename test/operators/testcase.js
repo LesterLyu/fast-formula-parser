@@ -1,4 +1,4 @@
-const {default: FormulaError} = require('../../formulas/error');
+const {FormulaError} = require('../utils');
 module.exports = {
     unaryOp: {
         '+1': 1,

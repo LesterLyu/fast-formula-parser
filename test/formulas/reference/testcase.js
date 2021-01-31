@@ -1,4 +1,4 @@
-const {default: FormulaError} = require('../../../formulas/error');
+const {FormulaError} = require('../../utils');
 module.exports = {
     ADDRESS: {
         'ADDRESS(2,3)': '$C$2',

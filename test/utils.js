@@ -1,5 +1,9 @@
 const expect = require('chai').expect;
+const {FormulaParser, DepParser, FormulaError, MAX_COLUMN, MAX_ROW} = require('../lib/index');
+const {default: Collection} = require('../lib/grammar/type/collection');
+
 module.exports = {
+    FormulaParser, DepParser, FormulaError, Collection, MAX_COLUMN, MAX_ROW,
     generateTests: (parser, TestCase) => {
         const funs = Object.keys(TestCase);
 

@@ -1,6 +1,6 @@
 const assert = require('assert');
 const expect = require('chai').expect;
-const {FormulaParser} = require('../grammar/hooks');
+const {FormulaParser} = require('./utils');
 const parser = new FormulaParser(undefined, true);
 
 const fs = require('fs');

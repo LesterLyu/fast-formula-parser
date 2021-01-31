@@ -1,4 +1,4 @@
-const {default: FormulaError} = require('../../../formulas/error');
+const {FormulaError} = require('../../utils');
 module.exports = {
     DATE: {
         'DATE(108,1,2)': 39449,
