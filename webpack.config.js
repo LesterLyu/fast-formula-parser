@@ -1,5 +1,4 @@
 const path = require("path");
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const webpack = require('webpack');
 
 module.exports = {
@@ -16,6 +15,5 @@ module.exports = {
         new webpack.SourceMapDevToolPlugin({
             filename: 'parser.min.js.map'
         }),
-        // new BundleAnalyzerPlugin(),
     ],
 };
