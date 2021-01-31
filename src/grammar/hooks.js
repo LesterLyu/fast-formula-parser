@@ -93,7 +93,7 @@ class FormulaParser {
      */
     getVariable(name) {
         // console.log('get variable', name);
-        const res = {ref: this.onVariable(name, this.position.sheet, this.position)};
+        const res = {ref: this.onVariable(name, this.position)};
         if (res.ref == null)
             return FormulaError.NAME;
         return res;
