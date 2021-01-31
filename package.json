@@ -3,20 +3,22 @@
   "version": "1.0.19",
   "description": "fast excel formula parser",
   "repository": "https://github.com/LesterLyu/fast-formula-parser",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
-    "test": "mocha -s 0 -r esm",
-    "test:f": "mocha test/formulas -r esm",
+    "test": "mocha -s 0",
+    "test:f": "mocha test/formulas",
     "prepublishOnly": "yarn run build && yarn run test",
     "postpublish": "yarn run publish:docs",
-    "build": "webpack",
+    "build:node": "babel src -d lib --source-maps",
+    "build:umd": "webpack",
+    "build": "yarn build:node && yarn build:umd",
     "size": "source-map-explorer build/parser.min.js*",
-    "diagram": "node -r esm grammar/diagram.js",
+    "diagram": "node -r esm src/grammar/diagram.js",
     "docs": "yarn run diagram && jsdoc --configure .jsdoc.json --verbose",
     "publish:docs": "yarn run docs && yarn run coverage && gh-pages -d docs",
-    "coverage": "nyc -x ssf -x test --reporter=html --reporter=text --report-dir=docs/coverage mocha",
-    "coverage:f": "nyc -n \"formulas/functions/**\" -n \"formulas/operators.js\" --reporter=html --reporter=text mocha test/formulas",
-    "coverage:server": "nyc -x ssf -x test --reporter=text-lcov --report-dir=docs/coverage mocha | coveralls"
+    "coverage": "nyc -x lib/ssf -x test --reporter=html --reporter=text --report-dir=docs/coverage mocha",
+    "coverage:f": "nyc -n \"lib/formulas/functions/**\" -n \"lib/formulas/operators.js\" --reporter=html --reporter=text mocha test/formulas",
+    "coverage:server": "nyc -x lib/ssf -x test --reporter=text-lcov --report-dir=docs/coverage mocha | coveralls"
   },
   "keywords": [
     "excel",
@@ -36,6 +38,9 @@
     "jstat": "https://github.com/LesterLyu/jstat.git"
   },
   "devDependencies": {
+    "@babel/cli": "^7.12.10",
+    "@babel/core": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
     "chai": "^4.2.0",
     "coveralls": "^3.1.0",
     "docdash": "^1.2.0",
