@@ -25,6 +25,10 @@ jobs:
         npm run coveralls
       env:
         CI: true
+  finish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
     - name: Coveralls Parallel
       uses: coverallsapp/github-action@master
       with:
