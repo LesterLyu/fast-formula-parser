@@ -5,7 +5,7 @@ import {
     beta as jstatBeta, binomial, chisquare, normalci, tci, corrcoeff, mean, covariance,
     exponential, centralF, gammafn, gamma, gammaln, normal, geomean, stdev, lognormal,
     negbin, poisson, studentt
-} from "jstat";
+} from "jstat-esm";
 
 const SQRT2PI = 2.5066282746310002;
 

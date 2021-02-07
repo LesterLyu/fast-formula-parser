@@ -2,7 +2,7 @@ import FormulaError from '../error';
 import TextFunctions from './text';
 import {FormulaHelpers as H, Types} from '../helpers';
 import bessel from "bessel";
-import {erf, erfc} from "jstat";
+import {erf, erfc} from "jstat-esm";
 
 const MAX_OCT = 536870911, // OCT2DEC(3777777777)
     MIN_OCT = -536870912, // OCT2DEC4000000000)

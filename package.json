@@ -36,7 +36,7 @@
     "bahttext": "^2.0.2",
     "bessel": "^1.0.2",
     "chevrotain": "^7.0.3",
-    "jstat": "https://github.com/LesterLyu/jstat.git"
+    "jstat-esm": "^2.0.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.10",
