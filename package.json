@@ -1,9 +1,13 @@
 {
-  "name": "fast-formula-parser",
-  "version": "1.0.19",
+  "name": "@lido-app/fast-formula-parser",
+  "version": "1.0.20",
   "description": "fast excel formula parser",
-  "repository": "https://github.com/LesterLyu/fast-formula-parser",
+  "repository": "https://github.com/lido-app/fast-formula-parser",
   "main": "index.js",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://npm.pkg.github.com/"
+  },
   "scripts": {
     "test": "mocha -s 0",
     "test:f": "mocha test/formulas",
