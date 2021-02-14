@@ -20,6 +20,7 @@ class DepParser {
         this.utils = new Utils(this);
 
         this.onVariable = config.onVariable;
+        this.onStructuredReference = config.onStructuredReference
         this.functions = {}
 
         this.parser = new Parser(this, this.utils);
@@ -76,6 +77,24 @@ class DepParser {
     getVariable(name) {
         // console.log('get variable', name);
         const res = {ref: this.onVariable(name, this.position.sheet)};
+        if (res.ref == null)
+            return FormulaError.NAME;
+        if (FormulaHelpers.isCellRef(res))
+            this.getCell(res.ref);
+        else {
+            this.getRange(res.ref);
+        }
+        return 0;
+    }
+
+    /**
+     * Get references or values for a structured referte
+     * @param {string} tableName 
+     * @param {string} columnName 
+     * @param {boolean} thisRow 
+     */
+    getStructuredReference (tableName, columnName, thisRow) {
+        const res = {ref: this.onStructuredReference(tableName, columnName, thisRow, this.position.sheet, this.position)};
         if (res.ref == null)
             return FormulaError.NAME;
         if (FormulaHelpers.isCellRef(res))

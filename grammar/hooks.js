@@ -111,6 +111,12 @@ class FormulaParser {
         return res;
     }
 
+    /**
+     * Get references or values for a structured referte
+     * @param {string} tableName 
+     * @param {string} columnName 
+     * @param {boolean} thisRow 
+     */
     getStructuredReference (tableName, columnName, thisRow) {
         const res = {ref: this.onStructuredReference(tableName, columnName, thisRow, this.position.sheet, this.position)};
         if (res.ref == null)
