@@ -73,6 +73,20 @@ const Column = createToken({
     longer_alt: Name
 });
 
+const TableName = createToken({
+    name: 'TableName',
+    pattern: /[A-Za-z_.\d\s\u007F-\uFFFF]+\[/
+})
+
+const ColumnName = createToken({
+    name: 'ColumnName',
+    pattern: /[\[]?[@]?[\[+]?[A-Za-z_.\d\s\u007F-\uFFFF]{0,}\]+/
+})
+
+const SpecialItem = createToken({
+    name: 'SpecialItem',
+    pattern: /[\[]?(#All|#Data|#Headers|#Total|#ThisRow)\]+/
+})
 
 /**
  * Symbols and operators
@@ -214,6 +228,9 @@ const allTokens = [
     FormulaErrorT,
     RefError,
     Sheet,
+    TableName,
+    ColumnName,
+    SpecialItem,
     Cell,
     Boolean,
     Column,

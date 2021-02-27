@@ -16,6 +16,9 @@ const {
     Number,
     Boolean,
     Column,
+    TableName,
+    ColumnName,
+    SpecialItem,
 
     // At,
     Comma,
@@ -361,7 +364,7 @@ class Parsing extends EmbeddedActionsParser {
                     return nextToken.image !== '['
                 },
                 ALT: () => {
-                    const name = $.CONSUME(Name).image;                    
+                    const name = $.CONSUME(Name).image;                                        
                     return $.ACTION(() => {                        
                         return context.getVariable(name)
                     })
@@ -369,8 +372,10 @@ class Parsing extends EmbeddedActionsParser {
             },
             {
                 ALT: () => {
-                    const column = $.CONSUME(Column).image;
-                    return $.ACTION(() => this.utils.parseCol(column))
+                    const column = $.CONSUME(Column).image;                    
+                    return $.ACTION(() => {
+                        return this.utils.parseCol(column)
+                    })
                 }
             },
             // A row check should be here, but the token is same with Number,
@@ -390,30 +395,28 @@ class Parsing extends EmbeddedActionsParser {
             let tableName
             let columnName;
             let thisRow = false
+            let specialItem
             $.OPTION3(() => {
-                tableName = $.CONSUME(Name).image
-            })
-            $.CONSUME(OpenSquareParen);            
-            $.MANY(() => {
-                thisRow = !!$.CONSUME(At).image
-            })
-            let isNested = false
-            $.OPTION2(() => {
-                isNested = !!$.CONSUME(OpenSquareParen).image;
-            })
-            $.AT_LEAST_ONE(() => {
-                columnName = $.CONSUME(Name).image;
-            });
-            $.OPTION({
-                GATE: () => isNested,
-                DEF: () => {
-                    $.CONSUME(CloseSquareParen);
-                }
+                tableName = $.CONSUME(TableName).image.slice(0,-1)
             })
 
-            $.CONSUME(CloseSquareParen);
+            $.OR([
+                {
+                    ALT: () => {
+                        columnName = $.CONSUME(ColumnName).image                
+                        thisRow = columnName.indexOf('@') !== -1
+                        columnName = columnName.replace(/\@|\[|\]/gi, '')
+                    }
+                },
+                {
+                    ALT: () => {
+                        specialItem = $.CONSUME(SpecialItem).image
+                    }
+                }
+            ])
+            
             return $.ACTION(() => {
-                return context.getStructuredReference(tableName, columnName, thisRow)
+                return context.getStructuredReference(tableName, columnName, thisRow, specialItem)
             });
         })
 

@@ -93,8 +93,8 @@ class DepParser {
      * @param {string} columnName 
      * @param {boolean} thisRow 
      */
-    getStructuredReference (tableName, columnName, thisRow) {
-        const res = {ref: this.onStructuredReference(tableName, columnName, thisRow, this.position.sheet, this.position)};
+    getStructuredReference (tableName, columnName, thisRow, specialItem) {
+        const res = {ref: this.onStructuredReference(tableName, columnName, thisRow, specialItem, this.position.sheet, this.position)};
         if (res.ref == null)
             return FormulaError.NAME;
         if (FormulaHelpers.isCellRef(res))

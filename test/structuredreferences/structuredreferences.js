@@ -11,8 +11,8 @@ const parser = new FormulaParser({
     onRange: () => {
       return [[1, 2]]
     },
-    onStructuredReference: (tableName, sheet, thisRow, position) => {
-      if (thisRow) {
+    onStructuredReference: (tableName, columnName, thisRow, specialItem, sheet, position) => {
+      if (thisRow || specialItem) {
         // Single cell
         return {row: 2, col: 2}
       } else {
@@ -36,7 +36,7 @@ const position = {row: 1, col: 1, sheet: 'Sheet1'};
 
 describe('Structured References', function () {
   it('should parse table and column reference', async () => {
-    let actual = await parser.parseAsync('TABLE[@COLUMN_NAME]', position, true);
+    let actual = await parser.parseAsync('Table Name[@COLUMN_NAME]', position, true);
     expect(actual).to.eq(1);
   });
 
@@ -51,7 +51,17 @@ describe('Structured References', function () {
   });
 
   it('can detect columns without table', async () => {
-    let actual = await parser.parseAsync('[@SalesAmount]*[@[Commission]]', position, true);
+    let actual = await parser.parseAsync('[@[Commission]]', position, true);
     expect(actual).to.deep.eq(1);
+  });
+
+  it('can parse single @', async () => {
+    let actual = await parser.parseAsync('TableName[@]', position, true);
+    expect(actual).to.eq(1);
+  });
+
+  it('can parse headers', async () => {
+    let actual = await parser.parseAsync('TableName[#Headers]', position, true);
+    expect(actual).to.eq(1);
   });
 });
