@@ -12,6 +12,7 @@ const parser = new FormulaParser({
       return [[1, 2]]
     },
     onStructuredReference: (tableName, columnName, thisRow, specialItem, sheet, position) => {
+      // console.log('d', tableName, columnName, thisRow, specialItem, sheet, position)
       if (thisRow || specialItem) {
         // Single cell
         return {row: 2, col: 2}
@@ -61,7 +62,12 @@ describe('Structured References', function () {
   });
 
   it('can parse headers', async () => {
-    let actual = await parser.parseAsync('TableName[#Headers]', position, true);
+    let actual = await parser.parseAsync('DeptSales[[#Headers],[Region]:[Commission Amount]]', position, true);
+    expect(actual).to.eq(1);
+  });
+
+  it('can parse empty headers', async () => {
+    let actual = await parser.parseAsync('DeptSales[[#Headers]]', position, true);
     expect(actual).to.eq(1);
   });
 });

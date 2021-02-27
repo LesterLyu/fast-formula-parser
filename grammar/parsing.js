@@ -358,11 +358,7 @@ class Parsing extends EmbeddedActionsParser {
                     return $.ACTION(() => this.utils.parseCellAddress(address));
                 }
             },
-            {
-                GATE: () => {
-                    const nextToken = $.LA(2);
-                    return nextToken.image !== '['
-                },
+            {                
                 ALT: () => {
                     const name = $.CONSUME(Name).image;                                        
                     return $.ACTION(() => {                        
@@ -400,24 +396,42 @@ class Parsing extends EmbeddedActionsParser {
                 tableName = $.CONSUME(TableName).image.slice(0,-1)
             })
 
-            $.OR([
-                {
-                    ALT: () => {
-                        columnName = $.CONSUME(ColumnName).image                
-                        thisRow = columnName.indexOf('@') !== -1
-                        columnName = columnName.replace(/\@|\[|\]/gi, '')
-                    }
-                },
-                {
-                    ALT: () => {
-                        specialItem = $.CONSUME(SpecialItem).image
-                    }
-                }
-            ])
+            $.OPTION(() => {
+                specialItem = $.CONSUME(SpecialItem).image
+                specialItem = specialItem.replace(/\[|\]|\,/gi, '')
+            })
+
+            columnName = $.SUBRULE($.columnNameWithRange)
             
             return $.ACTION(() => {
+                if (Array.isArray(columnName)) {
+                    columnName = columnName.map((name) => name.replace(/\@|\[|\]/gi, ''))
+                } else {
+                    thisRow = columnName.indexOf('@') !== -1
+                    columnName = columnName.replace(/\@|\[|\]/gi, '')
+                }
                 return context.getStructuredReference(tableName, columnName, thisRow, specialItem)
             });
+        })
+
+        $.RULE('tableColumnName', () => {
+            return $.CONSUME(ColumnName).image
+        })
+
+        // TODO Support range columns
+        $.RULE('columnNameWithRange', () => {
+            // e.g. 'A1:C3' or 'A1:A3:C4', can be any number of references, at lease 2
+            const ref1 = $.SUBRULE($.tableColumnName);
+            const refs = [ref1];
+            $.MANY(() => {
+                $.CONSUME(Colon);
+                refs.push($.SUBRULE2($.tableColumnName));
+            });
+            if (refs.length > 1)
+                return $.ACTION(() => $.ACTION(() => {
+                    return refs
+                }));
+            return ref1;
         })
 
         $.RULE('prefixName', () => $.OR([

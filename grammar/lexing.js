@@ -85,7 +85,7 @@ const ColumnName = createToken({
 
 const SpecialItem = createToken({
     name: 'SpecialItem',
-    pattern: /[\[]?(#All|#Data|#Headers|#Total|#ThisRow)\]+/
+    pattern: /[\[]?(#All|#Data|#Headers|#Total|#This Row)\][,]?/
 })
 
 /**
