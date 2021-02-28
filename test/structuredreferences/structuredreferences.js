@@ -70,4 +70,5 @@ describe('Structured References', function () {
     let actual = await parser.parseAsync('DeptSales[[#Headers]]', position, true);
     expect(actual).to.eq(1);
   });
+  
 });
