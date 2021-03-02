@@ -12,7 +12,6 @@ const parser = new FormulaParser({
       return [[1, 2]]
     },
     onStructuredReference: (tableName, columnName, thisRow, specialItem, sheet, position) => {
-      // console.log('d', tableName, columnName, thisRow, specialItem, sheet, position)
       if (thisRow || specialItem) {
         // Single cell
         return {row: 2, col: 2}
