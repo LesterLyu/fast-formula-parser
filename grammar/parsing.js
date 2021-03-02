@@ -16,6 +16,9 @@ const {
     Number,
     Boolean,
     Column,
+    TableName,
+    ColumnName,
+    SpecialItem,
 
     // At,
     Comma,
@@ -355,13 +358,9 @@ class Parsing extends EmbeddedActionsParser {
                     return $.ACTION(() => this.utils.parseCellAddress(address));
                 }
             },
-            {
-                GATE: () => {
-                    const nextToken = $.LA(2);
-                    return nextToken.image !== '['
-                },
+            {                
                 ALT: () => {
-                    const name = $.CONSUME(Name).image;                    
+                    const name = $.CONSUME(Name).image;                                        
                     return $.ACTION(() => {                        
                         return context.getVariable(name)
                     })
@@ -369,8 +368,10 @@ class Parsing extends EmbeddedActionsParser {
             },
             {
                 ALT: () => {
-                    const column = $.CONSUME(Column).image;
-                    return $.ACTION(() => this.utils.parseCol(column))
+                    const column = $.CONSUME(Column).image;                    
+                    return $.ACTION(() => {
+                        return this.utils.parseCol(column)
+                    })
                 }
             },
             // A row check should be here, but the token is same with Number,
@@ -390,31 +391,47 @@ class Parsing extends EmbeddedActionsParser {
             let tableName
             let columnName;
             let thisRow = false
+            let specialItem
             $.OPTION3(() => {
-                tableName = $.CONSUME(Name).image
-            })
-            $.CONSUME(OpenSquareParen);            
-            $.MANY(() => {
-                thisRow = !!$.CONSUME(At).image
-            })
-            let isNested = false
-            $.OPTION2(() => {
-                isNested = !!$.CONSUME(OpenSquareParen).image;
-            })
-            $.AT_LEAST_ONE(() => {
-                columnName = $.CONSUME(Name).image;
-            });
-            $.OPTION({
-                GATE: () => isNested,
-                DEF: () => {
-                    $.CONSUME(CloseSquareParen);
-                }
+                tableName = $.CONSUME(TableName).image.slice(0,-1)
             })
 
-            $.CONSUME(CloseSquareParen);
+            $.OPTION(() => {
+                specialItem = $.CONSUME(SpecialItem).image
+                specialItem = specialItem.replace(/\[|\]|\,/gi, '')
+            })
+
+            columnName = $.SUBRULE($.columnNameWithRange)
+            
             return $.ACTION(() => {
-                return context.getStructuredReference(tableName, columnName, thisRow)
+                if (Array.isArray(columnName)) {
+                    columnName = columnName.map((name) => name.replace(/\@|\[|\]/gi, ''))
+                } else {
+                    thisRow = columnName.indexOf('@') !== -1
+                    columnName = columnName.replace(/\@|\[|\]/gi, '')
+                }
+                return context.getStructuredReference(tableName, columnName, thisRow, specialItem)
             });
+        })
+
+        $.RULE('tableColumnName', () => {
+            return $.CONSUME(ColumnName).image
+        })
+
+        // TODO Support range columns
+        $.RULE('columnNameWithRange', () => {
+            // e.g. 'A1:C3' or 'A1:A3:C4', can be any number of references, at lease 2
+            const ref1 = $.SUBRULE($.tableColumnName);
+            const refs = [ref1];
+            $.MANY(() => {
+                $.CONSUME(Colon);
+                refs.push($.SUBRULE2($.tableColumnName));
+            });
+            if (refs.length > 1)
+                return $.ACTION(() => $.ACTION(() => {
+                    return refs
+                }));
+            return ref1;
         })
 
         $.RULE('prefixName', () => $.OR([
