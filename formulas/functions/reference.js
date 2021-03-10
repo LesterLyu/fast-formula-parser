@@ -311,7 +311,7 @@ const ReferenceFunctions = {
             throw e;
         }
         colIndexNum = H.accept(colIndexNum, Types.NUMBER);
-        rangeLookup = H.accept(rangeLookup, Types.BOOLEAN, false);
+        rangeLookup = H.accept(rangeLookup, Types.BOOLEAN, true);
 
         // check if colIndexNum out of bound
         if (colIndexNum < 1)
@@ -345,6 +345,9 @@ const ReferenceFunctions = {
             }
             if (prevValue == null)
                 throw FormulaError.NA;
+            if (tableArray.length === 1) {
+                return tableArray[0][colIndexNum - 1]
+            }
             return prevValue;
         }
         // exact lookup with wildcard support
