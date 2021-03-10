@@ -311,7 +311,7 @@ const ReferenceFunctions = {
             throw e;
         }
         colIndexNum = H.accept(colIndexNum, Types.NUMBER);
-        rangeLookup = H.accept(rangeLookup, Types.BOOLEAN, true);
+        rangeLookup = H.accept(rangeLookup, Types.BOOLEAN, false);
 
         // check if colIndexNum out of bound
         if (colIndexNum < 1)
