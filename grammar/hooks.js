@@ -111,13 +111,6 @@ class FormulaParser {
         return res;
     }
 
-    getStructuredReference (tableName, columnName, thisRow, specialItem) {
-        const res = {ref: this.onStructuredReference(tableName, columnName, thisRow, specialItem, this.position.sheet, this.position)};
-        if (res.ref == null)
-            return FormulaError.NAME;
-        return res
-    }
-
     /**
      * Get references or values for a structured referte
      * @param {string} tableName 
@@ -170,6 +163,7 @@ class FormulaParser {
                     return {value: res.val, isArray: res.isArray, ref: arg.ref};
                 }
                 return {
+                    ref: arg.ref,
                     value: res.val,
                     isArray: res.isArray,
                     isRangeRef: !!FormulaHelpers.isRangeRef(arg),
@@ -237,18 +231,10 @@ class FormulaParser {
      */
     supportedFunctions() {
         const supported = [];
-        const functions = Object.keys(this.functions);
-        functions.forEach(fun => {
-            try {
-                const res = this.functions[fun](0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                if (res === undefined) return;
-                supported.push(fun);
-            } catch (e) {
-                if (e instanceof Error)
-                    supported.push(fun);
-            }
-        });
-        return supported.sort();
+        for (const fn in this.functions) {
+            supported.push(fn)
+        }
+        return supported
     }
 
     /**

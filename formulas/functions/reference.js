@@ -108,7 +108,7 @@ const ReferenceFunctions = {
             throw FormulaError.REF;
 
         const lookupType = typeof lookupValue; // 'number', 'string', 'boolean'
-
+        console.log(tableArray)
         // approximate lookup (assume the array is sorted)
         if (rangeLookup) {
             let prevValue = lookupType === typeof tableArray[0][0] ? tableArray[0][0] : null;
@@ -132,6 +132,9 @@ const ReferenceFunctions = {
             }
             if (prevValue == null)
                 throw FormulaError.NA;
+            if (tableArray[0].length === 1) {
+                return tableArray[rowIndexNum - 1][0]
+            }
             return prevValue;
         }
         // exact lookup with wildcard support
@@ -345,6 +348,9 @@ const ReferenceFunctions = {
             }
             if (prevValue == null)
                 throw FormulaError.NA;
+            if (tableArray.length === 1) {
+                return tableArray[0][colIndexNum - 1]
+            }
             return prevValue;
         }
         // exact lookup with wildcard support
