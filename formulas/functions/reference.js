@@ -132,6 +132,9 @@ const ReferenceFunctions = {
             }
             if (prevValue == null)
                 throw FormulaError.NA;
+            if (tableArray[0].length === 1) {
+                return tableArray[rowIndexNum - 1][0]
+            }
             return prevValue;
         }
         // exact lookup with wildcard support
