@@ -36,6 +36,7 @@ class FormulaParser {
         }, config);
 
         this.onVariable = config.onVariable;
+        this.onStructuredReference = config.onStructuredReference
         this.functions = Object.assign({}, DateFunctions, StatisticalFunctions, InformationFunctions, ReferenceFunctions,
             EngFunctions, LogicalFunctions, TextFunctions, MathFunctions, TrigFunctions, WebFunctions,
             config.functions, config.functionsNeedContext);
@@ -94,6 +95,19 @@ class FormulaParser {
         if (ref.sheet == null)
             ref.sheet = this.position ? this.position.sheet : undefined;
         return this.onRange(ref)
+    }
+
+    /**
+     * Get references or values for a structured referte
+     * @param {string} tableName 
+     * @param {string} columnName 
+     * @param {boolean} thisRow 
+     */
+     getStructuredReference (tableName, columnName, thisRow, specialItem) {
+        const res = {ref: this.onStructuredReference(tableName, columnName, thisRow, specialItem, this.position.sheet, this.position)};
+        if (res.ref == null)
+            return FormulaError.NAME;
+        return res
     }
 
     /**
