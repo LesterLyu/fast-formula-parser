@@ -50,7 +50,12 @@ describe('Structured References', function () {
     expect(actual).to.deep.eq(1);
   });
 
-  it('can detect columns without table', async () => {
+  it('can detect columns with special characters', async () => {
+    let actual = await parser.parseAsync('[@%COLUMN_NAME]', position, true);
+    expect(actual).to.deep.eq(1);
+  });
+
+  it('can detect columns enclosed in []', async () => {
     let actual = await parser.parseAsync('[@[Commission]]', position, true);
     expect(actual).to.deep.eq(1);
   });

@@ -75,12 +75,12 @@ const Column = createToken({
 
 const TableName = createToken({
     name: 'TableName',
-    pattern: /[A-Za-z_.\d\s\u007F-\uFFFF]+\[/
+    pattern: /[%A-Za-z_.\d\s\u007F-\uFFFF]+\[/
 })
 
 const ColumnName = createToken({
     name: 'ColumnName',
-    pattern: /[\[]?[@]?[\[+]?[A-Za-z_.\d\s\u007F-\uFFFF]{0,}\]+/
+    pattern: /[\[]?[@]?[\[+]?[%A-Za-z_.\d\s\u007F-\uFFFF]{0,}\]+/
 })
 
 const SpecialItem = createToken({
