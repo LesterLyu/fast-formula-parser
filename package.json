@@ -1,12 +1,12 @@
 {
   "name": "@lido-app/fast-formula-parser",
-  "version": "1.0.25",
+  "version": "1.0.26-canary.1",
   "description": "fast excel formula parser",
   "repository": "https://github.com/lido-app/fast-formula-parser",
   "main": "index.js",
   "publishConfig": {
     "access": "public",
-    "registry": "https://npm.pkg.github.com/"
+    "registry": "https://npm.pkg.github.com/Lido-App"
   },
   "scripts": {
     "test": "mocha -s 0",

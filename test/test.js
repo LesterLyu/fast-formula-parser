@@ -1,6 +1,6 @@
 const assert = require('assert');
 const expect = require('chai').expect;
-const {FormulaParser} = require('../grammar/hooks');
+const { FormulaParser } = require('../grammar/hooks');
 const parser = new FormulaParser(undefined, true);
 
 const fs = require('fs');
@@ -36,7 +36,7 @@ describe('Parsing Formulas 1', function () {
         formulas.forEach((formula, index) => {
             // console.log('testing #', index, formula);
             try {
-                parser.parse(formula, {row: 2, col: 2});
+                parser.parse(formula, { row: 2, col: 2 });
                 success++;
             } catch (e) {
                 failures.push(formula);
@@ -66,11 +66,11 @@ describe('Parsing Formulas 2', () => {
         });
     });
 
-    it ('skip', () => '');
+    it('skip', () => '');
 
-    it('custom formulas parse rate should be 100%',  function(done) {
+    it('custom formulas parse rate should be 100%', function (done) {
         this.timeout(20000);
-        formulas.forEach((formula, index)  => {
+        formulas.forEach((formula, index) => {
             // console.log('testing #', index, formula);
             try {
                 parser.parse(formula);
@@ -93,7 +93,7 @@ describe('Parsing Formulas 2', () => {
 });
 
 describe('Get supported formulas', () => {
-    const functionsNames =  parser.supportedFunctions();
+    const functionsNames = parser.supportedFunctions();
     expect(functionsNames.length).to.greaterThan(275);
     console.log(`Support ${functionsNames.length} functions:\n${functionsNames.join(', ')}`);
     expect(functionsNames.includes('IFNA')).to.eq(true);
@@ -106,4 +106,5 @@ require('./grammar/errors');
 require('./grammar/collection');
 require('./grammar/depParser');
 require('./formulas');
-require('./structuredreferences/structuredreferences')
+require('./structuredreferences/structuredreferences');
+require('./joins/joins');
