@@ -1,3 +1,4 @@
+const util = require('util');
 const FormulaError = require('../error');
 const {FormulaHelpers, Types, Factorials, Criteria} = require('../helpers');
 const {Infix} = require('../operators');
@@ -636,8 +637,26 @@ const MathFunctions = {
         return sum;
     },
 
-    SUMIFS: () => {
+    // TODO: Add the ability to add more than 1 criteria range and criteria
+    SUMIFS: (context, sumRange, criteriaRange, criteria) => {
+        const [sumValues, sumCriteria] = H.retrieveRanges(context, sumRange, criteriaRange);
+        criteria = H.retrieveArg(context, criteria);
+        criteria = Criteria.parse(H.accept(criteria));
 
+        // console.log(util.inspect({sumRange, criteriaRange, criteria}, false, 10, true));
+        const values = sumValues.flat();
+
+        let sum = 0;
+        for (let i = 0; i < values.length; i++) {
+            if (criteria.op === 'wc') {
+                if (criteria.match === criteria.value.test(sumCriteria[i])) {
+                    sum += values[i];
+                }
+            }
+        }
+        // console.log(sum);
+
+        return sum;
     },
 
     SUMPRODUCT: (array1, ...arrays) => {
