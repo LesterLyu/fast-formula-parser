@@ -402,7 +402,9 @@ module.exports = {
     },
 
     SUMIFS: {
-        'SUMIFS(C7:C12, A7:A12, "Vege*")': 12000,
+        'SUMIFS(C7:C12, A7:A12, "Veg*")': 12000,
+        'SUMIFS(C7:C12, C7:C12, ">3000")': 9700,
+        'SUMIFS(C7:C12, A7:A12, "Veg*", C7:C12, ">5000")': 5500,
     },
 
     SUMPRODUCT: {
