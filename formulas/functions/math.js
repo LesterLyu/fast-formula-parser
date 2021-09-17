@@ -27,6 +27,68 @@ function factorialDouble(n) {
     return fd[n] = factorialDouble(n - 2) * n;
 }
 
+/**
+ * Moved the logic from SUMIF to here so that it could be used in both SUMIF and
+ * SUMIFS.
+ *
+ * NOTE: This function returns an array of objects that must be reduced to get
+ *       the final sum. The returned object can also contain entries that have
+ *       a key called remove. This key is used in SUMIFS to identify values
+ *       that have failed one of the criteria and must be removed before
+ *       calculating the final sum.
+ *
+ * @param context
+ * @param range
+ * @param criteria
+ * @param sumRange
+ * @returns [{ row: number, col: number, value: any, remove?: boolean }]
+ */
+const sumIf = (context, range, criteria, sumRange) => {
+    const ranges = H.retrieveRanges(context, range, sumRange);
+    range = ranges[0];
+    sumRange = ranges[1];
+
+    criteria = H.retrieveArg(context, criteria);
+    const isCriteriaArray = criteria.isArray;
+    criteria = Criteria.parse(H.accept(criteria));
+
+    const sums = [];
+
+    range.forEach((row, rowNum) => {
+        row.forEach((value, colNum) => {
+            const valueToAdd = sumRange[rowNum][colNum];
+            if (typeof valueToAdd !== 'number') {
+                return;
+            }
+            if (criteria.op === 'wc') {
+                if (criteria.match === criteria.value.test(value)) {
+                    sums.push({row: rowNum, col: colNum, value: valueToAdd});
+                }
+            } else {
+                if (Infix.compareOp(value, criteria.op, criteria.value, Array.isArray(value), isCriteriaArray)) {
+                    sums.push({row: rowNum, col: colNum, value: valueToAdd});
+                } else {
+                    sums.push({remove: true, row: rowNum, col: colNum});
+                }
+            }
+        })
+    });
+
+    return sums;
+}
+
+/**
+ * Simple reduce function to perform a sum over the object returned from sumIf
+ *
+ * @param prev
+ * @param cur
+ * @returns Number
+ */
+const reduceSums = (prev, cur) => {
+    return (prev?.value | prev) + cur.value;
+}
+
+
 // https://support.office.com/en-us/article/excel-functions-by-category-5f91f4e9-7b42-46d2-9bd1-63f26a86c0eb
 const MathFunctions = {
     ABS: number => {
@@ -607,56 +669,53 @@ const MathFunctions = {
     /**
      * This functions requires instance of {@link FormulaParser}.
      */
-    SUMIF: (context, range, criteria, sumRange) => {
-        const ranges = H.retrieveRanges(context, range, sumRange);
-        range = ranges[0];
-        sumRange = ranges[1];
-
-        criteria = H.retrieveArg(context, criteria);
-        const isCriteriaArray = criteria.isArray;
-        // parse criteria
-        criteria = Criteria.parse(H.accept(criteria));
-        let sum = 0;
-
-        range.forEach((row, rowNum) => {
-            row.forEach((value, colNum) => {
-                const valueToAdd = sumRange[rowNum][colNum];
-                if (typeof valueToAdd !== "number")
-                    return;
-                // wildcard
-                if (criteria.op === 'wc') {
-                    if (criteria.match === criteria.value.test(value)) {
-                        sum += valueToAdd;
-                    }
-
-                } else if (Infix.compareOp(value, criteria.op, criteria.value, Array.isArray(value), isCriteriaArray)) {
-                    sum += valueToAdd;
-                }
-            })
-        });
-        return sum;
+    SUMIF: (context, range, criteria, sumRange) =>
+    {
+        // Get the result array and filter out the items with a remove key
+        const sums = sumIf(context, range, criteria, sumRange).filter(item => !item.remove);
+        if (sums.length === 1) {
+            return sums[0].value;
+        }
+        return sums.reduce(reduceSums);
     },
 
-    // TODO: Add the ability to add more than 1 criteria range and criteria
-    SUMIFS: (context, sumRange, criteriaRange, criteria) => {
-        const [sumValues, sumCriteria] = H.retrieveRanges(context, sumRange, criteriaRange);
-        criteria = H.retrieveArg(context, criteria);
-        criteria = Criteria.parse(H.accept(criteria));
+    SUMIFS: (context, inputRange, ...criteriaList) => {
+        let sums = [];
 
-        // console.log(util.inspect({sumRange, criteriaRange, criteria}, false, 10, true));
-        const values = sumValues.flat();
-
-        let sum = 0;
-        for (let i = 0; i < values.length; i++) {
-            if (criteria.op === 'wc') {
-                if (criteria.match === criteria.value.test(sumCriteria[i])) {
-                    sum += values[i];
-                }
-            }
+        // Loop through the criteriaList pair-wise to get each range and criteria formula
+        for (let i = 0; i < criteriaList.length; i += 2) {
+            sums.push(...sumIf(context, criteriaList[i], criteriaList[i+1], inputRange));
         }
-        // console.log(sum);
 
-        return sum;
+        // Filter out any duplicate objects from sums when col, row, and value are all equal
+        sums = sums.filter(
+          (valA, index, array) =>
+            array.findIndex(
+              valB =>
+                valB.col === valA.col &&
+                valB.row === valA.row &&
+                valB.value === valA.value
+            ) === index
+        );
+
+        const toRemove = sums.filter(val => val.remove);
+        sums = sums.filter(val => {
+            if (val.remove) return false;
+            /**
+             * Search through the entries in toRemove and compare with the current
+             * entry from the sums result. If any entry is found, we need to return
+             * false. Find will return the object, which we then cast to a Boolean
+             * and then negate it since this indicates a bad entry.
+             */
+            return !Boolean(toRemove.find(({row, col}) => row === val.row && col === val.col));
+        });
+
+
+        if (sums.length === 1) {
+            return sums[0].value;
+        }
+
+        return sums.reduce(reduceSums);
     },
 
     SUMPRODUCT: (array1, ...arrays) => {
