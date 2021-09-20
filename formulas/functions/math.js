@@ -84,10 +84,7 @@ const sumIf = (context, range, criteria, sumRange) => {
  * @param cur
  * @returns Number
  */
-const reduceSums = (prev, cur) => {
-    return (prev?.value | prev) + cur.value;
-}
-
+const reduceSums = (prev, cur) => (prev.value || prev) + cur.value;
 
 // https://support.office.com/en-us/article/excel-functions-by-category-5f91f4e9-7b42-46d2-9bd1-63f26a86c0eb
 const MathFunctions = {
