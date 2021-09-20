@@ -44,37 +44,37 @@ function factorialDouble(n) {
  * @returns [{ row: number, col: number, value: any, remove?: boolean }]
  */
 const sumIf = (context, range, criteria, sumRange) => {
-    const ranges = H.retrieveRanges(context, range, sumRange);
-    range = ranges[0];
-    sumRange = ranges[1];
+    const ranges = H.retrieveRanges(context, range, sumRange)
+    range = ranges[0]
+    sumRange = ranges[1]
 
-    criteria = H.retrieveArg(context, criteria);
-    const isCriteriaArray = criteria.isArray;
-    criteria = Criteria.parse(H.accept(criteria));
+    criteria = H.retrieveArg(context, criteria)
+    const isCriteriaArray = criteria.isArray
+    criteria = Criteria.parse(H.accept(criteria))
 
-    const sums = [];
+    const sums = []
 
     range.forEach((row, rowNum) => {
         row.forEach((value, colNum) => {
-            const valueToAdd = sumRange[rowNum][colNum];
+            const valueToAdd = sumRange[rowNum][colNum]
             if (typeof valueToAdd !== 'number') {
-                return;
+                return
             }
             if (criteria.op === 'wc') {
                 if (criteria.match === criteria.value.test(value)) {
-                    sums.push({row: rowNum, col: colNum, value: valueToAdd});
+                    sums.push({ row: rowNum, col: colNum, value: valueToAdd })
                 }
             } else {
                 if (Infix.compareOp(value, criteria.op, criteria.value, Array.isArray(value), isCriteriaArray)) {
-                    sums.push({row: rowNum, col: colNum, value: valueToAdd});
+                    sums.push({ row: rowNum, col: colNum, value: valueToAdd })
                 } else {
-                    sums.push({remove: true, row: rowNum, col: colNum});
+                    sums.push({ row: rowNum, col: colNum, remove: true })
                 }
             }
         })
-    });
+    })
 
-    return sums;
+    return sums
 }
 
 /**
@@ -666,14 +666,13 @@ const MathFunctions = {
     /**
      * This functions requires instance of {@link FormulaParser}.
      */
-    SUMIF: (context, range, criteria, sumRange) =>
-    {
+    SUMIF: (context, range, criteria, sumRange) => {
         // Get the result array and filter out the items with a remove key
-        const sums = sumIf(context, range, criteria, sumRange).filter(item => !item.remove);
+        const sums = sumIf(context, range, criteria, sumRange).filter(item => !item.remove)
         if (sums.length === 1) {
-            return sums[0].value;
+            return sums[0].value
         } else if (!sums.length) {
-            return 0;
+            return 0
         }
         return sums.reduce(reduceSums);
     },
@@ -683,18 +682,18 @@ const MathFunctions = {
 
         // Loop through the criteriaList pair-wise to get each range and criteria formula
         for (let i = 0; i < criteriaList.length; i += 2) {
-            sums.push(...sumIf(context, criteriaList[i], criteriaList[i+1], inputRange));
+            sums.push(...sumIf(context, criteriaList[i], criteriaList[i + 1], inputRange))
         }
 
         // Filter out any duplicate objects from sums when col, row, and value are all equal
         sums = sums.filter(
-          (valA, index, array) =>
-            array.findIndex(
-              valB =>
-                valB.col === valA.col &&
-                valB.row === valA.row &&
-                valB.value === valA.value
-            ) === index
+            (valA, index, array) =>
+                array.findIndex(
+                    valB =>
+                        valB.col === valA.col &&
+                        valB.row === valA.row &&
+                        valB.value === valA.value
+                ) === index
         );
 
         const toRemove = sums.filter(val => val.remove);
@@ -706,12 +705,11 @@ const MathFunctions = {
              * false. Find will return the object, which we then cast to a Boolean
              * and then negate it since this indicates a bad entry.
              */
-            return !Boolean(toRemove.find(({row, col}) => row === val.row && col === val.col));
+            return !Boolean(toRemove.find(({ row, col }) => row === val.row && col === val.col));
         });
 
-
         if (sums.length === 1) {
-            return sums[0].value;
+            return sums[0].value
         }
 
         return sums.reduce(reduceSums);

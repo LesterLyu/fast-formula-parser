@@ -1,6 +1,6 @@
-const {FormulaParser} = require('../../../grammar/hooks');
+const { FormulaParser } = require('../../../grammar/hooks');
 const TestCase = require('./testcase');
-const {generateTests} = require('../../utils');
+const { generateTests } = require('../../utils');
 
 const data = [
     [1, 2, 3, 4, 5],
@@ -9,7 +9,6 @@ const data = [
     [300000, 21000, 4, 5, 6],
     [400000, 28000, 4, 5, 6],
     ['string', 3, 4, 5, 6],
-    // for SUMIF ex2
     ['Vegetables', 'Tomatoes', 2300, 5, 6], // row 7
     ['Vegetables', 'Celery', 5500, 5, 6], // row 8
     ['Fruits', 'Oranges', 800, 5, 6], // row 9
@@ -19,7 +18,19 @@ const data = [
     ['1'],
     [2, 3, 9, 1, 8, 7, 5],
     [6, 5, 11, 7, 5, 4, 4],
+    ['1/9/2020', 'red', 'tx', 1, 18],
+    ['1/23/2020', 'blue', 'co', 2, 34],
+    ['2/3/2020', 'red', 'nm', 2, 36],
+    ['2/18/2020', 'blue', 'tx', 1, 17],
+    ['3/2/2020', 'blue', 'az', 3, 51],
+    ['3/15/2020', 'red', 'az', 1, 17],
+    ['3/25/2020', 'red', 'nv', 2, 34],
+    ['4/3/2020', 'blue', 'az', 1, 17],
+    ['4/11/2020', 'red', 'tx', 2, 34],
+    ['4/30/2020', 'blue', 'co', 1, 17],
+    ['5/1/2020', 'red', 'tx', 2, 36],
 ];
+
 const parser = new FormulaParser({
     onCell: ref => {
         return data[ref.row - 1][ref.col - 1];
