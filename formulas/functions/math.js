@@ -675,6 +675,8 @@ const MathFunctions = {
         const sums = sumIf(context, range, criteria, sumRange).filter(item => !item.remove);
         if (sums.length === 1) {
             return sums[0].value;
+        } else if (!sums.length) {
+            return 0;
         }
         return sums.reduce(reduceSums);
     },

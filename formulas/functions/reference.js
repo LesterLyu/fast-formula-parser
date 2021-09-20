@@ -108,7 +108,6 @@ const ReferenceFunctions = {
             throw FormulaError.REF;
 
         const lookupType = typeof lookupValue; // 'number', 'string', 'boolean'
-        console.log(tableArray)
         // approximate lookup (assume the array is sorted)
         if (rangeLookup) {
             let prevValue = lookupType === typeof tableArray[0][0] ? tableArray[0][0] : null;
