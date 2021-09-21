@@ -53,7 +53,7 @@ class FormulaParser {
             .concat(Object.keys(DateFunctions));
 
         // functions need context and don't need to retrieve references
-        this.funsNeedContextAndNoDataRetrieve = ['ROW', 'ROWS', 'COLUMN', 'COLUMNS', 'SUMIF', 'INDEX', 'AVERAGEIF', 'IF'];
+        this.funsNeedContextAndNoDataRetrieve = ['ROW', 'ROWS', 'COLUMN', 'COLUMNS', 'SUMIF', 'SUMIFS', 'INDEX', 'AVERAGEIF', 'IF'];
 
         // functions need parser context
         this.funsNeedContext = [...Object.keys(config.functionsNeedContext), ...this.funsNeedContextAndNoDataRetrieve,
@@ -113,9 +113,9 @@ class FormulaParser {
 
     /**
      * Get references or values for a structured referte
-     * @param {string} tableName 
-     * @param {string} columnName 
-     * @param {boolean} thisRow 
+     * @param {string} tableName
+     * @param {string} columnName
+     * @param {boolean} thisRow
      */
     getStructuredReference (tableName, columnName, thisRow, specialItem) {
         const res = {ref: this.onStructuredReference(tableName, columnName, thisRow, specialItem, this.position.sheet, this.position)};
@@ -339,7 +339,7 @@ class FormulaParser {
         let res;
         try {
             res = await this.parser.formulaWithBinaryOp();
-            res = this.checkFormulaResult(res, allowReturnArray);            
+            res = this.checkFormulaResult(res, allowReturnArray);
             if (res instanceof FormulaError) {
                 return res;
             }
