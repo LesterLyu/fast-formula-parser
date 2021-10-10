@@ -101,6 +101,17 @@ const StatisticalFunctions = {
         return cnt;
     },
 
+    COUNTA: (...ranges) => {
+        let cnt = 0;
+        H.flattenParams(ranges, null, true,
+            (item) => {
+                if (item) {
+                    cnt++;
+                }
+            });
+      return cnt;
+    },
+
     COUNTIF: (range, criteria) => {
         // do not flatten the array
         range = H.accept(range, Types.ARRAY, undefined, false, true);

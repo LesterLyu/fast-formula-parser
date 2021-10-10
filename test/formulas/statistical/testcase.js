@@ -46,6 +46,15 @@ const tests = {
         'COUNT((A2:E2, A1:E1))': 4,
     },
 
+    COUNTA: {
+        'COUNTA(A2:A5, 123)': 5,
+        'COUNTA(A2:A5)': 4,
+        'COUNTA(A1:E1)': 4,
+        'COUNTA(A2:E2)': 5,
+        'COUNTA(A2:E2, A1:E1)': 9,
+        'COUNTA((A2:E2, A1:E1))': 9,
+    },
+
     COUNTIF: {
         'COUNTIF(A2:A5, "apples")': 2,
         'COUNTIF(A2:A5,A4)': 1,
