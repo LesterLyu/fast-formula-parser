@@ -111,6 +111,7 @@ const ReferenceFunctions = {
         if(filter_range.length != lookup_range.length){
             throw FormulaError.VALUE;
         }
+        
         let filtered_Array = [];
         for(let index = 0; index < filter_range.length; index++){
             if(lookup_range[index] == lookup_value){
