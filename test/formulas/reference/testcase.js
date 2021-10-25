@@ -34,6 +34,21 @@ module.exports = {
         'COLUMNS({1,2,3})': FormulaError.VALUE,
         'COLUMNS("A1")': FormulaError.VALUE
     },
+    FILTER: {
+        //Question @TYLER
+        //Not sure how to test this, b/c its supposed to return an array, but the test cases are only returning the first 
+        //values in the arrays my FILTER filters
+        //e.g. line 48 simplifies the entire array to just 'Apples'
+
+        'FILTER(A2,123,A1:A9, "hi")' : FormulaError.VALUE,
+        'FILTER(A2,A1:E9,124, "hi")' : FormulaError.VALUE,
+        'FILTER(A2,A1:E8,A1:A9, "hi")' : FormulaError.VALUE,
+        'FILTER(A2,A1:E9,A1:A8, "hi")' : FormulaError.VALUE,
+        'FILTER(A2,A1:E9,A1:A9, "hi")' : 'Apples',
+        'FILTER(A2,A1:E12,A1:A12, "hi")' : [['Apples', 0.69, 40, 5, 6], ['Apples', 'Lemons',0, 0, 0]],
+        'FILTER(0,A1:E12,E1:E12, "hi")' : [['Apples', 'Lemons',0, 0, 0],['Bananas', 'Pears', 0, 0, 0]],
+        'FILTER(B2,A1:E9,A1:A9, "hi")' : "hi"
+    },
 
     HLOOKUP: {
         'HLOOKUP(3, {1,2,3,4,5}, 1)': 3,
@@ -134,6 +149,35 @@ module.exports = {
         'VLOOKUP("a*", {"c";TRUE;"AbC";65;63;61;"b";"a";TRUE;FALSE}, 1, FALSE)': 'AbC',
         // single row table
         'VLOOKUP(614, { 614,"Foobar"}, 2)': 'Foobar'
+    },
+    XLOOKUP: {
+        //'XLOOKUP(A2, A1:A9, B1:B9)': .69,
+        //When match mode is 0 and search mode is 1
+        'XLOOKUP(A2, A1:A9, B1:B9)': .69,
+        'XLOOKUP("Bananas", A1:A9, B1:B9)': 0.34,
+        'XLOOKUP(0.55, B1:B9, C1:C9)': 15,
+        'XLOOKUP(1, B1:B9, C1:C9)': FormulaError.NA,
+        'XLOOKUP(1, B1:B9, C1:C9, 10)': 10,
+        //Basic duplicate
+        'XLOOKUP(A2, A1:A9, B1:B9,,0,1)': .69,
+        'XLOOKUP("Bananas", A1:A9, B1:B9,,0,1)': 0.34,
+        'XLOOKUP(0.55, B1:B9, C1:C9,,0,1)': 15,
+        'XLOOKUP(1, B1:B9, C1:C9,,0,1)': FormulaError.NA,
+        'XLOOKUP(1, B1:B9, C1:C9, 10,0,1)': 10,
+
+        //when matchmode is 1 and search mode is 1
+        //basic duplicate
+        'XLOOKUP(A2, A1:A9, B1:B9,,1,1)': .69,
+        'XLOOKUP("Bananas", A1:A9, B1:B9,,1,1)': 0.34,
+        'XLOOKUP(0.55, B1:B9, C1:C9,,1,1)': 15,
+        'XLOOKUP(1, B1:B9, C1:C9, 10,1,1)': 10,
+        //match_mode 1 and search_mode 1 specific test
+        'XLOOKUP(1, B1:B9, C1:C9,,0,1)': FormulaError.NA,
+        'XLOOKUP(1, B1:B9, C1:C9, 10,0,1)': 10,
+
+
+        'XLOOKUP(A2, A1:A9, B1:B9)': .69,
+        
     }
 
 };

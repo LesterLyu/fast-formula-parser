@@ -13,7 +13,6 @@ const data = [
     ['Cashews', 3.55, 16, 5, 6], // row 8
     ['Peanuts', 1.25, 20, 5, 6], // row 9
     ['Walnuts', 1.75, 12, 5, 6], // row 10
-
     ['Apples', 'Lemons',0, 0, 0], // row 11
     ['Bananas', 'Pears', 0, 0, 0], // row 12
 ];
