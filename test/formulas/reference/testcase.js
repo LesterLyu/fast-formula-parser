@@ -34,6 +34,7 @@ module.exports = {
         'COLUMNS({1,2,3})': FormulaError.VALUE,
         'COLUMNS("A1")': FormulaError.VALUE
     },
+    /*
     FILTER: {
         //Question @TYLER
         //Not sure how to test this, b/c its supposed to return an array, but the test cases are only returning the first 
@@ -49,7 +50,7 @@ module.exports = {
         'FILTER(0,A1:E12,E1:E12, "hi")' : [['Apples', 'Lemons',0, 0, 0],['Bananas', 'Pears', 0, 0, 0]],
         'FILTER(B2,A1:E9,A1:A9, "hi")' : "hi"
     },
-
+*/
     HLOOKUP: {
         'HLOOKUP(3, {1,2,3,4,5}, 1)': 3,
         'HLOOKUP(3, {3,2,1}, 1)': 1,
@@ -172,11 +173,30 @@ module.exports = {
         'XLOOKUP(0.55, B1:B9, C1:C9,,1,1)': 15,
         'XLOOKUP(1, B1:B9, C1:C9, 10,1,1)': 10,
         //match_mode 1 and search_mode 1 specific test
-        'XLOOKUP(1, B1:B9, C1:C9,,0,1)': FormulaError.NA,
-        'XLOOKUP(1, B1:B9, C1:C9, 10,0,1)': 10,
+        'XLOOKUP(0, B1:B9, C1:C9, 0,1,1)': 25,
+        'XLOOKUP(10, B1:B9, C1:C9, 5,1,1)': 5,
+        'XLOOKUP(1.5, B1:B9, C1:C9, 0,1,1)': 10,
+        'XLOOKUP("app", A1:A12, B1:B12, 0,1,1)': 0.69,
+        'XLOOKUP(".55", B1:B12, C1:C12, 0,1,1)' :15,
+        'XLOOKUP("KOJO", A1:A12, B1:B12, 0,1,1)': .55,
+
+        //when matchmode is -1 and search mode is 1
+        //basic duplicate
+        'XLOOKUP(A2, A1:A9, B1:B9,,-1,1)': .69,
+        'XLOOKUP("Bananas", A1:A9, B1:B9,,-1,1)': 0.34,
+        'XLOOKUP(0.55, B1:B9, C1:C9,,-1,1)': 15,
+        'XLOOKUP(1, B1:B9, C1:C9, 10,-1,1)': 10,
 
 
-        'XLOOKUP(A2, A1:A9, B1:B9)': .69,
+        //match_mode -1 and search_mode 1 specific test
+        'XLOOKUP(0, B1:B9, C1:C9, 0,-1,1)': 0,
+        'XLOOKUP(10, B1:B9, C1:C9, 5,-1,1)':16,
+        'XLOOKUP(1.5, B1:B9, C1:C9, 0,-1,1)': 20,
+        'XLOOKUP("app", A1:A12, B1:B12, 0,-1,1)': 2.8,
+        'XLOOKUP(".55", B1:B12, C1:C12, 0,-1,1)' :16,
+        'XLOOKUP("KOJO", A1:A12, B1:B12, 0,-1,1)': 'price',
+        
+
         
     }
 

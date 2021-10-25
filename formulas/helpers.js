@@ -313,26 +313,31 @@ class FormulaHelpers {
      ***/
      XLOOKUP_HELPER(lookup_value, compare_value, match_mode){
         //in the event we are looking for the next largest/smallest value
-        compare_value = compare_value.toString();
-        var sum = 0;
+        if(!isNaN(parseFloat(lookup_value)) && !isNaN(parseFloat(compare_value))){
+            return parseFloat(compare_value) - parseFloat(lookup_value);
+        }
+        compare_value = compare_value.toString().toLowerCase();
+        lookup_value = lookup_value.toLowerCase();
         if(match_mode != 2){
             var min_Index = Math.min(lookup_value.length, compare_value.length);
-            var max_Index = Math.max(lookup_value.length, compare_value.length);
             for(var i = 0; i < min_Index; i++){
-                sum = sum * 100 + compare_value.charCodeAt(i) - lookup_value.charCodeAt(i)
+                let diff = compare_value.charCodeAt(i) - lookup_value.charCodeAt(i);
+                if(diff != 0){
+                    return (diff/Math.abs(diff)) * 100 * (min_Index - i) + diff;
+                }
             }
             let Longer_string = (lookup_value.length > compare_value.length) ? lookup_value : compare_value;
-            let direction = (lookup_value.length > compare_value.length) ? -1 : 1;
-            for(var i = min_Index; i < max_Index; i++){
-                sum = sum * 10 + direction * Longer_string.charCodeAt(i);
+            if(Longer_string.length > min_Index){
+                let direction = (lookup_value.length > compare_value.length) ? -1 : 1;
+                return direction * Longer_string.charCodeAt(min_Index + 1);
             }
-            return sum;
+            return 0;
         }
         //the special cases with the unique regex values
         if(match_mode == 2){
             var index = 0;
             while(index < lookup_value.length){
-                var currValue = lookup_value[lookupIndex];
+                var currValue = lookup_value[index];
                 //? can be any character
                 if(currValue == '?'){
                     index++;
@@ -359,7 +364,12 @@ class FormulaHelpers {
                     sum -= lookup_value.charCodeAt(index);
                     return sum;
                 }else{
-                    sum = sum * 10 + compare_value.charCodeAt(index) - lookup_value.charCodeAt(index);
+                    sum = compare_value.charCodeAt(index) - lookup_value.charCodeAt(index);
+                    if(sum != 0){
+                        console.log("Hiphoh")
+                        console.log(sum)
+                        return sum;
+                    }
                     index++;
                 }
             }
