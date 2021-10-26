@@ -9,6 +9,7 @@
     "registry": "https://npm.pkg.github.com/Lido-App"
   },
   "scripts": {
+    "format": "prettier 'formulas/**/*.js' --write",
     "test": "mocha -s 0",
     "test:f": "mocha test/formulas",
     "prepublishOnly": "yarn run build && yarn run test",
