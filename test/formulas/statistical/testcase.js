@@ -75,6 +75,31 @@ const tests = {
         'COUNTIF(C2:E2, {1,2})': 0,
     },
 
+    COUNTIFS: {
+        'COUNTIFS(A2:A5, "apples")': 2,
+        'COUNTIFS(A2:A5,A4)': 1,
+        'COUNTIFS(A2:A5,A2)+COUNTIFS(A2:A5,A3)': 3,
+        'COUNTIFS(B2:B5,">55")': 2,
+        'COUNTIFS(B2:B5,"<>"&B4)': 3,
+        'COUNTIFS(B2:B5,">=32")-COUNTIFS(B2:B5,">85")': 3,
+        'COUNTIFS(A2:A5,"*")': 4,
+        'COUNTIFS(A2:A5,"?????es")': 2,
+        'COUNTIFS(B1:E1,TRUE)': 2,
+        'COUNTIFS(B1:E1,"=TRUE")': 2,
+        'COUNTIFS(B1:E1,"TRUE")': 2,
+        'COUNTIFS(B1:E1,"TRUE1")': 1,
+        'COUNTIFS(B1:E1,"=TRUE1")': 1,
+        'COUNTIFS(B1:E1, {1,3,4})': 1,
+        'COUNTIFS(C2:E2, "{1,2}")': 1,
+        'COUNTIFS(C2:E2, "={1,2}")': 1,
+        'COUNTIFS(C2:E2, {1,2})': 0,
+
+        'COUNTIFS(A2:A5, "apples", B2:B5,"<60")': 1,
+        'COUNTIFS(A2:A5,A4, B2:B5,B7)': 0,
+        'COUNTIFS(B2:B5,">55", B2:B5,"<>"&B4)': 1,
+        'COUNTIFS(A2:A5,"*", A2:A5,"?????es", B2:B5,"=75")': 1,
+    },
+
 };
 
 const distributions = {

@@ -4,6 +4,44 @@ const { Infix } = require("../operators");
 const H = FormulaHelpers;
 const { DistributionFunctions } = require("./distribution");
 
+/**
+ * Moved the logic from COUNTIF to here so that it could be used in both COUNTIF and
+ * COUNTIFS.
+ *
+ * NOTE: This function returns an array of booleans that can be used
+ *       in COUNTIFS to calculate a master array containing only values
+ *       that passed all the checks.
+ *
+ * @param range
+ * @param criteria
+ * @returns Bool array of passed checks
+ */
+ const countIf = (range, criteria) => {
+    // do not flatten the array
+    range = H.accept(range, Types.ARRAY, undefined, false, true);
+    const isCriteriaArray = criteria.isArray;
+    criteria = H.accept(criteria);
+
+    let arr = new Array(range.length * range[0].length).fill(false);
+    // parse criteria
+    criteria = Criteria.parse(criteria);
+
+    let cnt = 0;
+    range.forEach(row => {
+        row.forEach(value => {
+            // wildcard
+            if (criteria.op === 'wc') {
+                if (criteria.match === criteria.value.test(value))
+                    arr[cnt] = true;
+            } else if (Infix.compareOp(value, criteria.op, criteria.value, Array.isArray(value), isCriteriaArray)) {
+                arr[cnt] = true;
+            }
+            cnt++;
+        })
+    });
+    return arr;
+}
+
 const StatisticalFunctions = {
   AVEDEV: (...numbers) => {
     let sum = 0;
@@ -118,33 +156,34 @@ const StatisticalFunctions = {
   },
 
   COUNTIF: (range, criteria) => {
-    // do not flatten the array
-    range = H.accept(range, Types.ARRAY, undefined, false, true);
-    const isCriteriaArray = criteria.isArray;
-    criteria = H.accept(criteria);
-
     let cnt = 0;
-    // parse criteria
-    criteria = Criteria.parse(criteria);
+    countIf(range, criteria).forEach(val => {
+      if (val) cnt++;
+    })
+    return cnt;
+  },
 
-    range.forEach((row) => {
-      row.forEach((value) => {
-        // wildcard
-        if (criteria.op === "wc") {
-          if (criteria.match === criteria.value.test(value)) cnt++;
-        } else if (
-          Infix.compareOp(
-            value,
-            criteria.op,
-            criteria.value,
-            Array.isArray(value),
-            isCriteriaArray
-          )
-        ) {
-          cnt++;
-        }
-      });
-    });
+  COUNTIFS: (range1, criteria1, ...criteriaList) => {
+    criteriaList.push(range1, criteria1);
+    if (criteriaList.length % 2 != 0) throw FormulaError.arguments;
+    let arrs = [], currarr = [], len = 0;
+    for (let i = 0; i < criteriaList.length; i += 2) {
+      currarr = countIf(criteriaList[i], criteriaList[i+1]);
+      if (i == 0) len = currarr.length;
+      else if (currarr.length != len) throw FormulaError.ERROR("All parameter ranges must be of equal size.")
+      arrs.push(currarr);
+    }
+    len = arrs[0].length;
+    let arr = new Array(len).fill(true);
+    arrs.forEach(currarr => {
+      for (let i = 0; i < len; i++) {
+        arr[i] = arr[i] & currarr[i];
+      }
+    })
+    let cnt = 0;
+    arr.forEach(val => {
+      if (val) cnt++;
+    })
     return cnt;
   },
 
