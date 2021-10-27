@@ -98,6 +98,8 @@ const tests = {
         'COUNTIFS(A2:A5,A4, B2:B5,B7)': 0,
         'COUNTIFS(B2:B5,">55", B2:B5,"<>"&B4)': 1,
         'COUNTIFS(A2:A5,"*", A2:A5,"?????es", B2:B5,"=75")': 1,
+        'COUNTIFS(A1:A3,"?", B1:B3)': FormulaError.ERROR('Bad argument count - All arguments must be in range/criteria pairs.'),
+        'COUNTIFS(A1:A3,"?", B2:B3,">1")': FormulaError.ERROR("All parameter ranges must be of equal size."),
     },
 
 };
