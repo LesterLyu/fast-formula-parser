@@ -163,6 +163,7 @@ module.exports = {
         'XLOOKUP(A2, A1:A9, B1:B9,,0,1)': .69,
         'XLOOKUP("Bananas", A1:A9, B1:B9,,0,1)': 0.34,
         'XLOOKUP(0.55, B1:B9, C1:C9,,0,1)': 15,
+        //Null in Lido archetecture translates the value into 0 instead of Null.
         'XLOOKUP(1, B1:B9, C1:C9,,0,1)': FormulaError.NA,
         'XLOOKUP(1, B1:B9, C1:C9, 10,0,1)': 10,
 

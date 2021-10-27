@@ -300,13 +300,15 @@ class FormulaHelpers {
         return {value: res.val, isArray: res.isArray, ref: arg.ref};
     }
     /***
-     * @function XLOOKUP_HELPER: compares two strings, returns 0 if same, -1 if compare_value is smaller and 1 if its larger
+     * @function XLOOKUP_HELPER: compares two strings, returns 0 if same,-X if compare_value is smaller and X if its larger.
+     *                           X is porportional to the difference of the two strings, e.g. abs(XLOOKUP_HELPER('a','b')) < abs(XLOOKUP_HELPER('a','z'))
      * @param lookup_value: one of the two values being compared
      * @param compare_value: one of the two values being compared
      * @param: match_mode: 
-     *              != 2: exact match
-     *              == 2 A wildcard match where *, ?, and ~ have special meaning.
+     *              True: exact match
+     *              False A wildcard match where *, ?, and ~ have special meaning.
      * WILDCARDS
+     * @DELETE (For my Referance for now)
      * ? any character can go here, For example, sm?th finds "smith" and "smyth"
      * * Any number of characters, For example, *east finds "Northeast" and "Southeast"
      * ~ (tilde) followed by ?, *, or ~ A question mark, asterisk, or tilde, For example, fy06~? finds "fy06?"
@@ -318,7 +320,7 @@ class FormulaHelpers {
         }
         compare_value = compare_value.toString().toLowerCase();
         lookup_value = lookup_value.toLowerCase();
-        if(match_mode != 2){
+        if(match_mode){
             var min_Index = Math.min(lookup_value.length, compare_value.length);
             for(var i = 0; i < min_Index; i++){
                 let diff = compare_value.charCodeAt(i) - lookup_value.charCodeAt(i);
@@ -326,16 +328,17 @@ class FormulaHelpers {
                     return (diff/Math.abs(diff)) * 100 * (min_Index - i) + diff;
                 }
             }
-            let Longer_string = (lookup_value.length > compare_value.length) ? lookup_value : compare_value;
-            if(Longer_string.length > min_Index){
+            let longer_string = (lookup_value.length > compare_value.length) ? lookup_value : compare_value;
+            if(longer_string.length > min_Index){
                 let direction = (lookup_value.length > compare_value.length) ? -1 : 1;
-                return direction * Longer_string.charCodeAt(min_Index + 1);
+                return direction * longer_string.charCodeAt(min_Index + 1);
             }
             return 0;
         }
         //the special cases with the unique regex values
-        if(match_mode == 2){
+        if(!match_mode){
             var index = 0;
+            let sum = 0;
             while(index < lookup_value.length){
                 var currValue = lookup_value[index];
                 //? can be any character

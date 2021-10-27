@@ -287,10 +287,6 @@ const ReferenceFunctions = {
     MATCH: () => {
 
     },
-    //Question: what is the output supposed to be? a String? not sure how the infastructure interacts with the output
-    OFFSET: (Reference, Rows, Cols, [Height], [Width]) => {
-
-    },
 
     // Special
     ROW: (context, obj) => {
@@ -431,8 +427,7 @@ const ReferenceFunctions = {
      ***/
     XLOOKUP: (lookup_value, lookup_array, return_array, if_not_found = null, match_mode = 0, search_mode = 1) => {
         console.log("New Stuff")
-        console.log(match_mode)
-        //check the two arrays are the same length
+        console.log(if_not_found)
         if(lookup_array.length != return_array.length){
             throw FormulaError.NA;
         }
@@ -460,7 +455,7 @@ const ReferenceFunctions = {
         if(Math.abs(search_mode) == 1){
             //transform is 0 if search mode is 1 (we want to go through the array in order)
             //transform is the last index if search_mode is -1 (we go through in reverse order)
-            const transform = (search_mode > 0) ? 0 : lookup_array.length - 1;
+            const transform = (search_mode == 1) ? 0 : lookup_array.length - 1;
             //minmax records the difference between our lookup_value and the next smallest and next largest numbers
             var minmax = [Number.MAX_VALUE, Number.MAX_VALUE];
             //minmaxIndex records the indexes of the next largest and smallest value
@@ -471,7 +466,7 @@ const ReferenceFunctions = {
                 //curr index will go in order if searchmode is 1, and reverse order otherwise
                 const currIndex = Math.abs(transform - i)
                 const currValue = H.accept(lookup_array[currIndex], Types.STRING);
-                const comparison = H.XLOOKUP_HELPER(lookup_value, currValue, match_mode);
+                const comparison = H.XLOOKUP_HELPER(lookup_value, currValue, match_mode != 2);
 
                 console.log("round")
                 if(comparison == 0){
@@ -489,7 +484,7 @@ const ReferenceFunctions = {
                         console.log("currValue")
                         minmaxIndex[0] = currIndex;
                         minmax[0] = Math.abs(comparison);
-                    }
+                    } 
                     //updates larger value
                     if(comparison > 0 && comparison < minmax[1]){
                         console.log("Lookup")
@@ -501,6 +496,7 @@ const ReferenceFunctions = {
             }
             //returns value based upon optional parameters
             if(if_not_found != null) {
+                console.log(if_not_found)
                 return if_not_found;
             }
             if(match_mode == -1){
@@ -530,14 +526,24 @@ const ReferenceFunctions = {
                 while(front < back - 1){
                     const middle = Math.floor((front + back) / 2);
                     const currValue = H.accept(lookup_array[middle], Types.STRING);
-                    const comparison = H.XLOOKUP_HELPER(lookup_value, currValue, match_mode);
+                    const comparison = H.XLOOKUP_HELPER(lookup_value, currValue, match_mode != 2);
                     //updates the binary search
                     if(comparison == 0){
                         return return_array[middle];
+                        
                     }else if(comparison < 0){
-                        front = middle;
+                        if(search_mode == 2){
+                            front = middle;
+                        }else{
+                            back = middle;
+                        }
+                        
                     }else {
-                        back = middle;
+                        if(search_mode == 2) {
+                            back = middle;
+                        }else{
+                            front = middle;
+                        }  
                     }
                 }
                 if(if_not_found){
@@ -551,36 +557,7 @@ const ReferenceFunctions = {
                 if (match_mode == 1){
                     return Math.max(return_array[front], return_array[back]);
                 }
-            //decending order
-            }else {
-                while(front < back - 1){
-                    var middle = Math.floor((front + back) / 2);
-                    var currValue = H.accept(lookup_array[middle], Types.STRING);
-                    var comparison = H.XLOOKUP_HELPER(lookup_value, currValue, match_mode);
-                    var currValue = H.accept(lookup_array[middle], Types.STRING);
-                    
-                    //updates binary search
-                    if(comparison == 0){
-                        return return_array[middle];
-                    }
-                    if(comparison > 0){
-                        front = middle;
-                    }else {
-                        back = middle;
-                    }
-                }
-                if(if_not_found){
-                    return if_not_found;
-                }
-                //returns next larger number
-                if(match_mode == -1){
-                    return Math.max(return_array[front], return_array[back]);
-                //returns next smaller number
-                }else if (match_mode == 1){
-                    return Math.min(return_array[front], return_array[back]);
-                }
             }
-            
         }
         throw FormulaError.NA;
     }
