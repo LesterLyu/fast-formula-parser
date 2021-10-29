@@ -427,7 +427,8 @@ const ReferenceFunctions = {
      ***/
     XLOOKUP: (lookup_value, lookup_array, return_array, if_not_found = null, match_mode = 0, search_mode = 1) => {
         console.log("New Stuff")
-        console.log(if_not_found)
+        console.log(match_mode)
+        console.log(search_mode)
         if(lookup_array.length != return_array.length){
             throw FormulaError.NA;
         }
@@ -447,10 +448,21 @@ const ReferenceFunctions = {
         lookup_value = H.accept(lookup_value, Types.STRING);
         search_mode = H.accept(search_mode, Types.NUMBER);
         match_mode = H.accept(match_mode, Types.NUMBER);
-        if(if_not_found){
-            if_not_found = H.accept(if_not_found)
+        //check if search mode is valid
+        if(search_mode != 0 && Math.abs(search_mode) != 1 && Math.abs(search_mode) != 2){
+            throw FormulaError.VALUE;
         }
-        
+        //check if searchmode is valid
+        if(Math.abs(match_mode) != 1 && match_mode != 2 && match_mode != 0){
+            throw FormulaError.VALUE;
+        }
+        if(if_not_found != null){
+            if(if_not_found.omitted){
+                if_not_found = null;
+            }else {
+                if_not_found = H.accept(if_not_found,null,null,true,false, test = true)
+            }
+        }
         //If search mode is 1 or -1, then we run a linear search on the input arrays
         if(Math.abs(search_mode) == 1){
             //transform is 0 if search mode is 1 (we want to go through the array in order)
@@ -468,26 +480,18 @@ const ReferenceFunctions = {
                 const currValue = H.accept(lookup_array[currIndex], Types.STRING);
                 const comparison = H.XLOOKUP_HELPER(lookup_value, currValue, match_mode != 2);
 
-                console.log("round")
                 if(comparison == 0){
                     return return_array[currIndex]
                 }
                 //updates minmax and minmaxIndex if currValue is closer to lookup_value than the current recorded value
                 if(Math.abs(match_mode) == 1){
                     // updates smaller values
-                    console.log("___________")
-                    console.log(comparison)
-                    console.log(currValue)
-                    console.log(minmax[0])
-                    console.log(minmax[1])
                     if(comparison < 0 && Math.abs(comparison) < minmax[0]){
-                        console.log("currValue")
                         minmaxIndex[0] = currIndex;
                         minmax[0] = Math.abs(comparison);
                     } 
                     //updates larger value
                     if(comparison > 0 && comparison < minmax[1]){
-                        console.log("Lookup")
                         minmaxIndex[1] = currIndex;
                         minmax[1] = comparison;
                     }
@@ -495,69 +499,82 @@ const ReferenceFunctions = {
                 
             }
             //returns value based upon optional parameters
-            if(if_not_found != null) {
-                console.log(if_not_found)
-                return if_not_found;
-            }
             if(match_mode == -1){
-                if(minmaxIndex[0] > 0){
+                if(minmaxIndex[0] >= 0){
                     return return_array[minmaxIndex[0]];
                 }
             }
             if(match_mode == 1){
-                if(minmaxIndex[1] > 0){
+                if(minmaxIndex[1] >= 0){
                     return return_array[minmaxIndex[1]];
                 }
+            }
+            if(if_not_found != null) {
+                return if_not_found;
             }
             throw FormulaError.NA
 
         //in the case where search mode is 2 or -2, we run a binary search
-        }else if(Math.abs(search_mode == 2)){
-            //the lookup value has to be a number to do comparisons
-            if(typeof lookup_value != Types.NUMBER){
-                throw FormulaError.NA;
-            }
-
+        
+        }else if(Math.abs(search_mode) == 2){
+            console.log("MADE IT")
+            console.log(search_mode)
             var front = 0;
             var back = lookup_array.length - 1;
-
-            //ascending order of the arrays
-            if(search_mode == 2){
-                while(front < back - 1){
-                    const middle = Math.floor((front + back) / 2);
-                    const currValue = H.accept(lookup_array[middle], Types.STRING);
-                    const comparison = H.XLOOKUP_HELPER(lookup_value, currValue, match_mode != 2);
-                    //updates the binary search
-                    if(comparison == 0){
-                        return return_array[middle];
-                        
-                    }else if(comparison < 0){
-                        if(search_mode == 2){
-                            front = middle;
-                        }else{
-                            back = middle;
-                        }
-                        
-                    }else {
-                        if(search_mode == 2) {
-                            back = middle;
-                        }else{
-                            front = middle;
-                        }  
+            while(front < back - 1){
+                const middle = Math.floor((front + back) / 2);
+                const currValue = H.accept(lookup_array[middle], Types.STRING);
+                const comparison = H.XLOOKUP_HELPER(lookup_value, currValue, match_mode != 2);
+                //updates the binary search
+                if(comparison == 0){
+                    return return_array[middle];
+                    
+                }else if(comparison < 0){
+                    if(search_mode == 2){
+                        front = middle;
+                    }else{
+                        back = middle;
                     }
-                }
-                if(if_not_found){
-                    return if_not_found;
-                }
-                //returns next smaller number
-                if(match_mode == -1){
-                    return Math.min(return_array[front], return_array[back]);
-                }
-                //returns next larger number
-                if (match_mode == 1){
-                    return Math.max(return_array[front], return_array[back]);
+                    
+                }else {
+                    if(search_mode == 2) {
+                        back = middle;
+                    }else{
+                        front = middle;
+                    }  
                 }
             }
+            console.log(1)
+            //The binary search does not the final results of front and back to see if they equal lookup_value
+            var comparisonFront = H.XLOOKUP_HELPER(lookup_value, lookup_array[front], match_mode != 2)
+            var comparisonBack = H.XLOOKUP_HELPER(lookup_value, lookup_array[back], match_mode != 2)
+            console.log("!console.log(return_array[front])_____________________")
+            console.log(return_array[front])
+            console.log(return_array[back])
+            if(comparisonFront == 0){
+                return return_array[front];
+            }
+            if(comparisonBack == 0){
+                return return_array[back];
+            }
+            //matchmode == 1 means we want the next largest item, if comparison > 0, then lookup_array[front] > lookupValue
+            if(comparisonFront > 0 && match_mode == 1){
+                return return_array[front];
+            }
+            if(comparisonBack > 0 && match_mode == 1) {
+                return return_array[back];
+            }
+            //matchmode == 1 means we want the next largest item, if comparison > 0, then lookup_array[front] > lookupValue
+            if(comparisonBack < 0 && match_mode == -1) {
+                return return_array[front];
+            }
+            if(comparisonFront < 0 && match_mode == -1){
+                return return_array[back];
+            }
+            if(if_not_found){
+                return if_not_found;
+            }
+        
         }
         throw FormulaError.NA;
     }

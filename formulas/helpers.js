@@ -318,6 +318,7 @@ class FormulaHelpers {
         if(!isNaN(parseFloat(lookup_value)) && !isNaN(parseFloat(compare_value))){
             return parseFloat(compare_value) - parseFloat(lookup_value);
         }
+        
         compare_value = compare_value.toString().toLowerCase();
         lookup_value = lookup_value.toLowerCase();
         if(match_mode){
@@ -369,8 +370,6 @@ class FormulaHelpers {
                 }else{
                     sum = compare_value.charCodeAt(index) - lookup_value.charCodeAt(index);
                     if(sum != 0){
-                        console.log("Hiphoh")
-                        console.log(sum)
                         return sum;
                     }
                     index++;
