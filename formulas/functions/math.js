@@ -32,12 +32,12 @@ function factorialDouble(n) {
  *       a key called remove. This key is used in SUMIFS to identify values
  *       that have failed one of the criteria and must be removed before
  *       calculating the final sum.
- *
+ *       type of sums is: [{ row: number, col: number, value: any, remove?: boolean }]
  * @param context
  * @param range
  * @param criteria
  * @param sumRange
- * @returns [{ row: number, col: number, value: any, remove?: boolean }]
+ * @returns sums
  */
 const sumIf = (context, range, criteria, sumRange) => {
   const ranges = H.retrieveRanges(context, range, sumRange);
