@@ -301,19 +301,22 @@ class FormulaHelpers {
     }
     /***
      * @function XLOOKUP_HELPER: compares two strings, returns 0 if same,-X if compare_value is smaller and X if its larger.
-     *                           X is porportional to the difference of the two strings, e.g. abs(XLOOKUP_HELPER('a','b')) < abs(XLOOKUP_HELPER('a','z'))
+     *                           X is proportional to the difference of the two strings, e.g. abs(XLOOKUP_HELPER('a','b')) < abs(XLOOKUP_HELPER('a','z'))
      * @param lookup_value: one of the two values being compared
      * @param compare_value: one of the two values being compared
-     * @param: match_mode: 
+     * @param match_mode: 
      *              True: exact match
      *              False A wildcard match where *, ?, and ~ have special meaning.
+     * @param search_mode:
+     *          True: binary search
+     *          False: not binary search
      * WILDCARDS
      * @DELETE (For my Referance for now)
      * ? any character can go here, For example, sm?th finds "smith" and "smyth"
      * * Any number of characters, For example, *east finds "Northeast" and "Southeast"
      * ~ (tilde) followed by ?, *, or ~ A question mark, asterisk, or tilde, For example, fy06~? finds "fy06?"
      ***/
-     XLOOKUP_HELPER(lookup_value, compare_value, match_mode){
+     XLOOKUP_HELPER(lookup_value, compare_value, match_mode, search_mode = false){
         //in the event we are looking for the next largest/smallest value
         if(!isNaN(parseFloat(lookup_value)) && !isNaN(parseFloat(compare_value))){
             return parseFloat(compare_value) - parseFloat(lookup_value);
@@ -322,6 +325,9 @@ class FormulaHelpers {
         compare_value = compare_value.toString().toLowerCase();
         lookup_value = lookup_value.toLowerCase();
         if(match_mode){
+            if(search_mode) {
+                return compare_value.localeCompare(lookup_value);
+            }
             var min_Index = Math.min(lookup_value.length, compare_value.length);
             for(var i = 0; i < min_Index; i++){
                 let diff = compare_value.charCodeAt(i) - lookup_value.charCodeAt(i);

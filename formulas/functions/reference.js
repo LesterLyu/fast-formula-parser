@@ -87,6 +87,44 @@ const ReferenceFunctions = {
         }
     },
 
+    /***
+     * @function FILTER: The FILTER function allows you to filter a range of data based on criteria you define.
+     * @param lookup_value: the value being searched for
+     * @param lookup_range: the array we look for lookup_value in
+     * @param filter_range: the array of arrays where we will get our return rows from
+     * @param default_value: the value returned if lookup_value is not found in lookup_range
+     * Microsoft link: https://support.microsoft.com/en-us/office/filter-function-f4f7cb66-82eb-4767-8f7c-4877ad80c759
+     ***/
+    //Question: @TYLER
+    //Not sure what this should return, B/c unlike other formulas, this one returns multiple rows.
+    //For now it finds the rows which match lookup_value and returns the rows in lookup_range that match
+    //it as an array of arrays
+    //If this is correct, then I am not sure how to test it, see test cases for referance
+    //Also, the Excel version has filter(..., lookup_range=lookup_value,...). I tried using the =
+    //symbol in the test cases, but it looks to be incompatable with current archetecture, so I split it into
+    //two parameters, 
+    FILTER: (lookup_value, filter_range, lookup_range, default_value) =>{
+        lookup_value = H.accept(lookup_value);
+        filter_range = H.accept(filter_range, Types.ARRAY, null, false);
+        lookup_range = H.accept(lookup_range, Types.ARRAY);
+        default_value = H.accept(default_value);
+        if(filter_range.length != lookup_range.length){
+            throw FormulaError.VALUE;
+        }
+        
+        let filtered_Array = [];
+        for(let index = 0; index < filter_range.length; index++){
+            if(lookup_range[index] == lookup_value){
+                filtered_Array.push(filter_range[index]);
+            }
+        }
+        if(filtered_Array.length == 0){
+            return default_value;
+        }
+        console.log(filtered_Array)
+        return filtered_Array;
+        
+    },
 
     HLOOKUP: (lookupValue, tableArray, rowIndexNum, rangeLookup) => {
         // preserve type of lookupValue
@@ -387,7 +425,173 @@ const ReferenceFunctions = {
      *                         -2 - Perform a binary search that relies on lookup_array being sorted in descending order. If not sorted, invalid results will be returned.
      * Microsoft Link: https://support.microsoft.com/en-us/office/xlookup-function-b7fd680e-6d10-43e6-84f9-88eae8bf5929 
      ***/
+    XLOOKUP: (lookup_value, lookup_array, return_array, if_not_found = null, match_mode = 0, search_mode = 1) => {
+        console.log("New Stuff")
+        console.log(match_mode)
+        console.log(search_mode)
+        if(lookup_array.length != return_array.length){
+            throw FormulaError.NA;
+        }
+        //checks if the two arrays are one column each
+        //TODO:
+        
+        try {
+            lookup_array = H.accept(lookup_array, Types.ARRAY);
+            return_array = H.accept(return_array, Types.ARRAY);
+        }catch (e){
+            if (e instanceof FormulaError){
+                throw FormulaError.NA;
+            }
+            throw e;
+        }
+        //all comparisons can be done as strings
+        lookup_value = H.accept(lookup_value, Types.STRING);
+        search_mode = H.accept(search_mode, Types.NUMBER);
+        match_mode = H.accept(match_mode, Types.NUMBER);
+        //check if search mode is valid
+        if(![1, -1, 2, -2].includes(search_mode)){
+            throw FormulaError.VALUE;
+        }
+        //check if search_mode is valid
+        if(![0, 1, -1, 2].includes(match_mode)){
+            throw FormulaError.VALUE;
+        }
+        if(if_not_found != null){
+            if(if_not_found.omitted){
+                if_not_found = null;
+            }else {
+                if_not_found = H.accept(if_not_found,null,null,true,false, test = true)
+            }
+        }
+        //If search mode is 1 or -1, then we run a linear search on the input arrays
+        if([1, -1].includes(search_mode)){
+            //transform is 0 if search mode is 1 (we want to go through the array in order)
+            //transform is the last index if search_mode is -1 (we go through in reverse order)
+            const transform = (search_mode == 1) ? 0 : lookup_array.length - 1;
+            //minmax records the difference between our lookup_value and the next smallest and next largest numbers
+            var minmax = [Number.MAX_VALUE, Number.MAX_VALUE];
+            //minmaxIndex records the indexes of the next largest and smallest value
+            var minmaxIndex = [-1, -1]
 
+
+            for(var i = 0; i < lookup_array.length; i++){
+                //curr index will go in order if search_mode is 1, and reverse order otherwise
+                const currIndex = Math.abs(transform - i)
+                const currValue = H.accept(lookup_array[currIndex], Types.STRING);
+                const comparison = H.XLOOKUP_HELPER(lookup_value, currValue, match_mode != 2);
+
+                if(comparison == 0){
+                    return return_array[currIndex]
+                }
+                //updates minmax and minmaxIndex if currValue is closer to lookup_value than the current recorded value
+                if([1,-1].includes(match_mode)){
+                    // updates smaller values
+                    if(comparison < 0 && Math.abs(comparison) < minmax[0]){
+                        minmaxIndex[0] = currIndex;
+                        minmax[0] = Math.abs(comparison);
+                    } 
+                    //updates larger value
+                    if(comparison > 0 && comparison < minmax[1]){
+                        minmaxIndex[1] = currIndex;
+                        minmax[1] = comparison;
+                    }
+                }
+                
+            }
+            //returns value based upon optional parameters
+            if(match_mode == -1){
+                if(minmaxIndex[0] >= 0){
+                    return return_array[minmaxIndex[0]];
+                }
+            }
+            if(match_mode == 1){
+                if(minmaxIndex[1] >= 0){
+                    return return_array[minmaxIndex[1]];
+                }
+            }
+            if(if_not_found != null) {
+                return if_not_found;
+            }
+            throw FormulaError.NA
+
+        //in the case where search mode is 2 or -2, we run a binary search
+        
+        }else if([2, -2].includes(search_mode)){
+            var front = 0;
+            var back = lookup_array.length - 1;
+            while(front < back - 1){
+                const middle = Math.floor((front + back) / 2);
+                const currValue = H.accept(lookup_array[middle], Types.STRING);
+                const comparison = H.XLOOKUP_HELPER(lookup_value, currValue, match_mode != 2, [2,-2].includes(search_mode));
+                //updates the binary search
+                if(comparison == 0){
+                    return return_array[middle];
+                    
+                }else if(comparison < 0){
+                    if(search_mode == 2){
+                        front = middle;
+                    }else{
+                        back = middle;
+                    }
+                    
+                }else {
+                    if(search_mode == 2) {
+                        back = middle;
+                    }else{
+                        front = middle;
+                    }  
+                }
+            }
+            console.log(1)
+            //The binary search does not the final results of front and back to see if they equal lookup_value
+            var comparisonFront = H.XLOOKUP_HELPER(lookup_value, lookup_array[front], match_mode != 2)
+            var comparisonBack = H.XLOOKUP_HELPER(lookup_value, lookup_array[back], match_mode != 2)
+            
+            if(comparisonFront == 0){
+                return return_array[front];
+            }
+            if(comparisonBack == 0){
+                return return_array[back];
+            }
+            //if search mode == 2 search_mode == 1, we have to check front first, b/c its in ascending order
+            if(comparisonFront > 0 && match_mode == 1 && search_mode == 2) {
+                return return_array[front];
+            }
+            if(comparisonBack > 0 && match_mode == 1 && search_mode == 2) {
+                return return_array[back];
+            }
+            //if search mode == 2 search_mode == -1, we have to check back first, b/c its in ascending order
+            if(comparisonBack < 0 && match_mode == -1 && search_mode == 2){
+                return return_array[back];
+            }
+            if(comparisonFront < 0 && match_mode == -1 && search_mode == 2){
+                return return_array[front];
+            }
+            //if search mode == -2 search_mode == 1, we have to check back first, b/c its in descending order
+            if(comparisonBack > 0 && match_mode == 1 && search_mode == -2) {
+                return return_array[back];
+            }
+            if(comparisonFront > 0 && match_mode == 1 && search_mode == -2) {
+                return return_array[front];
+            }
+            //if search mode == -2 search_mode == -1, we have to check front first, b/c its in descending order
+            if(comparisonFront < 0 && match_mode == -1 && search_mode == -2){
+                return return_array[front];
+            }
+            
+            if(comparisonBack < 0 && match_mode == -1 && search_mode == -2){
+                return return_array[back];
+            }
+            
+            
+            
+            if(if_not_found){
+                return if_not_found;
+            }
+        
+        }
+        throw FormulaError.NA;
+    }
 }
 
 module.exports = ReferenceFunctions;
