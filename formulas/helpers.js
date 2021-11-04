@@ -314,18 +314,26 @@ class FormulaHelpers {
      *          False: not binary search
      ***/
     XLOOKUP_HELPER(lookup_value, compare_value, match_mode, search_mode = false){
-        //in the event we are looking for the next largest/smallest value
-        if(typeof lookup_value !== "string" && typeof compare_value !== "string"){
+      //All values should either be a string or a number
+        if(!["string", "number"].includes(typeof lookup_value) && !["string", "number"].includes(typeof compare_value)){
+          throw FormulaError.VALUE;
+        }
+        //If both values are numbers then we can subtract the two. 
+        if(typeof lookup_value === "number" && typeof compare_value === "number"){
             return parseFloat(compare_value) - parseFloat(lookup_value);
         }
+        //Converts any numbers into strings, then lower cases them
         lookup_value = (typeof lookup_value === "string") ? lookup_value : lookup_value.toString();
         compare_value = (typeof compare_value === "string") ? compare_value : compare_value.toString();
         compare_value = compare_value.toLowerCase();
         lookup_value = lookup_value.toLowerCase();
         if(match_mode){
+          //If the search mode === true then we are running binary search, so we only care which string value comes first not the magnitude of their difference
             if(search_mode) {
                 return compare_value.localeCompare(lookup_value);
             }
+            //If search === false then we care about the magnitude of their difference
+            //The following code finds the number of different characters, multiplies it by 100 and adds the difference of the charCodes of the last character
             var min_Index = Math.min(lookup_value.length, compare_value.length);
             for(var i = 0; i < min_Index; i++){
                 let diff = compare_value.charCodeAt(i) - lookup_value.charCodeAt(i);
@@ -333,6 +341,7 @@ class FormulaHelpers {
                     return (diff/Math.abs(diff)) * 100 * (min_Index - i) + diff;
                 }
             }
+            //In the event that the two characters match, except their lengths are different, then we return the charCode of the next character
             let longer_string = (lookup_value.length > compare_value.length) ? lookup_value : compare_value;
             if(longer_string.length > min_Index){
                 let direction = (lookup_value.length > compare_value.length) ? -1 : 1;
@@ -340,12 +349,14 @@ class FormulaHelpers {
             }
             return 0;
         }
-        //the special cases with the unique regex values
+        //The special cases with the unique regex values
         if(!match_mode){
           if(search_mode){
             throw FormulaError.VALUE;
           }
+          //EXCEL uses ~ instead of \ for their escape character, so we replace all instances of ~ with \ so that we can use a regex comparison with wcmatch
           lookup_value = lookup_value.replace("~", "\\")
+          //wcmatch returns if the two characters are the same.
           let rv = wcmatch(lookup_value)(compare_value) ? 0 : 1;
           return rv;
         }
