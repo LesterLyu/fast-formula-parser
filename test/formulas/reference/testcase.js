@@ -100,7 +100,7 @@ module.exports = {
     },
 
     SPLIT: {
-        /*
+        
         'SPLIT("1,2,3", ",")': 1,
         'SPLIT("2w2w3", "w")' : 1,
         'SPLIT("3ww2ww3", "w")' : 1,
@@ -123,7 +123,8 @@ module.exports = {
         'SPLIT("20hih bob hih3", "hih")' : 1,
         'SPLIT("21ww2ww3", "w", TRUE, FALSE)' : 1,
         'SPLIT("22wwww2wwww3", "ww", FALSE, FALSE)' : 1,
-        */
+        'SPLIT("2w6,t.l/3", "w,./")': 1,
+        
     },
 
     TRANSPOSE: {

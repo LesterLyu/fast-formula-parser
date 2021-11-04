@@ -314,7 +314,7 @@ const ReferenceFunctions = {
         text = text.split(delimiter);
 
         if(!remove_empty_text){
-            return text;
+            return 1;
         }
         //removes empty spaces if remove_empty_text is true
         for(let index = 0; index < text.length; index++){
@@ -322,7 +322,8 @@ const ReferenceFunctions = {
                 text.splice(index, 1)
             }
         }
-        return text;
+        console.log(text)
+        return 1;
     },
 
     TRANSPOSE: (array) => {
