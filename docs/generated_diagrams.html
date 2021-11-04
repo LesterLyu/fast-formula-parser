@@ -1,0 +1,993 @@
+
+<!-- This is a generated file -->
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+  body {
+    background-color: hsl(30, 20%, 95%)
+  }
+</style>
+
+
+<link rel='stylesheet' href='https://unpkg.com/chevrotain@7.1.2/diagrams/diagrams.css'>
+
+<script src='https://unpkg.com/chevrotain@7.1.2/diagrams/vendor/railroad-diagrams.js'></script>
+<script src='https://unpkg.com/chevrotain@7.1.2/diagrams/src/diagrams_builder.js'></script>
+<script src='https://unpkg.com/chevrotain@7.1.2/diagrams/src/diagrams_behavior.js'></script>
+<script src='https://unpkg.com/chevrotain@7.1.2/diagrams/src/main.js'></script>
+
+<div id="diagrams" align="center"></div>    
+
+<script>
+    window.serializedGrammar = [
+  {
+    "type": "Rule",
+    "name": "formulaWithBinaryOp",
+    "orgText": "",
+    "definition": [
+      {
+        "type": "NonTerminal",
+        "name": "formulaWithPercentOp",
+        "idx": 0
+      },
+      {
+        "type": "Repetition",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Alternation",
+            "idx": 0,
+            "definition": [
+              {
+                "type": "Alternative",
+                "definition": [
+                  {
+                    "type": "Terminal",
+                    "name": "GtOp",
+                    "label": "GtOp",
+                    "idx": 0,
+                    "pattern": ">"
+                  }
+                ]
+              },
+              {
+                "type": "Alternative",
+                "definition": [
+                  {
+                    "type": "Terminal",
+                    "name": "EqOp",
+                    "label": "EqOp",
+                    "idx": 0,
+                    "pattern": "="
+                  }
+                ]
+              },
+              {
+                "type": "Alternative",
+                "definition": [
+                  {
+                    "type": "Terminal",
+                    "name": "LtOp",
+                    "label": "LtOp",
+                    "idx": 0,
+                    "pattern": "<"
+                  }
+                ]
+              },
+              {
+                "type": "Alternative",
+                "definition": [
+                  {
+                    "type": "Terminal",
+                    "name": "NeqOp",
+                    "label": "NeqOp",
+                    "idx": 0,
+                    "pattern": "<>"
+                  }
+                ]
+              },
+              {
+                "type": "Alternative",
+                "definition": [
+                  {
+                    "type": "Terminal",
+                    "name": "GteOp",
+                    "label": "GteOp",
+                    "idx": 0,
+                    "pattern": ">="
+                  }
+                ]
+              },
+              {
+                "type": "Alternative",
+                "definition": [
+                  {
+                    "type": "Terminal",
+                    "name": "LteOp",
+                    "label": "LteOp",
+                    "idx": 0,
+                    "pattern": "<="
+                  }
+                ]
+              },
+              {
+                "type": "Alternative",
+                "definition": [
+                  {
+                    "type": "Terminal",
+                    "name": "ConcatOp",
+                    "label": "ConcatOp",
+                    "idx": 0,
+                    "pattern": "&"
+                  }
+                ]
+              },
+              {
+                "type": "Alternative",
+                "definition": [
+                  {
+                    "type": "Terminal",
+                    "name": "PlusOp",
+                    "label": "PlusOp",
+                    "idx": 0,
+                    "pattern": "\\+"
+                  }
+                ]
+              },
+              {
+                "type": "Alternative",
+                "definition": [
+                  {
+                    "type": "Terminal",
+                    "name": "MinOp",
+                    "label": "MinOp",
+                    "idx": 0,
+                    "pattern": "-"
+                  }
+                ]
+              },
+              {
+                "type": "Alternative",
+                "definition": [
+                  {
+                    "type": "Terminal",
+                    "name": "MulOp",
+                    "label": "MulOp",
+                    "idx": 0,
+                    "pattern": "\\*"
+                  }
+                ]
+              },
+              {
+                "type": "Alternative",
+                "definition": [
+                  {
+                    "type": "Terminal",
+                    "name": "DivOp",
+                    "label": "DivOp",
+                    "idx": 0,
+                    "pattern": "\\/"
+                  }
+                ]
+              },
+              {
+                "type": "Alternative",
+                "definition": [
+                  {
+                    "type": "Terminal",
+                    "name": "ExOp",
+                    "label": "ExOp",
+                    "idx": 0,
+                    "pattern": "\\^"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "NonTerminal",
+            "name": "formulaWithPercentOp",
+            "idx": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "plusMinusOp",
+    "orgText": "",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Alternative",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "PlusOp",
+                "label": "PlusOp",
+                "idx": 0,
+                "pattern": "\\+"
+              }
+            ]
+          },
+          {
+            "type": "Alternative",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "MinOp",
+                "label": "MinOp",
+                "idx": 0,
+                "pattern": "-"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "formulaWithPercentOp",
+    "orgText": "",
+    "definition": [
+      {
+        "type": "NonTerminal",
+        "name": "formulaWithUnaryOp",
+        "idx": 0
+      },
+      {
+        "type": "Option",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "PercentOp",
+            "label": "PercentOp",
+            "idx": 0,
+            "pattern": "%"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "formulaWithUnaryOp",
+    "orgText": "",
+    "definition": [
+      {
+        "type": "Repetition",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Alternation",
+            "idx": 0,
+            "definition": [
+              {
+                "type": "Alternative",
+                "definition": [
+                  {
+                    "type": "Terminal",
+                    "name": "PlusOp",
+                    "label": "PlusOp",
+                    "idx": 0,
+                    "pattern": "\\+"
+                  }
+                ]
+              },
+              {
+                "type": "Alternative",
+                "definition": [
+                  {
+                    "type": "Terminal",
+                    "name": "MinOp",
+                    "label": "MinOp",
+                    "idx": 0,
+                    "pattern": "-"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "NonTerminal",
+        "name": "formulaWithIntersect",
+        "idx": 0
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "formulaWithIntersect",
+    "orgText": "",
+    "definition": [
+      {
+        "type": "NonTerminal",
+        "name": "formulaWithRange",
+        "idx": 0
+      },
+      {
+        "type": "Repetition",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "formulaWithRange",
+            "idx": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "formulaWithRange",
+    "orgText": "",
+    "definition": [
+      {
+        "type": "NonTerminal",
+        "name": "formula",
+        "idx": 0
+      },
+      {
+        "type": "Repetition",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Colon",
+            "label": "Colon",
+            "idx": 0,
+            "pattern": ":"
+          },
+          {
+            "type": "NonTerminal",
+            "name": "formula",
+            "idx": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "formula",
+    "orgText": "",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 9,
+        "definition": [
+          {
+            "type": "Alternative",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "referenceWithoutInfix",
+                "idx": 0
+              }
+            ]
+          },
+          {
+            "type": "Alternative",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "paren",
+                "idx": 0
+              }
+            ]
+          },
+          {
+            "type": "Alternative",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "constant",
+                "idx": 0
+              }
+            ]
+          },
+          {
+            "type": "Alternative",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "functionCall",
+                "idx": 0
+              }
+            ]
+          },
+          {
+            "type": "Alternative",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "constantArray",
+                "idx": 0
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "paren",
+    "orgText": "",
+    "definition": [
+      {
+        "type": "Terminal",
+        "name": "OpenParen",
+        "label": "OpenParen",
+        "idx": 0,
+        "pattern": "\\("
+      },
+      {
+        "type": "NonTerminal",
+        "name": "formulaWithBinaryOp",
+        "idx": 0
+      },
+      {
+        "type": "Repetition",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Comma",
+            "label": "Comma",
+            "idx": 0,
+            "pattern": ","
+          },
+          {
+            "type": "NonTerminal",
+            "name": "formulaWithBinaryOp",
+            "idx": 2
+          }
+        ]
+      },
+      {
+        "type": "Terminal",
+        "name": "CloseParen",
+        "label": "CloseParen",
+        "idx": 0,
+        "pattern": "\\)"
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "constantArray",
+    "orgText": "",
+    "definition": [
+      {
+        "type": "Terminal",
+        "name": "OpenCurlyParen",
+        "label": "OpenCurlyParen",
+        "idx": 0,
+        "pattern": "{"
+      },
+      {
+        "type": "NonTerminal",
+        "name": "constantForArray",
+        "idx": 0
+      },
+      {
+        "type": "Repetition",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Alternation",
+            "idx": 0,
+            "definition": [
+              {
+                "type": "Alternative",
+                "definition": [
+                  {
+                    "type": "Terminal",
+                    "name": "Comma",
+                    "label": "Comma",
+                    "idx": 0,
+                    "pattern": ","
+                  }
+                ]
+              },
+              {
+                "type": "Alternative",
+                "definition": [
+                  {
+                    "type": "Terminal",
+                    "name": "Semicolon",
+                    "label": "Semicolon",
+                    "idx": 0,
+                    "pattern": ";"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "NonTerminal",
+            "name": "constantForArray",
+            "idx": 2
+          }
+        ]
+      },
+      {
+        "type": "Terminal",
+        "name": "CloseCurlyParen",
+        "label": "CloseCurlyParen",
+        "idx": 0,
+        "pattern": "}"
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "constantForArray",
+    "orgText": "",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Alternative",
+            "definition": [
+              {
+                "type": "Option",
+                "idx": 0,
+                "definition": [
+                  {
+                    "type": "NonTerminal",
+                    "name": "plusMinusOp",
+                    "idx": 0
+                  }
+                ]
+              },
+              {
+                "type": "Terminal",
+                "name": "Number",
+                "label": "Number",
+                "idx": 0,
+                "pattern": "[0-9]+[.]?[0-9]*([eE][+\\-][0-9]+)?"
+              }
+            ]
+          },
+          {
+            "type": "Alternative",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "String",
+                "label": "String",
+                "idx": 0,
+                "pattern": "\"(\"\"|[^\"])*\""
+              }
+            ]
+          },
+          {
+            "type": "Alternative",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Boolean",
+                "label": "Boolean",
+                "idx": 0,
+                "pattern": "TRUE|FALSE"
+              }
+            ]
+          },
+          {
+            "type": "Alternative",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "FormulaErrorT",
+                "label": "FormulaErrorT",
+                "idx": 0,
+                "pattern": "#NULL!|#DIV\\/0!|#VALUE!|#NAME\\?|#NUM!|#N\\/A"
+              }
+            ]
+          },
+          {
+            "type": "Alternative",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "RefError",
+                "label": "RefError",
+                "idx": 0,
+                "pattern": "#REF!"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "constant",
+    "orgText": "",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Alternative",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Number",
+                "label": "Number",
+                "idx": 0,
+                "pattern": "[0-9]+[.]?[0-9]*([eE][+\\-][0-9]+)?"
+              }
+            ]
+          },
+          {
+            "type": "Alternative",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "String",
+                "label": "String",
+                "idx": 0,
+                "pattern": "\"(\"\"|[^\"])*\""
+              }
+            ]
+          },
+          {
+            "type": "Alternative",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Boolean",
+                "label": "Boolean",
+                "idx": 0,
+                "pattern": "TRUE|FALSE"
+              }
+            ]
+          },
+          {
+            "type": "Alternative",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "FormulaErrorT",
+                "label": "FormulaErrorT",
+                "idx": 0,
+                "pattern": "#NULL!|#DIV\\/0!|#VALUE!|#NAME\\?|#NUM!|#N\\/A"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "functionCall",
+    "orgText": "",
+    "definition": [
+      {
+        "type": "Terminal",
+        "name": "Function",
+        "label": "Function",
+        "idx": 0,
+        "pattern": "[A-Za-z_]+[A-Za-z_0-9.]*\\("
+      },
+      {
+        "type": "NonTerminal",
+        "name": "arguments",
+        "idx": 0
+      },
+      {
+        "type": "Terminal",
+        "name": "CloseParen",
+        "label": "CloseParen",
+        "idx": 0,
+        "pattern": "\\)"
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "arguments",
+    "orgText": "",
+    "definition": [
+      {
+        "type": "Repetition",
+        "idx": 2,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Comma",
+            "label": "Comma",
+            "idx": 2,
+            "pattern": ","
+          }
+        ]
+      },
+      {
+        "type": "Option",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "NonTerminal",
+            "name": "formulaWithBinaryOp",
+            "idx": 0
+          },
+          {
+            "type": "Repetition",
+            "idx": 0,
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Comma",
+                "label": "Comma",
+                "idx": 1,
+                "pattern": ","
+              },
+              {
+                "type": "Option",
+                "idx": 3,
+                "definition": [
+                  {
+                    "type": "NonTerminal",
+                    "name": "formulaWithBinaryOp",
+                    "idx": 2
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "referenceWithoutInfix",
+    "orgText": "",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Alternative",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "referenceItem",
+                "idx": 0
+              }
+            ]
+          },
+          {
+            "type": "Alternative",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "prefixName",
+                "idx": 0
+              },
+              {
+                "type": "NonTerminal",
+                "name": "formulaWithRange",
+                "idx": 2
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "referenceItem",
+    "orgText": "",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Alternative",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Cell",
+                "label": "Cell",
+                "idx": 0,
+                "pattern": "[$]?[A-Za-z]{1,3}[$]?[1-9][0-9]*"
+              }
+            ]
+          },
+          {
+            "type": "Alternative",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Name",
+                "label": "Name",
+                "idx": 0,
+                "pattern": "[a-zA-Z_][a-zA-Z0-9_.?]*"
+              }
+            ]
+          },
+          {
+            "type": "Alternative",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Column",
+                "label": "Column",
+                "idx": 0,
+                "pattern": "[$]?[A-Za-z]{1,3}"
+              }
+            ]
+          },
+          {
+            "type": "Alternative",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "RefError",
+                "label": "RefError",
+                "idx": 0,
+                "pattern": "#REF!"
+              }
+            ]
+          },
+          {
+            "type": "Alternative",
+            "definition": [
+              {
+                "type": "NonTerminal",
+                "name": "structuredReference",
+                "idx": 0
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "structuredReference",
+    "orgText": "",
+    "definition": [
+      {
+        "type": "Option",
+        "idx": 3,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "TableName",
+            "label": "TableName",
+            "idx": 0,
+            "pattern": "[%A-Za-z_.\\d\\s\\u007F-\\uFFFF]+\\["
+          }
+        ]
+      },
+      {
+        "type": "Option",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "SpecialItem",
+            "label": "SpecialItem",
+            "idx": 0,
+            "pattern": "[\\[]?(#All|#Data|#Headers|#Total|#This Row)\\][,]?"
+          }
+        ]
+      },
+      {
+        "type": "NonTerminal",
+        "name": "columnNameWithRange",
+        "idx": 0
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "tableColumnName",
+    "orgText": "",
+    "definition": [
+      {
+        "type": "Terminal",
+        "name": "ColumnName",
+        "label": "ColumnName",
+        "idx": 0,
+        "pattern": "[\\[]?[@]?[\\[+]?[%:A-Za-z_.\\d\\s\\u007F-\\uFFFF]{0,}\\]+"
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "columnNameWithRange",
+    "orgText": "",
+    "definition": [
+      {
+        "type": "NonTerminal",
+        "name": "tableColumnName",
+        "idx": 0
+      },
+      {
+        "type": "Repetition",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Terminal",
+            "name": "Colon",
+            "label": "Colon",
+            "idx": 0,
+            "pattern": ":"
+          },
+          {
+            "type": "NonTerminal",
+            "name": "tableColumnName",
+            "idx": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "Rule",
+    "name": "prefixName",
+    "orgText": "",
+    "definition": [
+      {
+        "type": "Alternation",
+        "idx": 0,
+        "definition": [
+          {
+            "type": "Alternative",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "Sheet",
+                "label": "Sheet",
+                "idx": 0,
+                "pattern": "[A-Za-z_.\\d\\u007F-\\uFFFF]+!"
+              }
+            ]
+          },
+          {
+            "type": "Alternative",
+            "definition": [
+              {
+                "type": "Terminal",
+                "name": "SheetQuoted",
+                "label": "SheetQuoted",
+                "idx": 0,
+                "pattern": "'((?![\\\\\\/\\[\\]*?:]).)+?'!"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+];
+</script>
+
+<script>
+    var diagramsDiv = document.getElementById("diagrams");
+    main.drawDiagramsFromSerializedGrammar(serializedGrammar, diagramsDiv);
+</script>

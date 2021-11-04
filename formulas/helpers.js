@@ -1,5 +1,7 @@
 const FormulaError = require('./error');
 const Collection = require('../grammar/type/collection');
+const wcmatch = require('wildcard-match')
+
 
 const Types = {
     NUMBER: 0,
@@ -310,19 +312,15 @@ class FormulaHelpers {
      * @param search_mode:
      *          True: binary search
      *          False: not binary search
-     * WILDCARDS
-     * @DELETE (For my Referance for now)
-     * ? any character can go here, For example, sm?th finds "smith" and "smyth"
-     * * Any number of characters, For example, *east finds "Northeast" and "Southeast"
-     * ~ (tilde) followed by ?, *, or ~ A question mark, asterisk, or tilde, For example, fy06~? finds "fy06?"
      ***/
-     XLOOKUP_HELPER(lookup_value, compare_value, match_mode, search_mode = false){
+    XLOOKUP_HELPER(lookup_value, compare_value, match_mode, search_mode = false){
         //in the event we are looking for the next largest/smallest value
-        if(!isNaN(parseFloat(lookup_value)) && !isNaN(parseFloat(compare_value))){
+        if(typeof lookup_value !== "string" && typeof compare_value !== "string"){
             return parseFloat(compare_value) - parseFloat(lookup_value);
         }
-        
-        compare_value = compare_value.toString().toLowerCase();
+        lookup_value = (typeof lookup_value === "string") ? lookup_value : lookup_value.toString();
+        compare_value = (typeof compare_value === "string") ? compare_value : compare_value.toString();
+        compare_value = compare_value.toLowerCase();
         lookup_value = lookup_value.toLowerCase();
         if(match_mode){
             if(search_mode) {
@@ -344,45 +342,14 @@ class FormulaHelpers {
         }
         //the special cases with the unique regex values
         if(!match_mode){
-            var index = 0;
-            let sum = 0;
-            while(index < lookup_value.length){
-                var currValue = lookup_value[index];
-                //? can be any character
-                if(currValue == '?'){
-                    index++;
-                //the character after ~ can be any character
-                }else if(currValue == '~'){
-                    index += 2;
-                //the following values can be anywhere in the remaining string.
-                }else if(currValue == '*'){
-                    //if either string is too short
-                    if(lookup_value.length < index || compare_value.length < index){
-                        return -1;
-                    }
-                    
-                    lookup_value = lookup_value.slice(index);
-                    compare_value = compare_value.slice(index);
-
-                    //checks if lookup value is included in compare_value after the *
-                    if(compare_value.includes(lookup_value)){
-                        return 0;
-                    }
-                    return -1;
-                //if the strings are of unequal length
-                }else if(compare_value.length < index){
-                    sum -= lookup_value.charCodeAt(index);
-                    return sum;
-                }else{
-                    sum = compare_value.charCodeAt(index) - lookup_value.charCodeAt(index);
-                    if(sum != 0){
-                        return sum;
-                    }
-                    index++;
-                }
-            }
-            return sum;
+          if(search_mode){
+            throw FormulaError.VALUE;
+          }
+          lookup_value = lookup_value.replace("~", "\\")
+          let rv = wcmatch(lookup_value)(compare_value) ? 0 : 1;
+          return rv;
         }
+      
     }
 }
 
