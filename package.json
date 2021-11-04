@@ -1,6 +1,6 @@
 {
   "name": "@lido-app/fast-formula-parser",
-  "version": "1.0.26",
+  "version": "1.0.31",
   "description": "fast excel formula parser",
   "repository": "https://github.com/lido-app/fast-formula-parser",
   "main": "index.js",
@@ -9,7 +9,8 @@
     "registry": "https://npm.pkg.github.com/Lido-App"
   },
   "scripts": {
-    "test": "mocha -s 0",
+    "format": "prettier 'formulas/**/*.js' --write",
+    "test": "mocha -s 0 && yarn run diagram && yarn jsdoc --configure .jsdoc.json --verbose",
     "test:f": "mocha test/formulas",
     "prepublishOnly": "yarn run build && yarn run test",
     "postpublish": "yarn run publish:docs",

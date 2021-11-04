@@ -316,5 +316,8 @@ Note: The grammar in my implementation is different from theirs. My implementati
     }
     ```
 
+### Publishing
+yarn publish
+
 ### Thanks
 - [![JetBrains](https://raw.githubusercontent.com/LesterLyu/fast-formula-parser/master/logos/jetbrains-variant-4.svg)](https://www.jetbrains.com/?from=fast-formula-parser)
