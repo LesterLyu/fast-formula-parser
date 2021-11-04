@@ -3,6 +3,7 @@ const {FormulaHelpers, Types, WildCard, Address} = require('../helpers');
 const Collection = require('../../grammar/type/collection');
 const H = FormulaHelpers;
 
+
 const ReferenceFunctions = {
 
     ADDRESS: (rowNumber, columnNumber, absNum, a1, sheetText) => {
@@ -16,7 +17,7 @@ const ReferenceFunctions = {
             throw FormulaError.VALUE;
 
         let result = '';
-        if (sheetText.length > 0) {
+        if (sheetText.length > 0) { 
             if (/[^A-Za-z_.\d\u007F-\uFFFF]/.test(sheetText)) {
                 result += `'${sheetText}'!`;
             } else {
@@ -121,7 +122,6 @@ const ReferenceFunctions = {
         if(filtered_Array.length == 0){
             return default_value;
         }
-        console.log(filtered_Array)
         return filtered_Array;
         
     },
@@ -426,9 +426,6 @@ const ReferenceFunctions = {
      * Microsoft Link: https://support.microsoft.com/en-us/office/xlookup-function-b7fd680e-6d10-43e6-84f9-88eae8bf5929 
      ***/
     XLOOKUP: (lookup_value, lookup_array, return_array, if_not_found = null, match_mode = 0, search_mode = 1) => {
-        console.log("New Stuff")
-        console.log(match_mode)
-        console.log(search_mode)
         if(lookup_array.length != return_array.length){
             throw FormulaError.NA;
         }
@@ -445,7 +442,7 @@ const ReferenceFunctions = {
             throw e;
         }
         //all comparisons can be done as strings
-        lookup_value = H.accept(lookup_value, Types.STRING);
+        lookup_value = H.accept(lookup_value);
         search_mode = H.accept(search_mode, Types.NUMBER);
         match_mode = H.accept(match_mode, Types.NUMBER);
         //check if search mode is valid
@@ -454,6 +451,9 @@ const ReferenceFunctions = {
         }
         //check if search_mode is valid
         if(![0, 1, -1, 2].includes(match_mode)){
+            throw FormulaError.VALUE;
+        }
+        if(match_mode === 2 && [2, -2].includes(search_mode)){
             throw FormulaError.VALUE;
         }
         if(if_not_found != null){
@@ -467,7 +467,7 @@ const ReferenceFunctions = {
         if([1, -1].includes(search_mode)){
             //transform is 0 if search mode is 1 (we want to go through the array in order)
             //transform is the last index if search_mode is -1 (we go through in reverse order)
-            const transform = (search_mode == 1) ? 0 : lookup_array.length - 1;
+            const transform = (search_mode === 1) ? 0 : lookup_array.length - 1;
             //minmax records the difference between our lookup_value and the next smallest and next largest numbers
             var minmax = [Number.MAX_VALUE, Number.MAX_VALUE];
             //minmaxIndex records the indexes of the next largest and smallest value
@@ -477,10 +477,10 @@ const ReferenceFunctions = {
             for(var i = 0; i < lookup_array.length; i++){
                 //curr index will go in order if search_mode is 1, and reverse order otherwise
                 const currIndex = Math.abs(transform - i)
-                const currValue = H.accept(lookup_array[currIndex], Types.STRING);
+                const currValue = H.accept(lookup_array[currIndex]);
                 const comparison = H.XLOOKUP_HELPER(lookup_value, currValue, match_mode != 2);
 
-                if(comparison == 0){
+                if(comparison === 0){
                     return return_array[currIndex]
                 }
                 //updates minmax and minmaxIndex if currValue is closer to lookup_value than the current recorded value
@@ -499,12 +499,12 @@ const ReferenceFunctions = {
                 
             }
             //returns value based upon optional parameters
-            if(match_mode == -1){
+            if(match_mode === -1){
                 if(minmaxIndex[0] >= 0){
                     return return_array[minmaxIndex[0]];
                 }
             }
-            if(match_mode == 1){
+            if(match_mode === 1){
                 if(minmaxIndex[1] >= 0){
                     return return_array[minmaxIndex[1]];
                 }
@@ -521,65 +521,64 @@ const ReferenceFunctions = {
             var back = lookup_array.length - 1;
             while(front < back - 1){
                 const middle = Math.floor((front + back) / 2);
-                const currValue = H.accept(lookup_array[middle], Types.STRING);
+                const currValue = H.accept(lookup_array[middle]);
                 const comparison = H.XLOOKUP_HELPER(lookup_value, currValue, match_mode != 2, [2,-2].includes(search_mode));
                 //updates the binary search
-                if(comparison == 0){
+                if(comparison === 0){
                     return return_array[middle];
                     
                 }else if(comparison < 0){
-                    if(search_mode == 2){
+                    if(search_mode === 2){
                         front = middle;
                     }else{
                         back = middle;
                     }
                     
                 }else {
-                    if(search_mode == 2) {
+                    if(search_mode === 2) {
                         back = middle;
                     }else{
                         front = middle;
                     }  
                 }
             }
-            console.log(1)
             //The binary search does not the final results of front and back to see if they equal lookup_value
             var comparisonFront = H.XLOOKUP_HELPER(lookup_value, lookup_array[front], match_mode != 2)
             var comparisonBack = H.XLOOKUP_HELPER(lookup_value, lookup_array[back], match_mode != 2)
             
-            if(comparisonFront == 0){
+            if(comparisonFront === 0){
                 return return_array[front];
             }
-            if(comparisonBack == 0){
+            if(comparisonBack === 0){
                 return return_array[back];
             }
             //if search mode == 2 search_mode == 1, we have to check front first, b/c its in ascending order
-            if(comparisonFront > 0 && match_mode == 1 && search_mode == 2) {
+            if(comparisonFront > 0 && match_mode === 1 && search_mode === 2) {
                 return return_array[front];
             }
-            if(comparisonBack > 0 && match_mode == 1 && search_mode == 2) {
+            if(comparisonBack > 0 && match_mode === 1 && search_mode === 2) {
                 return return_array[back];
             }
             //if search mode == 2 search_mode == -1, we have to check back first, b/c its in ascending order
-            if(comparisonBack < 0 && match_mode == -1 && search_mode == 2){
+            if(comparisonBack < 0 && match_mode === -1 && search_mode === 2){
                 return return_array[back];
             }
-            if(comparisonFront < 0 && match_mode == -1 && search_mode == 2){
+            if(comparisonFront < 0 && match_mode === -1 && search_mode === 2){
                 return return_array[front];
             }
             //if search mode == -2 search_mode == 1, we have to check back first, b/c its in descending order
-            if(comparisonBack > 0 && match_mode == 1 && search_mode == -2) {
+            if(comparisonBack > 0 && match_mode === 1 && search_mode === -2) {
                 return return_array[back];
             }
-            if(comparisonFront > 0 && match_mode == 1 && search_mode == -2) {
+            if(comparisonFront > 0 && match_mode === 1 && search_mode === -2) {
                 return return_array[front];
             }
             //if search mode == -2 search_mode == -1, we have to check front first, b/c its in descending order
-            if(comparisonFront < 0 && match_mode == -1 && search_mode == -2){
+            if(comparisonFront < 0 && match_mode === -1 && search_mode === -2){
                 return return_array[front];
             }
             
-            if(comparisonBack < 0 && match_mode == -1 && search_mode == -2){
+            if(comparisonBack < 0 && match_mode === -1 && search_mode === -2){
                 return return_array[back];
             }
             

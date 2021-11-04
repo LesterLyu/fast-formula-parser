@@ -157,7 +157,6 @@ module.exports = {
         'XLOOKUP(10, B1:B9, C1:C9, 5,1,1)': 'count',
         'XLOOKUP(1.5, B1:B9, C1:C9, 0,1,1)': 10,
         'XLOOKUP("app", A1:A12, B1:B12, 0,1,1)': 0.69,
-        'XLOOKUP(".55", B1:B12, C1:C12, 0,1,1)' :15,
         'XLOOKUP("KOJO", A1:A12, B1:B12, 0,1,1)': .55,
 
         //when matchmode is -1 and search mode is 1
@@ -172,7 +171,6 @@ module.exports = {
         'XLOOKUP(10, B1:B9, C1:C9, 5,-1,1)':16,
         'XLOOKUP(1.5, B1:B9, C1:C9, 0,-1,1)': 20,
         'XLOOKUP("app", A1:A12, B1:B12, 0,-1,1)': 2.8,
-        'XLOOKUP(".55", B1:B12, C1:C12, 0,-1,1)' :15,
         'XLOOKUP("KOJO", A1:A12, B1:B12, 0,-1,1)': 'price',
         'XLOOKUP(5, A1:A12, B1:B12, 0,-1,1)': 0,
         'XLOOKUP(0, A1:A12, B1:B12, 0,-1,1)': 0,
@@ -186,10 +184,16 @@ module.exports = {
         'XLOOKUP(1, B1:B9, C1:C9,,2,1)': FormulaError.NA,
 
         //match_mode = 2 search_mode = 1 specific
-        //TODO
+        'XLOOKUP("?nt", {"ant", "bee", "cat", "dog", "elephant"}, {2, 3, 10, 20, 30}, 10, 2, 1)': 2,
+        'XLOOKUP("cat~?", {"ant", "bee", "cat?", "dog", "elephant"}, {2, 3, 10, 20, 30}, 50, 2, 1)': 10,
+        'XLOOKUP("cat~~", {"ant", "bee", "cat~", "dog", "elephant"}, {2, 3, 10, 20, 30}, 50, 2, 1)': 10,
+        'XLOOKUP("cat~*", {"ant", "bee", "cat*", "dog", "elephant"}, {2, 3, 10, 20, 30}, 50, 2, 1)': 10,
+        'XLOOKUP("*e", {"ant", "bee", "cat", "dog", "elephant"}, {2, 3, 10, 20, 30}, 10, 2, 1)': 3,
+        'XLOOKUP("*nt", {"ant", "bee", "cat", "dog", "elephant"}, {2, 3, 10, 20, 30}, 10, 2, 1)': 2,
+        'XLOOKUP("*g", {"ant", "bee", "cat", "dog", "elephant"}, {2, 3, 10, 20, 30}, 10, 2, 1)': 20,
+        'XLOOKUP("*eph?nt", {"ant", "bee", "cat", "dog", "elephant"}, {2, 3, 10, 20, 30}, 10, 2, 1)': 30,
 
-
-        //match_mode = 0 and searc_mode is -1 specific
+        //match_mode = 0 and search_mode is -1 specific
         'XLOOKUP(A2, A1:A9, B1:B9,,0,-1)': .69,
         'XLOOKUP("Bananas", A1:A9, B1:B9,,0,-1)': 0.34,
         'XLOOKUP(0.55, B1:B9, C1:C9,,0,-1)': 15,
@@ -208,7 +212,6 @@ module.exports = {
         'XLOOKUP(10, B1:B9, C1:C9, 5,-1,-1)':16,
         'XLOOKUP(1.5, B1:B9, C1:C9, 0,-1,-1)': 20,
         'XLOOKUP("app", A1:A12, B1:B12, 0,-1,-1)': 2.8,
-        'XLOOKUP(".55", B1:B12, C1:C12, 0,-1,-1)' :15,
         'XLOOKUP("KOJO", A1:A12, B1:B12, 0,-1,-1)': 'price',
         'XLOOKUP(5, A1:A12, B1:B12, 0,-1,-1)': 0,
         'XLOOKUP(0, A1:A12, B1:B12, 0,-1,-1)': 0,
@@ -226,7 +229,6 @@ module.exports = {
         'XLOOKUP(10, B1:B9, C1:C9, 5,1,-1)': 'count',
         'XLOOKUP(1.5, B1:B9, C1:C9, 0,1,-1)': 10,
         'XLOOKUP("app", A1:A12, B1:B12, 0,1,-1)': 'Lemons',
-        'XLOOKUP(".55", B1:B12, C1:C12, 0,1,-1)' :15,
         'XLOOKUP("KOJO", A1:A12, B1:B12, 0,1,-1)': .55,
 
         //match_mode = 2 search_mode = -1
@@ -237,8 +239,12 @@ module.exports = {
         'XLOOKUP(1, B1:B9, C1:C9, 10,2,-1)': 10,
         'XLOOKUP(1, B1:B9, C1:C9,,2,-1)': FormulaError.NA,
 
-        //match_mode = 2 search_mode = 1 specific
-        //TODO
+        //match_mode = 2 search_mode = -1 specific
+        'XLOOKUP(A2, A1:A9, B1:B9,,2,-1)': .69,
+        'XLOOKUP("Bananas", A1:A9, B1:B9,,2,-1)': 0.34,
+        'XLOOKUP(0.55, B1:B9, C1:C9,,2,-1)': 15,
+        'XLOOKUP(1, B1:B9, C1:C9, 10,2,-1)': 10,
+        'XLOOKUP(1, B1:B9, C1:C9,,2,-1)': FormulaError.NA,
 
 
 
@@ -311,7 +317,11 @@ module.exports = {
 
 
         //match_mode = 2 search_mode = 2 specific
-        //TODO
+        'XLOOKUP(A2, A1:A9, B1:B9,,2,2)': FormulaError.VALUE,
+        'XLOOKUP("Bananas", A1:A9, B1:B9,,2,2)': FormulaError.VALUE,
+        'XLOOKUP(0.55, B1:B9, C1:C9,,2,2)': FormulaError.VALUE,
+        'XLOOKUP(1, B1:B9, C1:C9, 10,2,2)': FormulaError.VALUE,
+        'XLOOKUP(1, B1:B9, C1:C9,,2,2)': FormulaError.VALUE,
 
 
         //match_mode = 0 search_mode = -2 specific
@@ -335,11 +345,6 @@ module.exports = {
 
 
         //match_mode = 1 search_mode = -2 specific
-        //{8,7,6,5,4,3,2,1}
-        //{"h", "g", "f", "e", "d", "c", "b", "a"}
-        // /{30, 20, 10, 3,1}
-        //{"ant", "bee", "cat", "dog", "elephant"}
-        //{"elephant", "dog", "cat", "bee", "ant"}
         'XLOOKUP(-1.5,{8,7,6,5,4,3,2,1},{"h", "g", "f", "e", "d", "c", "b", "a"}, 10, 1, -2)': 'a',
         'XLOOKUP(7.5, {8,7,6,5,4,3,2,1},{"h", "g", "f", "e", "d", "c", "b", "a"}, 10, 1, -2)': 'h',
         'XLOOKUP(1.5, {8,7,6,5,4,3,2,1},{"h", "g", "f", "e", "d", "c", "b", "a"}, 10, 1, -2)': 'b',
@@ -381,6 +386,13 @@ module.exports = {
         'XLOOKUP(1.5, {8,7,6,5,4,3,2,1},{"h", "g", "f", "e", "d", "c", "b", "a"}, 10, -1, -2)': 'a',
         'XLOOKUP(7.5, {8,7,6,5,4,3,2,1},{"h", "g", "f", "e", "d", "c", "b", "a"}, 10, -1, -2)': 'g',
         'XLOOKUP(8.5, {8,7,6,5,4,3,2,1},{"h", "g", "f", "e", "d", "c", "b", "a"}, 10, -1, -2)': 'h',
+
+        //match_mode = 2 search_mode = -2
+        'XLOOKUP(A2, A1:A9, B1:B9,,2,-2)': FormulaError.VALUE,
+        'XLOOKUP("Bananas", A1:A9, B1:B9,,2,-2)': FormulaError.VALUE,
+        'XLOOKUP(0.55, B1:B9, C1:C9,,2,-2)': FormulaError.VALUE,
+        'XLOOKUP(1, B1:B9, C1:C9, 10,2,-2)': FormulaError.VALUE,
+        'XLOOKUP(1, B1:B9, C1:C9,,2,-2)': FormulaError.VALUE,
     }
 
 };
