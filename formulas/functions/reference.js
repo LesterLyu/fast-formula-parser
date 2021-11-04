@@ -88,44 +88,6 @@ const ReferenceFunctions = {
         }
     },
 
-    /***
-     * @function FILTER: The FILTER function allows you to filter a range of data based on criteria you define.
-     * @param lookup_value: the value being searched for
-     * @param lookup_range: the array we look for lookup_value in
-     * @param filter_range: the array of arrays where we will get our return rows from
-     * @param default_value: the value returned if lookup_value is not found in lookup_range
-     * Microsoft link: https://support.microsoft.com/en-us/office/filter-function-f4f7cb66-82eb-4767-8f7c-4877ad80c759
-     ***/
-    //Question: @TYLER
-    //Not sure what this should return, B/c unlike other formulas, this one returns multiple rows.
-    //For now it finds the rows which match lookup_value and returns the rows in lookup_range that match
-    //it as an array of arrays
-    //If this is correct, then I am not sure how to test it, see test cases for referance
-    //Also, the Excel version has filter(..., lookup_range=lookup_value,...). I tried using the =
-    //symbol in the test cases, but it looks to be incompatable with current archetecture, so I split it into
-    //two parameters, 
-    FILTER: (lookup_value, filter_range, lookup_range, default_value) =>{
-        lookup_value = H.accept(lookup_value);
-        filter_range = H.accept(filter_range, Types.ARRAY, null, false);
-        lookup_range = H.accept(lookup_range, Types.ARRAY);
-        default_value = H.accept(default_value);
-        if(filter_range.length != lookup_range.length){
-            throw FormulaError.VALUE;
-        }
-        
-        let filtered_Array = [];
-        for(let index = 0; index < filter_range.length; index++){
-            if(lookup_range[index] == lookup_value){
-                filtered_Array.push(filter_range[index]);
-            }
-        }
-        if(filtered_Array.length == 0){
-            return default_value;
-        }
-        return filtered_Array;
-        
-    },
-
     HLOOKUP: (lookupValue, tableArray, rowIndexNum, rangeLookup) => {
         // preserve type of lookupValue
         lookupValue = H.accept(lookupValue);
