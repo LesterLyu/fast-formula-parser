@@ -98,12 +98,7 @@ module.exports = {
         'ROWS({1,2,3})': FormulaError.VALUE,
         'ROWS("A1")': FormulaError.VALUE
     },
-    //Was not sure how to test this, so I just printed all my values to my log before returning 1 (returned 1 so that tests would not fail and I would move on to the next test)
-    //Not sure how else to test b/c SUM does not work with strings
-    //All values were checked against sheets
-    //Current infrastructure cant pass \ into the function, with out escaping it
-    //the "\" is not appearing in the split function its self. I get "6?l2?3" instead of "6?\l2?3"
-    //you can pass in "\" in google sheets
+
     SPLIT: {
         /*
         'SPLIT("1,2,3", ",")': 1,
