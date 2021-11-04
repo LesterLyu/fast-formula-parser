@@ -301,67 +301,6 @@ class FormulaHelpers {
         const res = context.utils.extractRefValue(arg);
         return {value: res.val, isArray: res.isArray, ref: arg.ref};
     }
-    /***
-     * @function XLOOKUP_HELPER: compares two strings, returns 0 if same,-X if compare_value is smaller and X if its larger.
-     *                           X is proportional to the difference of the two strings, e.g. abs(XLOOKUP_HELPER('a','b')) < abs(XLOOKUP_HELPER('a','z'))
-     * @param lookup_value: one of the two values being compared
-     * @param compare_value: one of the two values being compared
-     * @param match_mode: 
-     *              True: exact match
-     *              False A wildcard match where *, ?, and ~ have special meaning.
-     * @param search_mode:
-     *          True: binary search
-     *          False: not binary search
-     ***/
-    XLOOKUP_HELPER(lookup_value, compare_value, match_mode, search_mode = false){
-      //All values should either be a string or a number
-        if(!["string", "number"].includes(typeof lookup_value) && !["string", "number"].includes(typeof compare_value)){
-          throw FormulaError.VALUE;
-        }
-        //If both values are numbers then we can subtract the two. 
-        if(typeof lookup_value === "number" && typeof compare_value === "number"){
-            return parseFloat(compare_value) - parseFloat(lookup_value);
-        }
-        //Converts any numbers into strings, then lower cases them
-        lookup_value = (typeof lookup_value === "string") ? lookup_value : lookup_value.toString();
-        compare_value = (typeof compare_value === "string") ? compare_value : compare_value.toString();
-        compare_value = compare_value.toLowerCase();
-        lookup_value = lookup_value.toLowerCase();
-        if(match_mode){
-          //If the search mode === true then we are running binary search, so we only care which string value comes first not the magnitude of their difference
-            if(search_mode) {
-                return compare_value.localeCompare(lookup_value);
-            }
-            //If search === false then we care about the magnitude of their difference
-            //The following code finds the number of different characters, multiplies it by 100 and adds the difference of the charCodes of the last character
-            var min_Index = Math.min(lookup_value.length, compare_value.length);
-            for(var i = 0; i < min_Index; i++){
-                let diff = compare_value.charCodeAt(i) - lookup_value.charCodeAt(i);
-                if(diff != 0){
-                    return (diff/Math.abs(diff)) * 100 * (min_Index - i) + diff;
-                }
-            }
-            //In the event that the two characters match, except their lengths are different, then we return the charCode of the next character
-            let longer_string = (lookup_value.length > compare_value.length) ? lookup_value : compare_value;
-            if(longer_string.length > min_Index){
-                let direction = (lookup_value.length > compare_value.length) ? -1 : 1;
-                return direction * longer_string.charCodeAt(min_Index + 1);
-            }
-            return 0;
-        }
-        //The special cases with the unique regex values
-        if(!match_mode){
-          if(search_mode){
-            throw FormulaError.VALUE;
-          }
-          //EXCEL uses ~ instead of \ for their escape character, so we replace all instances of ~ with \ so that we can use a regex comparison with wcmatch
-          lookup_value = lookup_value.replace("~", "\\")
-          //wcmatch returns if the two characters are the same.
-          let rv = wcmatch(lookup_value)(compare_value) ? 0 : 1;
-          return rv;
-        }
-      
-    }
 }
 
 const H = new FormulaHelpers();
