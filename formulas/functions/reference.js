@@ -84,6 +84,47 @@ const ReferenceFunctions = {
       throw Error("ReferenceFunctions.COLUMNS should not reach here.");
     }
   },
+  /**
+     * 
+     * @param lookupValue: the value we are filtering for in our lookupArray
+     * @param lookupArray: the array which we match values to lookupValue
+     * @param returnArray: the return values/array
+     * @param defaultValue : OPTIONAL: returned if lookupValue is not found
+     */
+   FILTER: (lookupValue, lookupArray, returnArray, defaultValue = null) => {
+    lookupValue = H.accept(lookupValue);
+    lookupArray = H.accept(lookupArray, Types.ARRAY);
+    returnArray = H.accept(returnArray, Types.ARRAY);
+    if(defaultValue != null){
+        defaultValue = H.accept(defaultValue);
+    }
+    //Asserts valid input for lookupValue
+    if(Array.isArray(lookupValue)){
+        throw FormulaError.NA;
+    }
+    if(lookupArray.length != returnArray.length){
+        throw FormulaError.VALUE;
+    }
+    //our return array
+    var rv = [];
+    //iterate through the lookupArray and check if each value is equal to the lookupValue. 
+    //If it is add it to our return array
+    for(let index = 0; index < lookupArray.length; index++){
+        let currValue = H.accept(lookupArray[index]);
+        if(currValue === lookupValue){
+            let returnArrayValue = H.accept(returnArray[index]);
+            rv.push(returnArrayValue);
+        }
+    }
+    //If we found no matches and the user provided a defaultValue, then we return the defaultValue
+    if(rv.length === 0 && defaultValue != null){
+        return defaultValue;
+    //If no default was found and there is no matches, we error
+    }else if(rv.length === 0){
+        throw FormulaError.VALUE;
+    }
+    return rv;
+},
 
   HLOOKUP: (lookupValue, tableArray, rowIndexNum, rangeLookup) => {
     // preserve type of lookupValue
