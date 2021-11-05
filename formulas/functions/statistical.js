@@ -16,7 +16,7 @@ const { DistributionFunctions } = require("./distribution");
  * @param criteria
  * @returns Bool array of passed checks
  */
- const countIf = (range, criteria) => {
+const countIf = (range, criteria) => {
   // do not flatten the array
   range = H.accept(range, Types.ARRAY, undefined, false, true);
   const isCriteriaArray = criteria.isArray;
@@ -27,20 +27,27 @@ const { DistributionFunctions } = require("./distribution");
   criteria = Criteria.parse(criteria);
 
   let cnt = 0;
-  range.forEach(row => {
-    row.forEach(value => {
+  range.forEach((row) => {
+    row.forEach((value) => {
       // wildcard
-      if (criteria.op === 'wc') {
-        if (criteria.match === criteria.value.test(value))
-          arr[cnt] = true;
-      } else if (Infix.compareOp(value, criteria.op, criteria.value, Array.isArray(value), isCriteriaArray)) {
+      if (criteria.op === "wc") {
+        if (criteria.match === criteria.value.test(value)) arr[cnt] = true;
+      } else if (
+        Infix.compareOp(
+          value,
+          criteria.op,
+          criteria.value,
+          Array.isArray(value),
+          isCriteriaArray
+        )
+      ) {
         arr[cnt] = true;
       }
       cnt++;
-    })
+    });
   });
   return arr;
-}
+};
 
 const StatisticalFunctions = {
   AVEDEV: (...numbers) => {
@@ -157,33 +164,39 @@ const StatisticalFunctions = {
 
   COUNTIF: (range, criteria) => {
     let cnt = 0;
-    countIf(range, criteria).forEach(val => {
+    countIf(range, criteria).forEach((val) => {
       if (val) cnt++;
-    })
+    });
     return cnt;
   },
 
   COUNTIFS: (range1, criteria1, ...criteriaList) => {
     criteriaList.push(range1, criteria1);
-    if (criteriaList.length % 2 != 0) throw FormulaError.ERROR('Bad argument count - All arguments must be in range/criteria pairs.');
-    let arrs = [], currarr = [], len = 0;
+    if (criteriaList.length % 2 != 0)
+      throw FormulaError.ERROR(
+        "Bad argument count - All arguments must be in range/criteria pairs."
+      );
+    let arrs = [],
+      currarr = [],
+      len = 0;
     for (let i = 0; i < criteriaList.length; i += 2) {
-      currarr = countIf(criteriaList[i], criteriaList[i+1]);
+      currarr = countIf(criteriaList[i], criteriaList[i + 1]);
       if (i == 0) len = currarr.length;
-      else if (currarr.length != len) throw FormulaError.ERROR('All parameter ranges must be of equal size.')
+      else if (currarr.length != len)
+        throw FormulaError.ERROR("All parameter ranges must be of equal size.");
       arrs.push(currarr);
     }
     len = arrs[0].length;
     let arr = new Array(len).fill(true);
-    arrs.forEach(currarr => {
+    arrs.forEach((currarr) => {
       for (let i = 0; i < len; i++) {
         arr[i] = arr[i] && currarr[i];
       }
-    })
+    });
     let cnt = 0;
-    arr.forEach(val => {
+    arr.forEach((val) => {
       if (val) cnt++;
-    })
+    });
     return cnt;
   },
 
