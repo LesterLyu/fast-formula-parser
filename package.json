@@ -37,7 +37,8 @@
     "bahttext": "^1.1.0",
     "bessel": "^1.0.2",
     "chevrotain": "^7.0.1",
-    "jstat": "^1.9.3"
+    "jstat": "^1.9.3",
+    "wildcard-match": "^5.1.2"
   },
   "devDependencies": {
     "chai": "^4.2.0",
