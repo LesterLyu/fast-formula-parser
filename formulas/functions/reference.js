@@ -87,6 +87,47 @@ const ReferenceFunctions = {
             throw Error('ReferenceFunctions.COLUMNS should not reach here.')
         }
     },
+    /**
+     * 
+     * @param lookupValue: the value we are filtering for in our lookupArray
+     * @param lookupArray: the array which we match values to lookupValue
+     * @param returnArray: the return values/array
+     * @param defaultValue : OPTIONAL: returned if lookupValue is not found
+     */
+    FILTER: (lookupValue, lookupArray, returnArray, defaultValue = null) => {
+        lookupValue = H.accept(lookupValue);
+        lookupArray = H.accept(lookupArray, Types.ARRAY);
+        returnArray = H.accept(returnArray, Types.ARRAY);
+        if(defaultValue != null){
+            defaultValue = H.accept(defaultValue);
+        }
+        //Asserts valid input for lookupValue
+        if(Array.isArray(lookupValue)){
+            throw FormulaError.NA;
+        }
+        if(lookupArray.length != returnArray.length){
+            throw FormulaError.VALUE;
+        }
+        //our return array
+        var rv = [];
+        //iterate through the lookupArray and check if each value is equal to the lookupValue. 
+        //If it is add it to our return array
+        for(let index = 0; index < lookupArray.length; index++){
+            let currValue = H.accept(lookupArray[index]);
+            if(currValue === lookupValue){
+                let returnArrayValue = H.accept(returnArray[index]);
+                rv.push(returnArrayValue);
+            }
+        }
+        //If we found no matches and the user provided a defaultValue, then we return the defaultValue
+        if(rv.length === 0 && defaultValue != null){
+            return defaultValue;
+        //If no default was found and there is no matches, we error
+        }else if(rv.length === 0){
+            throw FormulaError.VALUE;
+        }
+        return rv;
+    },
 
     HLOOKUP: (lookupValue, tableArray, rowIndexNum, rangeLookup) => {
         // preserve type of lookupValue
@@ -284,45 +325,6 @@ const ReferenceFunctions = {
         } else {
             throw Error('ReferenceFunctions.ROWS should not reach here.')
         }
-    },
-    /***
-     * @param text: The text to divide.
-     * @param delimiter: The character or characters to use to split text.
-     * @param split_by_each: OPTIONAL: Whether or not to divide text around each character contained in delimiter.
-     * @param remove_empty_text: OPTIONAL: 
-     *                           Whether or not to remove empty text messages from the split results. The default behavior is to treat 
-     *                           consecutive delimiters as one (if TRUE). If FALSE, empty cells values are added between consecutive delimiters.
-     * Google link: https://support.google.com/docs/answer/3094136?hl=en
-     *                             
-     ***/
-    SPLIT: (text, delimiter, split_by_each = true, remove_empty_text = true)  => {
-        text = H.accept(text, Types.STRING);
-        delimiter = H.accept(delimiter, Types.STRING);
-        split_by_each = H.accept(split_by_each, Types.BOOLEAN);
-        remove_empty_text = H.accept(remove_empty_text, Types.BOOLEAN);
-
-        //Exit out of any ReGex special characters in either string
-        delimiter.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
-        if(split_by_each){
-            //set up a ReGex group to exit out of all characters in delimiter
-            delimiter = "[" + delimiter + "]+"
-            delimiter = new RegExp(delimiter);
-        }
-        //delimiter is either the entire string, or the ReGex cluster depending on split_by_each
-        text = text.split(delimiter);
-
-        if(!remove_empty_text){
-            return text;
-        }
-        //removes empty spaces if remove_empty_text is true
-        for(let index = 0; index < text.length; index++){
-            if(text[index] === ''){
-                text.splice(index, 1)
-            }
-        }
-        return text;
     },
 
     TRANSPOSE: (array) => {

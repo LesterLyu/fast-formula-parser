@@ -34,6 +34,18 @@ module.exports = {
         'COLUMNS({1,2,3})': FormulaError.VALUE,
         'COLUMNS("A1")': FormulaError.VALUE
     },
+    FILTER: {
+        'SUM(FILTER(A2,A2:A10,B2:B10))' : .69,
+        'SUM(FILTER("BOB",A1:A10,B1:B10))' : FormulaError.VALUE,
+        'SUM(FILTER(5,D2:D10,C2:C10))' : 216,
+        'SUM(FILTER(6,E2:E10,C2:C10))' : 216,
+        'SUM(FILTER(6,E2:E10,B2:B10))' : 11.77,
+        'SUM(FILTER(5,D2:D10,B2:B10))' : 11.77,
+        'SUM(FILTER(7,D2:D10,B2:B10, 10))': 10,
+        'SUM(FILTER(B2, B2:B10, C2:C10))': 40,
+        'FILTER(B2, B2:B3, C3:C10)': FormulaError.VALUE
+        
+    },
 
     HLOOKUP: {
         'HLOOKUP(3, {1,2,3,4,5}, 1)': 3,
@@ -99,33 +111,6 @@ module.exports = {
         'ROWS("A1")': FormulaError.VALUE
     },
 
-    SPLIT: {
-        /*
-        'SPLIT("1,2,3", ",")': 1,
-        'SPLIT("2w2w3", "w")' : 1,
-        'SPLIT("3ww2ww3", "w")' : 1,
-        'SPLIT("4ww2ww3", "w")' : 1,
-        'SPLIT("5?2?3", "?")' : 1,
-        'SPLIT("6?l2?3", "?")' : 1,
-        'SPLIT("7?^?2?3", "?")' : 1,
-        'SPLIT("8?$?2?3", "?")' : 1,
-        'SPLIT("9?*?2?3", "?")' : 1,
-        'SPLIT("10?+?2?3", "?")' : 1,
-        'SPLIT("11?+?2?3", "?")' : 1,
-        'SPLIT("12ww.ww3", "w")' : 1,
-        'SPLIT("13ww(ww3", "w")' : 1,
-        'SPLIT("14ww)ww3", "w")' : 1,
-        'SPLIT("15ww|ww3", "w")' : 1,
-        'SPLIT("16ww{ww3", "w")' : 1,
-        'SPLIT("17ww}ww3", "w")' : 1,
-        'SPLIT("18ww[ww3", "w")' : 1,
-        'SPLIT("19ww]ww3", "ww", FALSE)' : 1,
-        'SPLIT("20hih bob hih3", "hih")' : 1,
-        'SPLIT("21ww2ww3", "w", TRUE, FALSE)' : 1,
-        'SPLIT("22wwww2wwww3", "ww", FALSE, FALSE)' : 1,
-        'SPLIT("2w6,t.l/3", "w,./")': 1,
-        */
-    },
 
     TRANSPOSE: {
         // this should be good, lol
