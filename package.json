@@ -39,6 +39,7 @@
     "chevrotain": "^7.0.1",
     "format": "^0.2.2",
     "jstat": "^1.9.3",
+    "prettier": "^2.4.1",
     "yarn": "^1.22.17"
   },
   "devDependencies": {

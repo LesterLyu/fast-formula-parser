@@ -84,6 +84,44 @@ const ReferenceFunctions = {
       throw Error("ReferenceFunctions.COLUMNS should not reach here.");
     }
   },
+  /**
+   *
+   * @param lookupValue: the value we are filtering for in our lookupArray
+   * @param lookupArray: the array which we match values to lookupValue
+   * @param returnArray: the return values/array
+   * @param defaultValue : OPTIONAL: returned if lookupValue is not found
+   */
+  FILTER: (returnArray, boolArray, defaultValue = null) => {
+    boolArray = H.accept(boolArray, Types.ARRAY);
+    returnArray = H.accept(returnArray, Types.ARRAY);
+    if (defaultValue !== null) {
+      defaultValue = H.accept(defaultValue);
+    }
+    if (!Array.isArray(boolArray)) {
+      throw FormulaError.NA;
+    }
+    if (!Array.isArray(returnArray)) {
+      throw FormulaError.NA;
+    }
+    if (boolArray.length !== returnArray.length) {
+      throw FormulaError.VALUE;
+    }
+    var rv = [];
+    for (let index = 0; index < boolArray.length; index++) {
+      let currBOOL = H.accept(boolArray[index], Types.BOOLEAN);
+      let currRV = H.accept(returnArray[index]);
+      if (currBOOL) {
+        rv.push(currRV);
+      }
+    }
+    if (rv.length === 0 && defaultValue !== null) {
+      return defaultValue;
+    }
+    if (rv.length === 0 && defaultValue === null) {
+      throw FormulaError.VALUE;
+    }
+    return rv;
+  },
 
   HLOOKUP: (lookupValue, tableArray, rowIndexNum, rangeLookup) => {
     // preserve type of lookupValue
@@ -507,8 +545,8 @@ const ReferenceFunctions = {
           back = middle;
         } else if (comparison > 0 && search_mode === -2) {
           front = middle;
-        }else {
-          throw "Unreachable Code Error"
+        } else {
+          throw "Unreachable Code Error";
         }
       }
       var comparisonFront = H.XLOOKUP_HELPER(
@@ -528,7 +566,7 @@ const ReferenceFunctions = {
       if (comparisonBack === 0) {
         return return_array[back];
       }
-      //If search mode === 2 search_mode === 1, we have to check front first, 
+      //If search mode === 2 search_mode === 1, we have to check front first,
       //b/c its in ascending order and we want the next largest item
       if (comparisonFront > 0 && match_mode === 1 && search_mode === 2) {
         return return_array[front];
@@ -536,7 +574,7 @@ const ReferenceFunctions = {
       if (comparisonBack > 0 && match_mode === 1 && search_mode === 2) {
         return return_array[back];
       }
-      //If search mode === 2 search_mode === -1, we have to check back first, 
+      //If search mode === 2 search_mode === -1, we have to check back first,
       //b/c its in ascending order and we want the next smaller item
       if (comparisonBack < 0 && match_mode === -1 && search_mode === 2) {
         return return_array[back];
@@ -544,7 +582,7 @@ const ReferenceFunctions = {
       if (comparisonFront < 0 && match_mode === -1 && search_mode === 2) {
         return return_array[front];
       }
-      //If search mode === -2 search_mode === 1, we have to check back first, 
+      //If search mode === -2 search_mode === 1, we have to check back first,
       //b/c its in descending order and we want the next largest item
       if (comparisonBack > 0 && match_mode === 1 && search_mode === -2) {
         return return_array[back];
@@ -552,7 +590,7 @@ const ReferenceFunctions = {
       if (comparisonFront > 0 && match_mode === 1 && search_mode === -2) {
         return return_array[front];
       }
-      //If search mode === -2 search_mode === -1, we have to check front first, 
+      //If search mode === -2 search_mode === -1, we have to check front first,
       //b/c its in descending order and we want the next smaller item
       if (comparisonFront < 0 && match_mode === -1 && search_mode === -2) {
         return return_array[front];
