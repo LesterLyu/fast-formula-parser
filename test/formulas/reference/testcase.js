@@ -34,6 +34,17 @@ module.exports = {
         'COLUMNS({1,2,3})': FormulaError.VALUE,
         'COLUMNS("A1")': FormulaError.VALUE
     },
+    FILTER: {
+        'SUM(FILTER(B2:B10,{TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE}))' : .69,
+        'SUM(FILTER(C2:C10,{TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE}))' : 216,
+        'SUM(FILTER(B1:B10,{TRUE}))' : FormulaError.VALUE,
+        'SUM(FILTER(C2:C10,{TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE}))' : 216,
+        'SUM(FILTER(B2:B10,{TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE}))' : 11.77,
+        'SUM(FILTER(B2:B10,{TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE}))' : 11.77,
+        'SUM(FILTER(B2:B10,{FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE},10))': 10,
+        'SUM(FILTER(C2:C10,{TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE}))': 40,
+        'SUM(FILTER(C3:C10,{FALSE,FALSE,FALSE}))': FormulaError.VALUE
+    },
 
 
     HLOOKUP: {
@@ -98,6 +109,58 @@ module.exports = {
         'ROWS(123)': FormulaError.VALUE,
         'ROWS({1,2,3})': FormulaError.VALUE,
         'ROWS("A1")': FormulaError.VALUE
+    },
+
+    SPLIT: {        
+        //Basic tests
+        'CONCAT(SPLIT("1,2,3", ","))': "123",        
+        'CONCAT(SPLIT("2w2w3", "w"))' : "223",
+        'CONCAT(SPLIT("3ww2ww3", "w"))' : "323",
+        'CONCAT(SPLIT("4ww2ww3", "w"))' : "423",
+        //Checks if special characters still work
+        'CONCAT(SPLIT("5?2?3", "?"))' : "523",
+        'CONCAT(SPLIT("6?l2?3", "?"))' : "6l23",
+        'CONCAT(SPLIT("7?^?2?3", "?"))' : "7^23",
+        'CONCAT(SPLIT("8?$?2?3", "?"))' : "8$23",
+        'CONCAT(SPLIT("9?*?2?3", "?"))' : "9*23",
+        'CONCAT(SPLIT("10?+?2?3", "?"))' : "10+23",
+        'CONCAT(SPLIT("11?+?2?3", "?"))' : "11+23",
+        'CONCAT(SPLIT("12ww.ww3", "w"))' : "12.3",
+        'CONCAT(SPLIT("13ww(ww3", "w"))' : "13(3",
+        'CONCAT(SPLIT("14ww)ww3", "w"))' : "14)3",
+        'CONCAT(SPLIT("15ww|ww3", "w"))' : "15|3",
+        'CONCAT(SPLIT("16ww{ww3", "w"))' : "16{3",
+        'CONCAT(SPLIT("17ww}ww3", "w"))' : "17}3",
+        'CONCAT(SPLIT("18ww[ww3", "w"))' : "18[3",
+        //More complected tests        
+        'CONCAT(SPLIT("19ww]ww3", "ww", FALSE))' : "19]3",
+        'CONCAT(SPLIT("20hih bob hih3", "hih"))' : "20 bob 3",
+        'CONCAT(SPLIT("21ww2ww3", "wd", TRUE, FALSE))' : "2123",
+        'CONCAT(SPLIT("22wwww2wwww3", "ww", FALSE, FALSE))' : "2223",
+        'CONCAT(SPLIT("2w6,t.l/3", "w,./"))': "26tl3",
+        //Checks if remove empty works properly
+        'CONCAT(SPLIT("qwqwqwqwqwqwqw", "w", TRUE, TRUE))' : "qqqqqqq",
+        'CONCAT(SPLIT("qwqwqwqwqwqwqw", "w", FALSE, TRUE))' : "qqqqqqq",
+        'CONCAT(SPLIT("qwqwqwqwqwqwqw", "w", TRUE, FALSE))' : "qqqqqqq",
+        'CONCAT(SPLIT("qwqwqwqwqwqwqw", "w", FALSE, FALSE))' : "qqqqqqq",
+        'CONCAT(SPLIT("qwwqwwqwwqwwqwwqwwqww", "w", TRUE, TRUE))': "qqqqqqq",
+        'CONCAT(SPLIT("qwwqwwqwwqwwqwwqwwqww", "w", FALSE, TRUE))': "qqqqqqq",
+        'CONCAT(SPLIT("qwwqwwqwwqwwqwwqwwqww", "w", TRUE, FALSE))': "qqqqqqq",
+        'CONCAT(SPLIT("qwwqwwqwwqwwqwwqwwqww", "w", FALSE, FALSE))': "qqqqqqq",
+        //Checks that the split function is case senstitive
+        'CONCAT(SPLIT("RwwRwwR", "WW", TRUE, TRUE))' : "RwwRwwR",
+        'CONCAT(SPLIT("RwwRwwR", "WW", FALSE, TRUE))' : "RwwRwwR",
+        'CONCAT(SPLIT("RwwRwwR", "WW", TRUE, FALSE))' : "RwwRwwR",
+        'CONCAT(SPLIT("RwwRwwR", "WW", FALSE, FALSE))' : "RwwRwwR",
+        //Checks if split by each works correctly
+        'CONCAT(SPLIT("RwwRwwR", "ww", TRUE, TRUE))' : "RRR",
+        'CONCAT(SPLIT("RwwRwwR", "ww", FALSE, TRUE))' : "RRR",
+        'CONCAT(SPLIT("RwwRwwR", "ww", TRUE, FALSE))' : "RRR",
+        'CONCAT(SPLIT("RwwRwwR", "ww", FALSE, FALSE))' : "RRR",
+        'CONCAT(SPLIT("RwqRwqR", "wq", TRUE, TRUE))': "RRR",
+        'CONCAT(SPLIT("RwqRwqR", "wq", FALSE, TRUE))': "RRR",
+        'CONCAT(SPLIT("RwqRwqR", "wq", TRUE, FALSE))': "RRR",
+        'CONCAT(SPLIT("RwqRwqR", "wq", FALSE, FALSE))': "RRR"
     },
 
     TRANSPOSE: {
@@ -382,5 +445,5 @@ module.exports = {
         'XLOOKUP(1, B1:B9, C1:C9, 10,2,-2)': FormulaError.VALUE,
         'XLOOKUP(1, B1:B9, C1:C9,,2,-2)': FormulaError.VALUE,
     }
-
+    
 };

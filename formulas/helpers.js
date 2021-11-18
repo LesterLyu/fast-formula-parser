@@ -1,6 +1,6 @@
 const FormulaError = require("./error");
 const Collection = require("../grammar/type/collection");
-const wcmatch = require('wildcard-match');
+const wcmatch = require("wildcard-match");
 
 const Types = {
   NUMBER: 0,
@@ -371,6 +371,7 @@ class FormulaHelpers {
     return { value: res.val, isArray: res.isArray, ref: arg.ref };
   }
   /***
+<<<<<<< HEAD
      * @function XLOOKUP_HELPER: compares two strings, returns 0 if same,-X if compare_value is smaller and X if its larger.
      *                           X is proportional to the difference of the two strings, e.g. abs(XLOOKUP_HELPER('a','b')) < abs(XLOOKUP_HELPER('a','z'))
      * @param lookup_value: one of the two values being compared
@@ -432,6 +433,77 @@ class FormulaHelpers {
     
   }
 
+=======
+   * @function XLOOKUP_HELPER: compares two strings, returns 0 if same,-X if compare_value is smaller and X if its larger.
+   *                           X is proportional to the difference of the two strings, e.g. abs(XLOOKUP_HELPER('a','b')) < abs(XLOOKUP_HELPER('a','z'))
+   * @param lookup_value: one of the two values being compared
+   * @param compare_value: one of the two values being compared
+   * @param match_mode:
+   *              True: exact match
+   *              False A wildcard match where *, ?, and ~ have special meaning.
+   * @param search_mode:
+   *          True: binary search
+   *          False: not binary search
+   ***/
+  XLOOKUP_HELPER(lookup_value, compare_value, match_mode, search_mode = false) {
+    if (
+      !["string", "number"].includes(typeof lookup_value) ||
+      !["string", "number"].includes(typeof compare_value)
+    ) {
+      throw FormulaError.VALUE;
+    }
+    //If both values are numbers
+    if (typeof lookup_value === "number" && typeof compare_value === "number") {
+      return parseFloat(compare_value) - parseFloat(lookup_value);
+    }
+
+    //We use strings and element wise comparisons to compare our two values
+    lookup_value =
+      typeof lookup_value === "string" ? lookup_value : lookup_value.toString();
+    compare_value =
+      typeof compare_value === "string"
+        ? compare_value
+        : compare_value.toString();
+    compare_value = compare_value.toLowerCase();
+    lookup_value = lookup_value.toLowerCase();
+    if (match_mode) {
+      //If the search mode === true then we are running binary search, so we only care 
+      //which string value comes first not the magnitude of their difference
+      if (search_mode) {
+        return compare_value.localeCompare(lookup_value);
+      }
+      //Comparison formula = 100 * (number of different characters) + difference of character values
+      //for the first different characters 
+      var min_Index = Math.min(lookup_value.length, compare_value.length);
+      for (var i = 0; i < min_Index; i++) {
+        let diff = compare_value.charCodeAt(i) - lookup_value.charCodeAt(i);
+        if (diff != 0) {
+          return (diff / Math.abs(diff)) * 100 * (min_Index - i) + diff;
+        }
+      }
+      let longer_string =
+        lookup_value.length > compare_value.length
+          ? lookup_value
+          : compare_value;
+      if (longer_string.length > min_Index) {
+        let direction = lookup_value.length > compare_value.length ? -1 : 1;
+        return direction * longer_string.charCodeAt(min_Index + 1);
+      }
+      return 0;
+    }
+    //WildCard Comparisons: only care if the two values are the same
+    if (!match_mode) {
+      if (search_mode) {
+        throw FormulaError.VALUE;
+      }
+      //EXCEL uses ~ instead of \ for their escape character
+      lookup_value = lookup_value.replace("~", "\\");
+      //wcmatch returns True if the two characters are the same.
+      let rv = wcmatch(lookup_value)(compare_value) ? 0 : 1;
+      return rv;
+    }
+  }
+>>>>>>> 538287c0a771bc9616e2acc62a6cd837cbb9bfe2
 }
 
 const H = new FormulaHelpers();
