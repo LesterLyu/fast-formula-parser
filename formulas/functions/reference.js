@@ -377,6 +377,43 @@ const ReferenceFunctions = {
     return result;
   },
 
+   /**
+       * @param {*} range - The data to filter by unique entries.
+       * @returns unique rows in the provided source range, discarding duplicates.
+       *          Rows are returned in the order in which they first appear in the source range.
+       **/
+    UNIQUE: (range) => {
+      try {
+        range = H.accept(range, Types.ARRAY, null, false);
+      } catch (e) {
+        range = H.accept(range);
+        return range;
+      }
+      //Checks to see if range is an array of arrays. If it is not, 
+      //then the first row is Unique to its self and thus can be returned
+      if (typeof range[0] !== "object") {
+        return range;
+      }
+      let seen = new Set();
+      let rv = [];
+      for (let index = 0; index < range.length; index++) {
+        let currValue = range[index];
+        let returnValue = currValue;
+        currValue = H.accept(currValue);
+        returnValue = H.accept(returnValue)
+
+        //Since JS compares based upon pointers, converting our Arrays to strings allows for element wise comparisons.
+        if(typeof currValue.join === 'function'){
+          currValue = currValue.join();
+        }
+        if (!seen.has(currValue)) {
+          seen.add(currValue);
+          rv.push(returnValue);
+        }
+      }
+      return rv;
+    },
+
   VLOOKUP: (lookupValue, tableArray, colIndexNum, rangeLookup) => {
     // preserve type of lookupValue
     lookupValue = H.accept(lookupValue);

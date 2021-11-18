@@ -46,6 +46,7 @@ module.exports = {
         'SUM(FILTER(C3:C10,{FALSE,FALSE,FALSE}))': FormulaError.VALUE
     },
 
+
     HLOOKUP: {
         'HLOOKUP(3, {1,2,3,4,5}, 1)': 3,
         'HLOOKUP(3, {3,2,1}, 1)': 1,
@@ -165,6 +166,30 @@ module.exports = {
     TRANSPOSE: {
         // this should be good, lol
         'SUM(TRANSPOSE({1,2,3;4,5,6}))': 21,
+    },
+
+    UNIQUE: {
+        'COUNT(UNIQUE(C2:C10))': 8,
+        'COUNT(UNIQUE(D2:D10))': 1,
+        'COUNT(UNIQUE(D1:E12))': 6,
+        'COUNT(UNIQUE(B2:E10))': 36,
+        'COUNT(UNIQUE(D1))' : 1,
+        'COUNT(UNIQUE(D10:E12))': 4,
+        'COUNT(UNIQUE(C2:E2))': 3,
+
+        'COUNT(UNIQUE(D2:D10))': 1,
+        'COUNT(UNIQUE(B2:C10))': 18,
+        'COUNT(UNIQUE(B2:E10))': 36,
+        'COUNT(UNIQUE(D10:E12))': 4,
+        'COUNT(UNIQUE({38,15,25,10,16,20,12}))': 7,
+        'COUNT(UNIQUE(D1:E12))': 6,
+        'COUNT(UNIQUE(C2:C10))': 8,
+        'COUNT(UNIQUE(B2:C10))': 18,
+        'COUNT(UNIQUE({1;2;3;4;5}))': 5,
+        //duplicates
+        'COUNT(UNIQUE({1;1;1;1;1;1;1;1;2;2;2;2;2;3;3;4;4;4;5;5;5;5;6}))': 6,
+        'COUNT(UNIQUE({7;7;8;8;9;9}))': 3,
+        'COUNT(UNIQUE({1;1;1;1;1;1;1;1;1;1;1;1;1}))':1
     },
 
     VLOOKUP: {
