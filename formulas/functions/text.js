@@ -302,6 +302,40 @@ const TextFunctions = {
     return TextFunctions.SEARCH(...params);
   },
 
+  /***
+    * @param text: The text to divide.
+    * @param delimiter: The character or characters to use to split text.
+    * @param split_by_each: OPTIONAL: Whether or not to divide text around each character contained in delimiter.
+    * @param remove_empty_text: OPTIONAL:
+    *                           Whether or not to remove empty text messages from the split results. The default behavior is to treat
+    *                           consecutive delimiters as one (if TRUE). If FALSE, empty cells values are added between consecutive delimiters.
+    * Google link: https://support.google.com/docs/answer/3094136?hl=en
+    *
+    ***/
+   SPLIT: (text, delimiter, split_by_each = true, remove_empty_text = true) => {
+    text = H.accept(text, Types.STRING);
+    delimiter = H.accept(delimiter, Types.STRING);
+    split_by_each = H.accept(split_by_each, Types.BOOLEAN);
+    remove_empty_text = H.accept(remove_empty_text, Types.BOOLEAN);
+
+    //Exit out of any ReGex special characters in both delimiter and text in order to preserve
+    //the user's input sequence 
+    delimiter.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    if (split_by_each) {
+      delimiter = "[" + delimiter + "]";
+      delimiter = new RegExp(delimiter);
+    }
+    let rv = text.split(delimiter);
+
+    if (!remove_empty_text) {
+      return rv;
+    }
+    filteredRV = rv.filter(s => s);
+    return filteredRV;
+  },
+
   SUBSTITUTE: (...params) => {},
 
   T: (value) => {
