@@ -337,7 +337,6 @@ class Utils {
         }
         return {val: res, isArray};
     }
-    
 
     /**
      *

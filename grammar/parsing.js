@@ -184,7 +184,7 @@ class Parsing extends EmbeddedActionsParser {
             {ALT: () => $.SUBRULE($.paren)},
             {ALT: () => $.SUBRULE($.constant)},
             {ALT: () => $.SUBRULE($.functionCall)},
-            {ALT: () => $.SUBRULE($.multiArray)},
+            {ALT: () => $.SUBRULE($.constantArray)},
         ]));
 
         $.RULE('paren', () => {
@@ -206,80 +206,12 @@ class Parsing extends EmbeddedActionsParser {
             return result;
         });
 
-        $.RULE('multiArray', () => {
-            const multiArr = [[]];
-            let singleArr = null;
-
-            const updateRow = (multiArr, newArr) => {
-                if (multiArr[0] === null)
-                    multiArr.push([])
-                for(let newArrIndex = 0; newArrIndex < newArr.length; newArrIndex++){
-                    let currVal = newArr[newArrIndex];
-                    if (!Array.isArray(currVal)){
-                        multiArr[0].push(currVal);
-                        continue;
-                    }
-                    if (multiArr.length <= newArrIndex)
-                            multiArr.push([]);
-                    for(let currValIndex = 0; currValIndex < currVal.length; currValIndex++){
-                        multiArr[newArrIndex].push(currVal[currValIndex]);
-                    }
-                }
-            }
-            
-
-            $.CONSUME(OpenCurlyParen);
-            let single = $.OR([
-                {ALT: () => {
-                    updateRow(multiArr, $.SUBRULE($.functionCall));
-                    return false
-                }},
-                {ALT: () => {
-                    singleArr = $.SUBRULE($.constantArray);
-                    $.CONSUME(CloseCurlyParen);
-                    return true;
-                }}, 
-                {ALT: () => {
-                    updateRow(multiArr, $.SUBRULE($.subArray));
-                    return false;
-                }},
-            ])
-            // chevrotain occasionally runs simulations where $.OR returns as
-            // "{description: 'This Object indicates the Parser is during Recording Phase'}" 
-            // thus we need to check if single === true
-            if (single === true){
-                return $.ACTION(() => this.utils.toArray(singleArr));
-            }
-            $.MANY(() => {
-                $.CONSUME(Comma);
-                let x = $.OR2([
-                    {ALT: () => {
-                        updateRow(multiArr, $.SUBRULE($.subArray));
-                    }},
-                    {ALT:() => {
-                        updateRow(multiArr, $.SUBRULE($.functionCall));
-                        
-                    }},
-                ]);
-            })
-            $.CONSUME(CloseCurlyParen)
-            return $.ACTION(() => this.utils.toArray(multiArr));
-        })
-
-        $.RULE('subArray', () => {
-            $.CONSUME(OpenCurlyParen)
-            const subArray = $.SUBRULE2($.constantArray);
-            if (subArray.length > 1){
-                throw "Error: 3D Array";
-            }
-            $.CONSUME(CloseCurlyParen)
-            return $.ACTION(() => this.utils.toArray(subArray));
-        })
-  
         $.RULE('constantArray', () => {
             // console.log('constantArray');
             const arr = [[]];
             let currentRow = 0;
+            $.CONSUME(OpenCurlyParen);
+
             // array must contain at least one item
             arr[currentRow].push($.SUBRULE($.constantForArray));
             $.MANY(() => {
@@ -296,10 +228,13 @@ class Parsing extends EmbeddedActionsParser {
                     arr[currentRow].push(constant)
                 }
             });
+
+            $.CONSUME(CloseCurlyParen);
+
             return $.ACTION(() => this.utils.toArray(arr));
         });
-  
-       /**
+
+        /**
          * Used in array
          */
         $.RULE('constantForArray', () => $.OR([
@@ -334,7 +269,6 @@ class Parsing extends EmbeddedActionsParser {
                 }
             },
         ]));
- 
 
         $.RULE('constant', () => $.OR([
             {
