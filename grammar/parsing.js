@@ -209,29 +209,12 @@ class Parsing extends EmbeddedActionsParser {
         $.RULE('multiArray', () => {
             const multiArr = [[]];
             let singleArr = null;
-
-            const updateRow = (multiArr, newArr) => {
-                if (multiArr[0] === null)
-                    multiArr.push([])
-                for(let newArrIndex = 0; newArrIndex < newArr.length; newArrIndex++) {
-                    let currVal = newArr[newArrIndex];
-                    if (!Array.isArray(currVal)) {
-                        multiArr[0].push(currVal);
-                        continue;
-                    }
-                    if (multiArr.length <= newArrIndex)
-                            multiArr.push([]);
-                    for(let currValIndex = 0; currValIndex < currVal.length; currValIndex++) {
-                        multiArr[newArrIndex].push(currVal[currValIndex]);
-                    }
-                }
-            }
             
 
             $.CONSUME(OpenCurlyParen);
             let single = $.OR([
                 {ALT: () => {
-                    updateRow(multiArr, $.SUBRULE($.functionCall));
+                    this.utils.updateRow(multiArr, $.SUBRULE($.functionCall));
                     return false
                 }},
                 {ALT: () => {
@@ -240,7 +223,7 @@ class Parsing extends EmbeddedActionsParser {
                     return true;
                 }}, 
                 {ALT: () => {
-                    updateRow(multiArr, $.SUBRULE($.subArray));
+                    this.utils.updateRow(multiArr, $.SUBRULE($.subArray));
                     return false;
                 }},
             ])
@@ -254,10 +237,10 @@ class Parsing extends EmbeddedActionsParser {
                 $.CONSUME(Comma);
                 let x = $.OR2([
                     {ALT: () => {
-                        updateRow(multiArr, $.SUBRULE($.subArray));
+                        this.utils.updateRow(multiArr, $.SUBRULE($.subArray));
                     }},
                     {ALT:() => {
-                        updateRow(multiArr, $.SUBRULE($.functionCall));
+                        this.utils.updateRow(multiArr, $.SUBRULE($.functionCall));
                         
                     }},
                 ]);
