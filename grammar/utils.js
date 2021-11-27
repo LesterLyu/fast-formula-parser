@@ -421,7 +421,7 @@ class Utils {
     updateRow = (multiArr, inputArr) => {
         if(!Array.isArray(multiArr))
             throw "ERROR: multiArray is not array";
-        if (multiArr[0] === undefined)
+        if (multiArr[0] === undefined || multiArr.length === 0)
             multiArr[0].push([])
         if(!Array.isArray(inputArr)){
             multiArr[0].push(inputArr)
