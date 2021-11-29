@@ -214,7 +214,7 @@ class Parsing extends EmbeddedActionsParser {
             $.CONSUME(OpenCurlyParen);
             let single = $.OR([
                 {ALT: () => {
-                    this.utils.updateRow(multiArr, $.SUBRULE($.functionCall));
+                    context.updateRow(multiArr, $.SUBRULE($.functionCall));
                     return false
                 }},
                 {ALT: () => {
@@ -223,7 +223,7 @@ class Parsing extends EmbeddedActionsParser {
                     return true;
                 }}, 
                 {ALT: () => {
-                    this.utils.updateRow(multiArr, $.SUBRULE($.subArray));
+                    context.updateRow(multiArr, $.SUBRULE($.subArray));
                     return false;
                 }},
             ])
@@ -237,10 +237,10 @@ class Parsing extends EmbeddedActionsParser {
                 $.CONSUME(Comma);
                 let x = $.OR2([
                     {ALT: () => {
-                        this.utils.updateRow(multiArr, $.SUBRULE($.subArray));
+                        context.updateRow(multiArr, $.SUBRULE($.subArray));
                     }},
                     {ALT:() => {
-                        this.utils.updateRow(multiArr, $.SUBRULE($.functionCall));
+                        context.updateRow(multiArr, $.SUBRULE($.functionCall));
                         
                     }},
                 ]);
