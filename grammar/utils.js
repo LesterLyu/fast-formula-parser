@@ -403,7 +403,6 @@ class Utils {
         error.errorLocation = {line, column};
         return FormulaError.ERROR(msg, error);
     }
-
 }
 
 module.exports = Utils;
