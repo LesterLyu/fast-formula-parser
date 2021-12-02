@@ -404,13 +404,13 @@ class FormulaHelpers {
     compare_value = compare_value.toLowerCase();
     lookup_value = lookup_value.toLowerCase();
     if (match_mode) {
-      //If the search mode === true then we are running binary search, so we only care 
+      //If the search mode === true then we are running binary search, so we only care
       //which string value comes first not the magnitude of their difference
       if (search_mode) {
         return compare_value.localeCompare(lookup_value);
       }
       //Comparison formula = 100 * (number of different characters) + difference of character values
-      //for the first different characters 
+      //for the first different characters
       var min_Index = Math.min(lookup_value.length, compare_value.length);
       for (var i = 0; i < min_Index; i++) {
         let diff = compare_value.charCodeAt(i) - lookup_value.charCodeAt(i);
