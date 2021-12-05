@@ -66,23 +66,6 @@ describe('Parser allows returning array or range', () => {
         let actual = parser.parse('E5', position, true);
         expect(actual).to.eq(null);
     });
-    it('should work with multiArrays', function() {
-        let actual = parser.parse('{{1,2,FALSE},{4,5,"HI"},{7,8,9.7}}', position, true);
-        expect(actual).to.deep.eq([[1, 2, false, 4, 5, "HI", 7, 8, 9.7]]);
-    });
-    it('should allow for functions in arrays', function() {
-        let actual = parser.parse('{TRANSPOSE({1,2,3})}', position, true);
-        expect(actual).to.deep.eq([[1],[2],[3]]);
-    });
-    it('should allow for multiple functions in arrays', function() {
-        let actual = parser.parse('{TRANSPOSE({1,2}),TRANSPOSE({3,4})}', position, true)
-        expect(actual).to.deep.eq([[1,3],[2,4]])
-    })
-    it('should allow for other functions in arrays', function() {
-        let actual = parser.parse('{TRANSPOSE({1,2}),TRANSPOSE({3,4}), TRANSPOSE({5,6})}', position, true);
-        expect(actual).to.deep.eq([[1,3,5], [2,4,6]])
-    })
- 
 });
 
 describe('async parse', () => {
