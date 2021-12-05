@@ -36,6 +36,19 @@ describe('Basic parse', () => {
         let actual = parser.parse('SUM(1:1)', position);
         expect(actual).to.deep.eq(1);
     });
+    it('should not parse ACTION', function () {
+      let actual = parser.parse('ACTION(INVALID_FORMULA)', position);
+      expect(actual).to.deep.eq("INVALID_FORMULA");
+    });
+  describe('When parser is running action', () => {
+    beforeEach(() => {
+      parser.isRunningAction = true;
+    });
+    it('should parse ACTION', function () {
+      let actual = parser.parse('ACTION(SUM(1:1))', position);
+      expect(actual).to.deep.eq(1);
+    });
+  });
 
 })
 

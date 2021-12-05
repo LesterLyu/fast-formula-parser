@@ -299,6 +299,12 @@ class FormulaParser {
      */
     parse(inputText, position, allowReturnArray = false) {
         if (inputText.length === 0) throw Error('Input must not be empty.');
+        if (inputText.startsWith("ACTION") && this.isRunningAction) {
+          return this.parse(inputText.substring("ACTION(".length, inputText.length - 1), position, allowReturnArray);
+        }
+        if (inputText.startsWith("ACTION") && !this.isRunningAction) {
+          return inputText.substring("ACTION(".length, inputText.length - 1);
+        }
         this.position = position;
         this.async = false;
         const lexResult = lexer.lex(inputText);
