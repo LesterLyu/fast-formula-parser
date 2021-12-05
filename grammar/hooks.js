@@ -42,6 +42,7 @@ class FormulaParser {
             config.functions, config.functionsNeedContext);
         this.onRange = config.onRange;
         this.onCell = config.onCell;
+        this.isRunningAction = config.isRunningAction;
 
         // functions treat null as 0, other functions treats null as ""
         this.funsNullAs0 = Object.keys(MathFunctions)
