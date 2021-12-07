@@ -1,5 +1,6 @@
 const FormulaError = require("../error");
-const { FormulaHelpers, Types } = require("../helpers");
+const { FormulaHelpers } = require("../helpers");
+const { Types } = require("../types");
 const H = FormulaHelpers;
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;

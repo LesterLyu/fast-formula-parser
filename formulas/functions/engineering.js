@@ -1,6 +1,7 @@
 const FormulaError = require("../error");
 const TextFunctions = require("./text");
-const { FormulaHelpers, Types } = require("../helpers");
+const { FormulaHelpers } = require("../helpers");
+const { Types } = require("../types");
 const H = FormulaHelpers;
 const bessel = require("bessel");
 const jStat = require("jstat");

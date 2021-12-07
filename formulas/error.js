@@ -127,7 +127,7 @@ FormulaError.TOO_MANY_ARGS = (functionName) => {
  * @constructor
  */
 FormulaError.ARG_MISSING = (args) => {
-  const { Types } = require("./helpers");
+  const { Types } = require("./types");
   return new FormulaError(
     "#N/A",
     `Argument type ${args.map((arg) => Types[arg]).join(", ")} is missing.`

@@ -1,5 +1,6 @@
 const FormulaError = require('../../formulas/error');
-const {FormulaHelpers, Types, Address} = require('../../formulas/helpers');
+const {FormulaHelpers, Address} = require('../../formulas/helpers');
+const { Types } = require("./../../formulas/types");
 const {Prefix, Postfix, Infix, Operators} = require('../../formulas/operators');
 const Collection = require('../type/collection');
 const MAX_ROW = 1048576, MAX_COLUMN = 16384;

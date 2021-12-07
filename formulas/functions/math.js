@@ -1,6 +1,7 @@
 const util = require("util");
 const FormulaError = require("../error");
-const { FormulaHelpers, Types, Factorials, Criteria } = require("../helpers");
+const { FormulaHelpers, Factorials, Criteria } = require("../helpers");
+const { Types } = require("../types");
 const { Infix } = require("../operators");
 const H = FormulaHelpers;
 

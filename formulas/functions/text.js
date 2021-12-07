@@ -1,5 +1,6 @@
 const FormulaError = require("../error");
-const { FormulaHelpers, Types, WildCard } = require("../helpers");
+const { FormulaHelpers, WildCard } = require("../helpers");
+const { Types } = require("../types");
 const H = FormulaHelpers;
 
 // Spreadsheet number format

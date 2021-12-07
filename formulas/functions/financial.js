@@ -1,5 +1,6 @@
 const FormulaError = require("../error");
-const { FormulaHelpers: H, Types } = require("../helpers");
+const { FormulaHelpers: H } = require("../helpers");
+const { Types } = require("../types");
 const { DATEVALUE, YEARFRAC } = require("./date");
 
 const FinancialFunctions = {

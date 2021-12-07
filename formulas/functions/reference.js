@@ -1,5 +1,6 @@
 const FormulaError = require("../error");
-const { FormulaHelpers, Types, WildCard, Address } = require("../helpers");
+const { FormulaHelpers, WildCard, Address } = require("../helpers");
+const { Types } = require("../types");
 const Collection = require("../../grammar/type/collection");
 const H = FormulaHelpers;
 

@@ -2,16 +2,7 @@ const FormulaError = require("./error");
 const Collection = require("../grammar/type/collection");
 const wcmatch = require("wildcard-match");
 
-const Types = {
-  NUMBER: 0,
-  ARRAY: 1,
-  BOOLEAN: 2,
-  STRING: 3,
-  RANGE_REF: 4, // can be 'A:C' or '1:4', not only 'A1:C3'
-  CELL_REF: 5,
-  COLLECTIONS: 6, // Unions of references
-  NUMBER_NO_BOOLEAN: 10,
-};
+const { Types } = require("./types");
 
 const Factorials = [
   1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800, 39916800, 479001600,
@@ -602,7 +593,6 @@ const Address = {
 
 module.exports = {
   FormulaHelpers: H,
-  Types,
   ReversedTypes,
   Factorials,
   WildCard,
