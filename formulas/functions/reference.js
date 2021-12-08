@@ -292,6 +292,73 @@ const ReferenceFunctions = {
 
   MATCH: () => {},
 
+  /**
+   * 
+   * @param {*} Origin : Required. The reference from which you want to base the offset. 
+   *                        Reference must refer to a cell or range of adjacent cells; otherwise, 
+   *                        OFFSET returns the #VALUE! error value.
+   * @param {*} Rows : Required. The number of rows, up or down, that you want the upper-left cell to refer to.
+   *                   Using 5 as the rows argument specifies that the upper-left cell in the reference is five rows below reference. 
+   *                   Rows can be positive (which means below the starting reference) or negative (which means above the starting reference).
+   * @param {*} Cols : Required. The number of columns, to the left or right, that you want the upper-left cell of the result to refer to. 
+   *                   Using 5 as the cols argument specifies that the upper-left cell in the reference is five columns to the right of reference. 
+   *                   Cols can be positive (which means to the right of the starting reference) or negative (which means to the left of the starting reference).
+   * @param {*} Height : Optional. The height, in number of rows, that you want the returned reference to be. Height must be a positive number.
+   * @param {*} Width : Optional. The width, in number of columns, that you want the returned reference to be. Width must be a positive number.
+   */
+   OFFSET: (context, origin, rows, cols, height = null, width = null) => {
+    let newRow = null;
+    let newCol = null;
+    if(!H.isRangeRef(origin) && !H.isCellRef(origin))
+      throw FormulaError.VALUE;
+    if(H.isRangeRef(origin)){
+      newRow = origin.ref.from.row + H.accept(rows, Types.NUMBER);
+      newCol = origin.ref.from.col + H.accept(cols, Types.NUMBER);
+    }
+    else if (H.isCellRef(origin)){
+      newRow = origin.ref.row + H.accept(rows, Types.NUMBER);
+      newCol = origin.ref.col + H.accept(cols, Types.NUMBER);
+    }
+    else{
+      throw "Unreachable Code Error"
+    }
+
+
+    if(newRow <= 0 || newCol <= 0)
+      throw FormulaError.CUSTOM("#REF", "Out of Range Error");
+
+    const isRangeRef = H.isRangeRef(origin) != null
+
+    if(height == null && !isRangeRef)
+      height = 0;
+    else if (height == null &&  isRangeRef)
+      height =  origin.ref.to.row - origin.ref.from.row + 1
+    else if(height != null)
+      height = H.accept(height, Types.NUMBER)
+    else
+      throw "Unreachable Code Error"
+
+
+    if(width == null && !isRangeRef)
+      width = 0;
+    else if(width == null && isRangeRef)
+      width = origin.ref.to.col - origin.ref.from.col + 1
+    else if(width != null)
+      width = H.accept(width, H.NUMBER)
+    else
+      throw "Unreachable Code Error"
+    const finalRow = newRow + height - Math.sign(height);
+    const finalCol = newCol + width - Math.sign(width);
+    if(finalRow < 0 || finalCol < 0)
+      throw FormulaError.CUSTOM("#REF", "Out of Range Error");
+    const top = Math.min(newRow, finalRow)
+    const left = Math.min(newCol, finalCol)
+    const bottom = Math.max(newRow, finalRow)
+    const right = Math.max(newCol, finalCol)
+    ref = {ref: {from: {row: top, col: left}, to: {row: bottom, col: right}}}
+    return context.utils.extractRefValue(ref).val;
+  },
+
   // Special
   ROW: (context, obj) => {
     if (obj == null) {

@@ -94,6 +94,29 @@ module.exports = {
         'SUM(INDEX(D1:E2, 0, 0, 1))': 20,
     },
 
+    OFFSET: {
+        'OFFSET(A1, 4,4)': 6,
+        'OFFSET(B7, 3,3)' : 6,
+        'OFFSET(B7, -1,1)' : 40,
+        'OFFSET(B7, 3,-1)' : 'Walnuts',
+        'OFFSET(B7, -1,-1)': 'Pears',
+        'OFFSET(B7, 0,0)': 2.8,
+        'OFFSET(B7, -7, 0)': FormulaError.CUSTOM("#REF", "Out of Range Error"),
+        'OFFSET(B7, 0, -3)': FormulaError.CUSTOM("#REF", "Out of Range Error"),
+        'SUM(OFFSET(B7, 1, 1, 2, 2))': 46,
+        'SUM(OFFSET(B7, 1, 1, -2 ,2))': 36,
+        'SUM(OFFSET(B7, 1, 1, 2, -2))': 40.8,
+        'SUM(OFFSET(B7, 1, 1, -2, -2))': 32.35,
+        'SUM(OFFSET(B7, 3, 2, -6, -7))': FormulaError.CUSTOM("#REF", "Out of Range Error"),
+        'SUM(OFFSET(C7, 3, 2, -4, -1))': 24,
+        'SUM(OFFSET(D7, 3, 2, -4, -1))': 0,
+        'SUM(OFFSET(A7, 0, 0, 4, 1))': 0,
+        'SUM(OFFSET(B2:B7, 0, 1))' : 168,
+        'SUM(OFFSET(C2:C7, 0, 1))' : 30,
+        'SUM(OFFSET(B2:C7, 0, 1))' : 198
+
+    },
+
     ROW: {
         'ROW()': 1,
         'ROW(C4)': 4,
