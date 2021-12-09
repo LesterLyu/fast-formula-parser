@@ -135,6 +135,19 @@ FormulaError.ARG_MISSING = (args) => {
 };
 
 /**
+ * CUSTOM error
+ * @param args - the name of the errored function
+ * @returns {FormulaError}
+ * @constructor
+ */
+ FormulaError.CUSTOM = (errorType, message) => {
+  return new FormulaError(
+    errorType,
+    message
+  );
+};
+
+/**
  * #ERROR!
  * Parse/Lex error or other unexpected errors
  * @param {string} msg
