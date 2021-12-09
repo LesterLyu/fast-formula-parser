@@ -57,6 +57,7 @@ module.exports = {
         'DATEVALUE("12/3/2014")': 41976,
         'DATEVALUE("Wednesday, December 3, 2014")': 41976,
         'DATEVALUE("2014-12-3")': 41976,
+        'DATEVALUE("2014-12-03")': 41976,
         'DATEVALUE("12/3")': 44533, // *special
         'DATEVALUE("12/3/14")': 41976,
         'DATEVALUE("12/03/14")': 41976,
