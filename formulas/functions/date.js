@@ -651,6 +651,12 @@ const DateFunctions = {
         );
     }
   },
+  // If something's not a date, just wrap in TO_DATE?
+  // Double array hack to get result type without FFP puking
+  // Doesn't work with repeat
+  TO_DATE: (n) => {
+    return JSON.stringify({result: n.value, resultType: "date"});
+  },
 };
 
 module.exports = DateFunctions;

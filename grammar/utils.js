@@ -4,6 +4,9 @@ const {Prefix, Postfix, Infix, Operators} = require('../formulas/operators');
 const Collection = require('./type/collection');
 const MAX_ROW = 1048576, MAX_COLUMN = 16384;
 const {NotAllInputParsedException} = require('chevrotain');
+const DateFunctions = require('../formulas/functions/date');
+const lexer = require('./lexing');
+
 
 class Utils {
 
@@ -404,6 +407,88 @@ class Utils {
         return FormulaError.ERROR(msg, error);
     }
 
+  static isDate(result, text, dependencies) {
+    const cleanFunctionToken = (text) => {
+        return text.replace(new RegExp(/\(|\)/, 'gi'), '');
+    };
+
+    if (text === null || typeof result === 'string') {
+      return false;
+    }
+    const tokenized = lexer.lex(text);
+    const isATokenADateFunction = tokenized.tokens.some(token => {
+      if (token.tokenType.name === 'Function') {
+        const name = cleanFunctionToken(token.image);
+        return name.toUpperCase() in DateFunctions;
+      }
+      return false;
+    });
+
+    const isADependencyADate = dependencies.some(d => d.resultType === 'date');
+    return isATokenADateFunction || isADependencyADate;
+  };
+
+  static resultType(result, inputText, dependencies) {
+    if (Array.isArray(result)) {
+      return 'array';
+    }
+    if (typeof result === 'string') {
+      return 'string';
+    }
+    if (result === null || result === undefined) {
+      return undefined;
+    }
+    if (typeof result === 'boolean') {
+      return 'boolean';
+    }
+    if (result instanceof Date || (!isNaN(Number(result)) && Utils.isDate(result, inputText, dependencies))) {
+      return 'date';
+    }
+    if (!isNaN(Number(result))) {
+      return 'number';
+    }
+    return 'string';
+  }
+
+  static addType(rawResult, inputText, dependencies) {
+    let result;
+    if (typeof rawResult === "string") {
+      try {
+        result = JSON.parse(rawResult);
+      } catch (e) {
+        // Do nothing
+      }
+    } else {
+      result = rawResult;
+    }
+
+    if(Array.isArray(result)) {
+      for(let i = 0; i < result.length; i++){
+        for(let j = 0; j < result[i].length; j++) {
+          if(typeof result[i][j] !== "object") {
+            result[i][j] = {
+              result: result[i][j],
+              // Last two are only for dates and punting on doing dates right here cause
+              // its probably rare something will generate a list of dates that's not REPEAT and dealing with that is hard.
+              resultType: Utils.resultType(result[i][j], "", []),
+            }
+          }
+        }
+      }
+    }
+    // result already is typed
+    if (!Array.isArray(result) && typeof result === "object" && "result" in result && "resultType" in result) {
+      return result;
+    }
+    if (!Array.isArray(result) && typeof result === "object") {
+      result = rawResult;
+      resultType = 'string';
+    }
+    return {
+      result,
+      resultType: Utils.resultType(result, inputText, dependencies),
+    }
+  }
 }
 
 module.exports = Utils;

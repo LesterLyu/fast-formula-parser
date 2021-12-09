@@ -13,6 +13,7 @@ const {FormulaHelpers} = require('../formulas/helpers');
 const {Parser, allTokens} = require('./parsing');
 const lexer = require('./lexing');
 const Utils = require('./utils');
+const { DepParser } = require('./dependency/hooks');
 
 /**
  * A Excel Formula Parser & Evaluator
@@ -43,6 +44,7 @@ class FormulaParser {
         this.onRange = config.onRange;
         this.onCell = config.onCell;
         this.isRunningAction = config.isRunningAction;
+        this.onFullCell = config.onFullCell;
 
         // functions treat null as 0, other functions treats null as ""
         this.funsNullAs0 = Object.keys(MathFunctions)
@@ -298,6 +300,13 @@ class FormulaParser {
      *                                      or data validation formulas.
      * @returns {*}
      */
+    parseWithType(inputText, position, allowReturnArray = false) {
+      const result = this.parse(inputText, position, allowReturnArray);
+      const dp = new DepParser(this.onStructuredReference);
+      const dependencies = dp.parse(inputText, position).map(this.onFullCell);
+      return Utils.addType(result, inputText, dependencies);
+    }
+
     parse(inputText, position, allowReturnArray = false) {
         if (inputText.length === 0) throw Error('Input must not be empty.');
         if (inputText.toUpperCase().startsWith("ACTION(") && this.isRunningAction) {
@@ -337,6 +346,11 @@ class FormulaParser {
      *                                      or data validation formulas.
      * @returns {*}
      */
+    async parseAsyncWithType(inputText, position, allowReturnArray = false) {
+      const result = await this.parseAsync(inputText, position, allowReturnArray);
+      return Utils.addType(result, inputText);
+    }
+
     async parseAsync(inputText, position, allowReturnArray = false) {
         if (inputText.length === 0) throw Error('Input must not be empty.');
         if (inputText.toUpperCase().startsWith("ACTION(") && this.isRunningAction) {
