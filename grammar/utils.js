@@ -424,7 +424,7 @@ class Utils {
       return false;
     });
 
-    const isADependencyADate = dependencies.some(d => d.resultType === 'date');
+    const isADependencyADate = dependencies.some(d => d.resultType === 'date' || d.datatype === 'date');
     return isATokenADateFunction || isADependencyADate;
   };
 
