@@ -456,6 +456,7 @@ class Utils {
       try {
         result = JSON.parse(rawResult);
       } catch (e) {
+        result = rawResult;
         // Do nothing
       }
     } else {
