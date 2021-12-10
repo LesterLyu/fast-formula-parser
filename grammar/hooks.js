@@ -46,6 +46,7 @@ class FormulaParser {
         this.onCell = config.onCell;
         this.isRunningAction = config.isRunningAction;
         this.onFullCell = config.onFullCell;
+        this.onFullRange = config.onFullRange;
 
         // functions treat null as 0, other functions treats null as ""
         this.funsNullAs0 = Object.keys(MathFunctions)
@@ -303,8 +304,16 @@ class FormulaParser {
      */
     parseWithType(inputText, position, allowReturnArray = false) {
       const result = this.parse(inputText, position, allowReturnArray);
-      const dp = new DepParser(this.onStructuredReference);
-      const dependencies = dp.parse(inputText, position).map(this.onFullCell);
+      const rawDeps = new DepParser(this.onStructuredReference).parse(inputText, position);
+      const dependencies = rawDeps.map(e => {
+        if("from" in e && "to" in e) {
+          return this.onFullRange(e);
+        }
+        if("row" in e && "col" in e) {
+          return this.onFullCell(e);
+        }
+        throw new Error(`Invalid dependency: ${JSON.stringify(e)}`);
+      });
       return Utils.addType(result, inputText, dependencies);
     }
 
@@ -349,8 +358,16 @@ class FormulaParser {
      */
     async parseAsyncWithType(inputText, position, allowReturnArray = false) {
       const result = await this.parseAsync(inputText, position, allowReturnArray);
-      const dp = new DepParser(this.onStructuredReference);
-      const dependencies = dp.parse(inputText, position).map(this.onFullCell);
+      const rawDeps = new DepParser(this.onStructuredReference).parse(inputText, position);
+      const dependencies = rawDeps.map(e => {
+        if("from" in e && "to" in e) {
+          return this.onFullRange(e);
+        }
+        if("row" in e && "col" in e) {
+          return this.onFullCell(e);
+        }
+        throw new Error(`Invalid dependency: ${JSON.stringify(e)}`);
+      });
       return Utils.addType(result, inputText, dependencies);
     }
 
