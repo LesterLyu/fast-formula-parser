@@ -319,16 +319,24 @@ class FormulaParser {
 
     parse(inputText, position, allowReturnArray = false) {
         if (inputText.length === 0) throw Error('Input must not be empty.');
-        if (inputText.toUpperCase().startsWith("ACTION(") && this.isRunningAction) {
-          return this.parse(inputText.substring("ACTION(".length, inputText.length - 1), position, allowReturnArray);
-        }
-        if (inputText.toUpperCase().startsWith("ACTION(") && !this.isRunningAction) {
-          return inputText.substring("ACTION(".length, inputText.length - 1);
-        }
+
         this.position = position;
         this.async = false;
-        const lexResult = lexer.lex(inputText);
-        this.parser.input = lexResult.tokens;
+        const { tokens } = lexer.lex(inputText);
+
+        if (Utils.isActionMacro(tokens) && this.isRunningAction) {
+          return this.parse(Utils.expandActionMacro(tokens), position, allowReturnArray);
+        }
+
+        if (Utils.isActionMacro(tokens) && !this.isRunningAction) {
+          return Utils.expandActionMacro(tokens);
+        }
+
+        if (Utils.isComputedColumnMacro(tokens)) {
+          return this.parse(Utils.expandComputedColumnMacro(tokens), position, allowReturnArray);
+        }
+
+        this.parser.input = tokens;
         let res;
         try {
             res = this.parser.formulaWithBinaryOp();
@@ -337,6 +345,7 @@ class FormulaParser {
                 return res;
             }
         } catch (e) {
+            console.error(e);
             throw FormulaError.ERROR(e.message, e);
         }
         if (this.parser.errors.length > 0) {
@@ -373,17 +382,23 @@ class FormulaParser {
 
     async parseAsync(inputText, position, allowReturnArray = false) {
         if (inputText.length === 0) throw Error('Input must not be empty.');
-        if (inputText.toUpperCase().startsWith("ACTION(") && this.isRunningAction) {
-          return this.parseAsync(inputText.substring("ACTION(".length, inputText.length - 1), position, allowReturnArray);
-        }
-        if (inputText.toUpperCase().startsWith("ACTION(") && !this.isRunningAction) {
-          return inputText.substring("ACTION(".length, inputText.length - 1);
-        }
 
         this.position = position;
         this.async = true;
-        const lexResult = lexer.lex(inputText);
-        this.parser.input = lexResult.tokens;
+        const { tokens } = lexer.lex(inputText);
+
+        if (Utils.isActionMacro(tokens) && this.isRunningAction) {
+          return this.parseAsync(Utils.expandActionMacro(tokens), position, allowReturnArray);
+        }
+
+        if (Utils.isActionMacro(tokens) && !this.isRunningAction) {
+          return Utils.expandActionMacro(tokens);
+        }
+
+        if (Utils.isComputedColumnMacro(tokens)) {
+          return this.parseAsync(Utils.expandComputedColumnMacro(tokens), position, allowReturnArray);
+        }
+        this.parser.input = tokens;
         let res;
         try {
             res = await this.parser.formulaWithBinaryOp();
@@ -392,6 +407,7 @@ class FormulaParser {
                 return res;
             }
         } catch (e) {
+            console.error(e);
             throw FormulaError.ERROR(e.message, e);
         }
         if (this.parser.errors.length > 0) {

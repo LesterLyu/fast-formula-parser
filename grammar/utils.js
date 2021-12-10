@@ -492,6 +492,33 @@ class Utils {
       resultType: Utils.resultType(result, inputText, dependencies),
     }
   }
+
+  static isActionMacro(tokens) {
+    return tokens.length > 0 && tokens[0].image.toUpperCase() === "ACTION(" && tokens[tokens.length-1].tokenType.name === "CloseParen";
+  }
+
+  static expandActionMacro(tokens) {
+    return tokens.slice(1,tokens.length-1).map(t => t.image).join("");
+  }
+
+  static isComputedColumnMacro(tokens) {
+    return tokens.length > 0 && tokens[0].image.toUpperCase() === "COMPUTEDCOLUMN(" && tokens[tokens.length-1].tokenType.name === "CloseParen";
+  }
+
+  static expandComputedColumnMacro(tokens) {
+    const firstComma = tokens.findIndex(t => t.tokenType.name === "Comma");
+    const secondComma = tokens.findIndex((t,i) => i > firstComma && t.tokenType.name === "Comma");
+
+    const tableName = tokens.slice(firstComma+1, secondComma).map(t => t.image).join("");
+    const columnName = tokens.slice(secondComma+1, tokens.length-1).map(t => t.image).join("");
+    const rArgs = [
+      `"=${tokens.slice(1, firstComma).map(t => t.image).join("")}"`,
+      `ROWS(${tableName}[])`
+    ];
+
+    return `extendTable(repeat(${rArgs[0]},${rArgs[1]},1), "${tableName}", {"${columnName}"})`;
+  }
+
 }
 
 module.exports = Utils;

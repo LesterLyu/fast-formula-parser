@@ -3,6 +3,7 @@ const {FormulaHelpers} = require('../../formulas/helpers');
 const {Parser} = require('../parsing');
 const lexer = require('../lexing');
 const Utils = require('./utils');
+const GrammarUtils = require('../utils');
 const {formatChevrotainError} = require('../utils');
 
 class DepParser {
@@ -155,14 +156,22 @@ class DepParser {
      */
     parse(inputText, position, ignoreError = false) {
         if (inputText.length === 0) throw Error('Input must not be empty.');
+
+
         this.data = [];
         this.position = position;
-        const lexResult = lexer.lex(inputText);
-        this.parser.input = lexResult.tokens;
+        const { tokens } = lexer.lex(inputText);
+
+        if (GrammarUtils.isComputedColumnMacro(tokens)) {
+          return this.parse(GrammarUtils.expandComputedColumnMacro(tokens), position, ignoreError);
+        }
+
+        this.parser.input = tokens;
         try {
             const res = this.parser.formulaWithBinaryOp();
             this.checkFormulaResult(res);
         } catch (e) {
+            console.error(e);
             if (!ignoreError) {
                 throw FormulaError.ERROR(e.message, e);
             }
