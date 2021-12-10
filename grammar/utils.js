@@ -482,8 +482,10 @@ class Utils {
       return result;
     }
     if (!Array.isArray(result) && typeof result === "object") {
-      result = rawResult;
-      resultType = 'string';
+      return {
+        result: rawResult,
+        resultType: 'string',
+      }
     }
     return {
       result,
