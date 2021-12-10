@@ -16,6 +16,7 @@ class DepParser {
         this.utils = new Utils(this);
         config = Object.assign({
             onVariable: () => null,
+            onStructuredReference: () => ({ref: null}),
         }, config);
         this.utils = new Utils(this);
 

@@ -34,6 +34,7 @@ class FormulaParser {
             onVariable: () => null,
             onCell: () => 0,
             onRange: () => [[0]],
+            onStructuredReference: () => ({ref: null}),
         }, config);
 
         this.onVariable = config.onVariable;
