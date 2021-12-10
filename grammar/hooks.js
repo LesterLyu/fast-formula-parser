@@ -348,7 +348,9 @@ class FormulaParser {
      */
     async parseAsyncWithType(inputText, position, allowReturnArray = false) {
       const result = await this.parseAsync(inputText, position, allowReturnArray);
-      return Utils.addType(result, inputText, []);
+      const dp = new DepParser(this.onStructuredReference);
+      const dependencies = dp.parse(inputText, position).map(this.onFullCell);
+      return Utils.addType(result, inputText, dependencies);
     }
 
     async parseAsync(inputText, position, allowReturnArray = false) {
