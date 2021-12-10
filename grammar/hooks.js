@@ -392,7 +392,7 @@ class FormulaParser {
         }
 
         if (Utils.isActionMacro(tokens) && !this.isRunningAction) {
-          return Utils.expandActionMacro(tokens);
+          return "=".concat(inputText);
         }
 
         if (Utils.isComputedColumnMacro(tokens)) {
