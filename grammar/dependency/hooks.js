@@ -182,9 +182,10 @@ class DepParser {
         if (tokens.some(t => t.image === "repeat(")) {
           const d = this.data.slice();
           const token = tokens[tokens.findIndex(t => t.image === "repeat(") + 1];
-          const startI = token.image[1] === "=" ? 2 : 1;
-          const subData = this.parse(token.image.slice(startI, token.image.length-1), position, ignoreError)
-          this.data.push(...subData);
+          if (token.image[1] === "=") {
+            const subData = this.parse(token.image.slice(2, token.image.length-1), position, ignoreError)
+            this.data.push(...subData);
+          }
         }
         if (this.parser.errors.length > 0 && !ignoreError) {
             const error = this.parser.errors[0];
