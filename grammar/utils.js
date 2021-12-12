@@ -478,7 +478,7 @@ class Utils {
       }
     }
     // result already is typed
-    if (!Array.isArray(result) && typeof result === "object" && "result" in result && "resultType" in result) {
+    if (!Array.isArray(result) && typeof result === "object" && result !== null && "result" in result && "resultType" in result) {
       return result;
     }
     if (!Array.isArray(result) && typeof result === "object") {
