@@ -455,9 +455,9 @@ class Utils {
     if (typeof rawResult === "string") {
       try {
         result = JSON.parse(rawResult);
+      // if not json, it's fine, just treat like normal string
       } catch (e) {
         result = rawResult;
-        // Do nothing
       }
     } else {
       result = rawResult;
