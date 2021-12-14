@@ -129,9 +129,9 @@ class DepParser {
      * @return {*}
      */
     callFunction(name, args) {
-        args.forEach(arg => {
-            if (arg == null)
-                return;
+        args.filter((arg, i) =>
+            !(arg == null || (name === "UPDATECELL" && i === 0))
+        ).forEach(arg => {
             this.retrieveRef(arg);
         });
         return {value: 0, ref: {}};
