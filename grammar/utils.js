@@ -505,14 +505,24 @@ class Utils {
     return tokens.length > 0 && tokens[0].image.toUpperCase() === "COMPUTEDCOLUMN(" && tokens[tokens.length-1].tokenType.name === "CloseParen";
   }
 
-  static expandComputedColumnMacro(tokens) {
-    const firstComma = tokens.findIndex(t => t.tokenType.name === "Comma");
-    const secondComma = tokens.findIndex((t,i) => i > firstComma && t.tokenType.name === "Comma");
+  static findAllIndicies(a, f) {
+    const b = [];
+    b.push(a.findIndex(f));
+    while(b[b.length - 1] !== -1 ) {
+      b.push(a.findIndex((e, i) => i > b[b.length - 1] && f(e)));
+    }
+    return b.slice(0, b.length - 1);
+  }
 
-    const tableName = tokens.slice(firstComma+1, secondComma).map(t => t.image).join("");
-    const columnName = tokens.slice(secondComma+1, tokens.length-1).map(t => t.image).join("");
+  static expandComputedColumnMacro(tokens) {
+    const commaLocations = Utils.findAllIndicies(tokens, t => t.tokenType.name === "Comma")
+    const tableComma = commaLocations[commaLocations.length - 2];
+    const columnComma = commaLocations[commaLocations.length - 1];
+
+    const tableName = tokens.slice(tableComma+1, tableComma+2)[0].image
+    const columnName = tokens.slice(columnComma+1, columnComma+2)[0].image
     const rArgs = [
-      `"=${tokens.slice(1, firstComma).map(t => t.image).join("")}"`,
+      `"=${tokens.slice(1, tableComma).map(t => t.image).join("")}"`,
       `ROWS(${tableName}[])`
     ];
 
