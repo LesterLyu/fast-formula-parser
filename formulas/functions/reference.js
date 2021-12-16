@@ -112,7 +112,7 @@ const ReferenceFunctions = {
       let currBOOL = H.accept(boolArray[index], Types.BOOLEAN);
       let currRV = H.accept(returnArray[index]);
       if (currBOOL) {
-        rv.push(currRV);
+        rv.push([currRV]);
       }
     }
     if (rv.length === 0 && defaultValue !== null) {
