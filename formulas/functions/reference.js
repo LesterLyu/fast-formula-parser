@@ -290,6 +290,13 @@ const ReferenceFunctions = {
     }
   },
 
+  ISELEMENTVAL: (lookupArrayArg, valArg) => {
+    const lookupArray = H.accept(lookupArrayArg, Types.ARRAY);
+    const val = H.accept(valArg);
+
+    return lookupArray.map(e => H.accept(e) === val).map(e => [e]);
+  },
+
   MATCH: () => {},
 
   /**
