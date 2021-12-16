@@ -464,6 +464,13 @@ class Utils {
     }
 
     if(Array.isArray(result)) {
+      if(result.length === 0) {
+        result.push([]);
+      }
+      // {1, 2, 3} is a horizontal array, so too are all plain arrays
+      if(!Array.isArray(result[0])) {
+        result = [result];
+      }
       for(let i = 0; i < result.length; i++){
         for(let j = 0; j < result[i].length; j++) {
           if(typeof result[i][j] !== "object") {
