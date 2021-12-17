@@ -14,6 +14,14 @@ const DateValueFunctions = new Set([
   "TODAY",
 ]);
 
+const NumberValueFunctions = new Set([
+  "YEAR",
+  "MONTH",
+  "DAY",
+  "HOUR",
+  "MINUTE",
+  "SECOND",
+]);
 class Utils {
 
     constructor(context) {
@@ -421,17 +429,17 @@ class Utils {
     if (text === null || typeof result === 'string') {
       return false;
     }
-    const tokenized = lexer.lex(text);
-    const isATokenADateFunction = tokenized.tokens.some(token => {
-      if (token.tokenType.name === 'Function') {
-        const name = cleanFunctionToken(token.image);
-        return name.toUpperCase() in DateValueFunctions;
-      }
-      return false;
-    });
+    const { tokens } = lexer.lex(text);
+    const normalizedTokens = tokens
+        .filter(token => token.tokenType.name === 'Function')
+        .map(token => cleanFunctionToken(token.image).toUpperCase());
+
+    const isTokenInList = (tokens, set) => {
+      return tokens.length > 0 && tokens.some(token => set.has(token));
+    };
 
     const isADependencyADate = dependencies.some(d => d.resultType === 'date' || d.datatype === 'date');
-    return isATokenADateFunction || isADependencyADate;
+    return !isTokenInList(normalizedTokens, NumberValueFunctions) && (isTokenInList(normalizedTokens, DateValueFunctions) || isADependencyADate);
   };
 
   static resultType(result, inputText, dependencies) {
