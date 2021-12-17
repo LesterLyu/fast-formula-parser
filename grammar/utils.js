@@ -4,9 +4,15 @@ const {Prefix, Postfix, Infix, Operators} = require('../formulas/operators');
 const Collection = require('./type/collection');
 const MAX_ROW = 1048576, MAX_COLUMN = 16384;
 const {NotAllInputParsedException} = require('chevrotain');
-const DateFunctions = require('../formulas/functions/date');
 const lexer = require('./lexing');
 
+const DateValueFunctions = new Set([
+  "DATE",
+  "DATEDIF",
+  "DATEVALUE",
+  "NOW",
+  "TODAY",
+]);
 
 class Utils {
 
@@ -419,7 +425,7 @@ class Utils {
     const isATokenADateFunction = tokenized.tokens.some(token => {
       if (token.tokenType.name === 'Function') {
         const name = cleanFunctionToken(token.image);
-        return name.toUpperCase() in DateFunctions;
+        return name.toUpperCase() in DateValueFunctions;
       }
       return false;
     });
