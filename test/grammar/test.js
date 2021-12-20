@@ -48,6 +48,14 @@ describe('Basic parse', () => {
       let actual = parser.parse('ACTION(SUM(1:1))', position);
       expect(actual).to.deep.eq(1);
     });
+    it('should parse a boolean array when = is after array', function () {
+        let actual = parser.parse('{1,0,1,1,0,0}=1', position, true);
+        expect(actual).to.deep.eq([[true, false, true, true, false, false]])
+    })
+    it('should parse a boolean array when = is before array', function () {
+        let actual = parser.parse('1={1,0,1,1,0,0}', position, true);
+        expect(actual).to.deep.eq([[true, false, true, true, false, false]])
+    })
   });
 
 })

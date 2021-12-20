@@ -1,5 +1,8 @@
 const FormulaError = require('../../../formulas/error');
 module.exports = {
+    MARBULL: {
+        'TEST({1, 0, 1, 1, 0, 0}=1)':1,
+    },
     ADDRESS: {
         'ADDRESS(2,3)': '$C$2',
         'ADDRESS(2,3, 1)': '$C$2',

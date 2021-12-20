@@ -386,6 +386,10 @@ const ReferenceFunctions = {
       }
     }
   },
+  TEST: (val) => {
+    console.log(val)
+    return 1
+  },
 
   // Special
   ROWS: (context, obj) => {

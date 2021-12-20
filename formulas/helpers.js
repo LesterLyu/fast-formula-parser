@@ -179,6 +179,33 @@ class FormulaHelpers {
     return number;
   }
 
+  equalOP(input1, input2) {
+    let array = null;
+    let constant = null;
+    if(Array.isArray(input1)){
+      array = input1;
+      constant = input2;
+    }else if(Array.isArray(input2)){
+      array = input2;
+      constant = input1;
+    }else{
+      return input1 === input2
+    }
+    //for a single value
+    if(array[0].length === 1){
+      return array[0][0] === constant;
+    }
+
+    const rv = []
+    for(let row = 0; row < array.length; row++){
+      let curr = []
+      for(let col = 0; col < array[row].length; col++){
+        curr.push(array[row][col] === constant);
+      }
+      rv.push(curr);
+    }
+    return rv; 
+  }
   /**
    * Flatten parameters to 1D array.
    * @see {@link FormulaHelpers.accept}

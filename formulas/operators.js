@@ -56,6 +56,11 @@ const Infix = {
   compareOp: (value1, infix, value2, isArray1, isArray2) => {
     if (value1 == null) value1 = 0;
     if (value2 == null) value2 = 0;
+    if(infix === "="){
+      let x = FormulaHelpers.equalOP(value1, value2);
+      return x;
+    }
+
     // for array: {1,2,3}, get the first element to compare
     if (isArray1) {
       value1 = value1[0][0];
@@ -63,15 +68,13 @@ const Infix = {
     if (isArray2) {
       value2 = value2[0][0];
     }
-
+      
     const type1 = typeof value1,
       type2 = typeof value2;
 
     if (type1 === type2) {
       // same type comparison
-      switch (infix) {
-        case "=":
-          return value1 === value2;
+      switch (infix) {          
         case ">":
           return value1 > value2;
         case "<":
@@ -101,6 +104,8 @@ const Infix = {
     }
     throw Error("Infix.compareOp: Should not reach here.");
   },
+
+
 
   concatOp: (value1, infix, value2, isArray1, isArray2) => {
     if (value1 == null) value1 = "";
