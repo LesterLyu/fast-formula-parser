@@ -179,13 +179,16 @@ class FormulaHelpers {
     return number;
   }
 
-  equalOP(input1, input2) {
+  equalOP(input1, input2, comparison = "=") {
+    let comparator = null;
     if(!Array.isArray(input1) && !Array.isArray(input2)){
-      return input1 === input2
+      comparator = H.getComparator(comparison)
+      return comparator(input1, input2)
     }
     const rv = []
-    
+
     if(Array.isArray(input1) && Array.isArray(input2)){
+      comparator = H.getComparator(comparison)
       let maxRow = Math.max(input1.length, input2.length);
       for(let row = 0; row < maxRow; row++){
         let row1 = (input1.length > row) ? input1[row] : []
@@ -195,29 +198,76 @@ class FormulaHelpers {
         for(let col = 0; col < maxCol; col++){
           let item1 = (row1.length > col) ? row1[col] : null
           let item2 = (row2.length > col) ? row2[col] : null
-          curr.push(item1 === item2)
+          curr.push(comparator(item1, item2))
         }
         rv.push(curr)
       }
       return rv
     }
-
-    let array = (Array.isArray(input1)) ? input1 : input2;
-    let constant = (Array.isArray(input1)) ? input2 : input1;
-
-    //for a single value
-    if(array.length === 1 && array[0].length === 1){
-      return array[0][0] === constant;
+    let array = null
+    let constant = null
+    if(Array.isArray(input1)){
+      array = input1
+      constant = input2
+      comparator = H.getComparator(comparison)
+    }else if(Array.isArray(input2)){
+      array = input2
+      constant = input1
+      comparator = H.getComparator(comparison, true)
+    }else {
+      throw "Impossible to reach error"
     }
 
     for(let row = 0; row < array.length; row++){
       let curr = []
       for(let col = 0; col < array[row].length; col++){
-        curr.push(array[row][col] === constant);
+        curr.push(comparator(constant, array[row][col]));
       }
       rv.push(curr);
     }
     return rv; 
+  }
+  getComparator(comparison, reverse = false){
+    if(reverse){
+      switch(comparison){
+        case "=":
+          return function(a, b) {return a === b}
+        case ">":
+          return function(a, b) {return a > b}
+        case "<":
+          return function(a, b) {return a < b}
+        case ">=":
+            return function(a, b) {return a >= b}
+        case "<=":
+          return function(a, b) {return a <= b}
+        case "<>":
+          return function(a,b) {return a !== b}
+        default:
+          throw "Unseen Comparator"
+      }
+    //order of the comparisons matter 1>2 != 2>1, 
+    //This allows us to swap orderings of our parameters
+    }else if(!reverse){
+      switch(comparison){
+        case "=":
+          return function(a, b) {return a === b}
+        case ">":
+          return function(a, b) {return a < b}
+        case "<":
+          return function(a, b) {return a > b}
+        case ">=":
+            return function(a, b) {return a <= b}
+        case "<=":
+          return function(a, b) {return a >= b}
+        case "<>":
+          return function(a,b) {return a !== b}
+        default:
+          throw "Unseen Comparator"
+      }
+    }else {
+      throw "Unreachable Code Error"
+    }
+    
   }
   /**
    * Flatten parameters to 1D array.

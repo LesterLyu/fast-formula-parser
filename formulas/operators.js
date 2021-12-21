@@ -54,13 +54,11 @@ const type2Number = { boolean: 3, string: 2, number: 1 };
 
 const Infix = {
   compareOp: (value1, infix, value2, isArray1, isArray2) => {
-
     if (value1 == null) value1 = 0;
     if (value2 == null) value2 = 0;
-    if(infix === "="){
-      let x = FormulaHelpers.equalOP(value1, value2);
-      return x;
-    }
+    if(isArray1 || isArray2)
+      return FormulaHelpers.equalOP(value1, value2, infix)
+      
 
     // for array: {1,2,3}, get the first element to compare
     if (isArray1) {
@@ -75,7 +73,9 @@ const Infix = {
 
     if (type1 === type2) {
       // same type comparison
-      switch (infix) {          
+      switch (infix) {        
+        case "=":
+          return value1 === value2  
         case ">":
           return value1 > value2;
         case "<":
