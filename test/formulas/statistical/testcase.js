@@ -93,6 +93,7 @@ const tests = {
         'COUNTIFS(C2:E2, "{1,2}")': 1,
         'COUNTIFS(C2:E2, "={1,2}")': 1,
         'COUNTIFS(C2:E2, {1,2})': 0,
+
         'COUNTIFS(A2:A5, "apples", B2:B5,"<60")': 1,
         'COUNTIFS(A2:A5,A4, B2:B5,B7)': 0,
         'COUNTIFS(B2:B5,">55", B2:B5,"<>"&B4)': 1,
