@@ -229,8 +229,6 @@ class FormulaHelpers {
         "<=": (a, b) => a <= b,
         "<>": (a,b) => a !== b,
     }
-    //order of the comparisons matter 1>2 != 2>1, 
-    //This allows us to swap orderings of our parameters
     if(reverse){
       return map[comparison]
     }else if(!reverse){

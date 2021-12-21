@@ -71,10 +71,7 @@ const Infix = {
 
     if (type1 === type2) 
       return comparator(value1, value2)
-    else 
-      return comparator(type2Number[type1], type2Number[type2])
-    
-    throw Error("Infix.compareOp: Should not reach here.");
+    return comparator(type2Number[type1], type2Number[type2])
   },
 
 
