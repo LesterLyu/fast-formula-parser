@@ -48,6 +48,62 @@ describe('Basic parse', () => {
       let actual = parser.parse('ACTION(SUM(1:1))', position);
       expect(actual).to.deep.eq(1);
     });
+    it('should parse a boolean array when = is after array', function () {
+        let actual = parser.parse('{1,0,1,1,0,0}=1', position, true);
+        expect(actual).to.deep.eq([[true, false, true, true, false, false]])
+    })
+    it('should parse a boolean array when = is before array', function () {
+        let actual = parser.parse('1={1,0,1,1,0,0}', position, true);
+        expect(actual).to.deep.eq([[true, false, true, true, false, false]])
+    })
+    it('should parse a boolean for comparing any 2 values', function () {
+        let actual = parser.parse('A2=A2', position, true);
+        expect(actual).to.deep.eq(true)
+    })
+    it('should parse a boolean array when comparing 2 arrays', function () {
+        let actual = parser.parse('{1,2,3}={1,2,3}', position, true);
+        expect(actual).to.deep.eq([[true, true, true]])
+    })
+    it('should parse a boolean array when comparing a value to an arrays with >', function () {
+        let actual = parser.parse('1>{0,2,3}', position, true);
+        expect(actual).to.deep.eq([[true, false, false]])
+    })
+    it('should parse a boolean array when comparing a value to an arrays with >=', function () {
+        let actual = parser.parse('1>={0,1,3}', position, true);
+        expect(actual).to.deep.eq([[true, true, false]])
+    })
+    it('should parse a boolean array when comparing a value to an arrays with <', function () {
+        let actual = parser.parse('1<{0,2,3}', position, true);
+        expect(actual).to.deep.eq([[false, true, true]])
+    })
+    it('should parse a boolean array when comparing a value to an arrays with <=', function () {
+        let actual = parser.parse('1<={0,1,3}', position, true);
+        expect(actual).to.deep.eq([[false, true, true]])
+    })
+    it('should parse a boolean array when comparing a value to an arrays with <>', function () {
+        let actual = parser.parse('1<>{0,1,3}', position, true);
+        expect(actual).to.deep.eq([[true, false, true]])
+    })
+    it('should pass this example', function () {
+        let actual = parser.parse('{1;2;3} > 5', position, true);
+        expect(actual).to.deep.eq([[false], [false], [false]])
+    })
+    it('should work when flipping arguments', function () {
+        let actual = parser.parse('{0,2,3} < 1', position, true);
+        expect(actual).to.deep.eq([[true, false, false]])
+    })
+    it('should parse a boolean array when comparing a value to an arrays with >=', function () {
+        let actual = parser.parse('{0,1,3} <= 1', position, true);
+        expect(actual).to.deep.eq([[true, true, false]])
+    })
+    it('should parse a boolean array when comparing a value to an arrays with <', function () {
+        let actual = parser.parse('{0,2,3} > 1', position, true);
+        expect(actual).to.deep.eq([[false, true, true]])
+    })
+    it('should parse a boolean array when comparing a value to an arrays with <=', function () {
+        let actual = parser.parse('{0,1,3}>=1', position, true);
+        expect(actual).to.deep.eq([[false, true, true]])
+    })
   });
 
 })
