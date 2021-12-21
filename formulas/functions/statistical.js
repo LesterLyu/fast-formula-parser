@@ -18,6 +18,11 @@ const { DistributionFunctions } = require("./distribution");
  * @returns Bool array of passed checks
  */
 const countIf = (range, criteria) => {
+  console.log("___________")
+  console.log(range)  
+  console.log("..........")
+
+  console.log(criteria)
   // do not flatten the array
   range = H.accept(range, Types.ARRAY, undefined, false, true);
   const isCriteriaArray = criteria.isArray;

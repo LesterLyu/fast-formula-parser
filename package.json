@@ -10,7 +10,7 @@
   },
   "scripts": {
     "format": "prettier 'formulas/**/*.js' --write",
-    "test": "mocha -s 0 && yarn run diagram && yarn jsdoc --configure .jsdoc.json --verbose",
+    "test": "mocha -g COUNTIF",
     "test:f": "mocha test/formulas",
     "prepublishOnly": "yarn run build && yarn run test",
     "postpublish": "yarn run publish:docs",
