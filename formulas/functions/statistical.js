@@ -172,6 +172,15 @@ const StatisticalFunctions = {
   },
 
   COUNTIFS: (range1, criteria1, ...criteriaList) => {
+    if(Array.isArray(criteria1[0]))
+      criteria1 = criteria1[0]
+    console.log("_____________________")
+    console.log(range1)
+    console.log("......................")
+    console.log(criteria1)
+    console.log("......................")
+
+    console.log(criteriaList)
     criteriaList.push(range1, criteria1);
     if (criteriaList.length % 2 != 0)
       throw FormulaError.ERROR(
