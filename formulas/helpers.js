@@ -3,6 +3,7 @@ const Collection = require("../grammar/type/collection");
 const wcmatch = require("wildcard-match");
 
 const { Types } = require("./types");
+const { CstParser } = require("chevrotain");
 
 const Factorials = [
   1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800, 39916800, 479001600,
@@ -191,16 +192,16 @@ class FormulaHelpers {
       comparator = H.getComparator(comparison)
       let maxRow = Math.max(input1.length, input2.length);
       for(let row = 0; row < maxRow; row++){
-        let row1 = (input1.length > row) ? input1[row] : []
-        let row2 = (input2.length > row) ? input2[row] : []
-        let curr = []
-        let maxCol = Math.max(row1.length, row2.length);
+        const row1 = (input1.length > row) ? input1[row] : [],
+              row2 = (input2.length > row) ? input2[row] : [],
+              curr = [],
+              maxCol = Math.max(row1.length, row2.length);
         for(let col = 0; col < maxCol; col++){
-          let item1 = (row1.length > col) ? row1[col] : null
-          let item2 = (row2.length > col) ? row2[col] : null
-          curr.push(comparator(item1, item2))
+          const item1 = (row1.length > col) ? row1[col] : null,
+                item2 = (row2.length > col) ? row2[col] : null;
+          curr.push(comparator(item1, item2));
         }
-        rv.push(curr)
+        rv.push(curr);
       }
       return rv
     }
@@ -215,55 +216,25 @@ class FormulaHelpers {
       constant = input1
       comparator = H.getComparator(comparison, true)
     }else {
-      throw "Impossible to reach error"
+      throw "Impossible to reach error. INPUT1: " + input1.toString() + " INPUT2: " + input2.toString()
     }
-
-    for(let row = 0; row < array.length; row++){
-      let curr = []
-      for(let col = 0; col < array[row].length; col++){
-        curr.push(comparator(constant, array[row][col]));
-      }
-      rv.push(curr);
-    }
-    return rv; 
+    return array.map(row => row.map(val => comparator(constant, val)))
   }
   getComparator(comparison, reverse = false){
-    if(reverse){
-      switch(comparison){
-        case "=":
-          return function(a, b) {return a === b}
-        case ">":
-          return function(a, b) {return a > b}
-        case "<":
-          return function(a, b) {return a < b}
-        case ">=":
-            return function(a, b) {return a >= b}
-        case "<=":
-          return function(a, b) {return a <= b}
-        case "<>":
-          return function(a,b) {return a !== b}
-        default:
-          throw "Unseen Comparator"
-      }
+    const map = {
+        "=": (a, b) => a === b,
+        ">": (a, b) => a > b,
+        "<": (a, b) => a < b,
+        ">=": (a, b) => a >= b,
+        "<=": (a, b) => a <= b,
+        "<>": (a,b) => a !== b,
+    }
     //order of the comparisons matter 1>2 != 2>1, 
     //This allows us to swap orderings of our parameters
+    if(reverse){
+      return map[comparison]
     }else if(!reverse){
-      switch(comparison){
-        case "=":
-          return function(a, b) {return a === b}
-        case ">":
-          return function(a, b) {return a < b}
-        case "<":
-          return function(a, b) {return a > b}
-        case ">=":
-            return function(a, b) {return a <= b}
-        case "<=":
-          return function(a, b) {return a >= b}
-        case "<>":
-          return function(a,b) {return a !== b}
-        default:
-          throw "Unseen Comparator"
-      }
+      return (a,b) => map[comparison](b, a)
     }else {
       throw "Unreachable Code Error"
     }

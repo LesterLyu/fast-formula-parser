@@ -41,11 +41,11 @@ const countIf = (range, criteria) => {
           let localBool = false
           
           //not modifying bool for some reason
-          x.map(function(row) {
-            row.map(function(val){
-              localBool = localBool || val;
-            })
-          })
+          x.forEach(row => 
+            row.forEach(val => 
+              localBool |= val
+            )
+          )
           bool = localBool
         }
         

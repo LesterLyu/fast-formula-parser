@@ -59,50 +59,21 @@ const Infix = {
     if(isArray1 || isArray2)
       return FormulaHelpers.equalOP(value1, value2, infix)
       
-
     // for array: {1,2,3}, get the first element to compare
-    if (isArray1) {
+    if (isArray1) 
       value1 = value1[0][0];
-    }
-    if (isArray2) {
+    if (isArray2) 
       value2 = value2[0][0];
-    }
       
     const type1 = typeof value1,
-      type2 = typeof value2;
+      type2 = typeof value2,
+      comparator = FormulaHelpers.getComparator(infix, true);
 
-    if (type1 === type2) {
-      // same type comparison
-      switch (infix) {        
-        case "=":
-          return value1 === value2  
-        case ">":
-          return value1 > value2;
-        case "<":
-          return value1 < value2;
-        case "<>":
-          return value1 !== value2;
-        case "<=":
-          return value1 <= value2;
-        case ">=":
-          return value1 >= value2;
-      }
-    } else {
-      switch (infix) {
-        case "=":
-          return false;
-        case ">":
-          return type2Number[type1] > type2Number[type2];
-        case "<":
-          return type2Number[type1] < type2Number[type2];
-        case "<>":
-          return true;
-        case "<=":
-          return type2Number[type1] <= type2Number[type2];
-        case ">=":
-          return type2Number[type1] >= type2Number[type2];
-      }
-    }
+    if (type1 === type2) 
+      return comparator(value1, value2)
+    else 
+      return comparator(type2Number[type1], type2Number[type2])
+    
     throw Error("Infix.compareOp: Should not reach here.");
   },
 
