@@ -33,20 +33,30 @@ const countIf = (range, criteria) => {
       // wildcard
       if (criteria.op === "wc") {
         if (criteria.match === criteria.value.test(value)) arr[cnt] = true;
-      } else if (
-        Infix.compareOp(
-          value,
-          criteria.op,
-          criteria.value,
-          Array.isArray(value),
-          isCriteriaArray
-        )
-      ) {
-        arr[cnt] = true;
+      } else{
+        let x = Infix.compareOp(value, criteria.op, criteria.value, Array.isArray(value), isCriteriaArray)
+        if(typeof x === "boolean"){
+          bool = x
+        }else{
+          let localBool = false
+          
+          //not modifying bool for some reason
+          x.forEach(row => 
+            row.forEach(val => 
+              localBool |= val
+            )
+          )
+          bool = localBool
+        }
+        
+        if(bool)
+          arr[cnt] = true
+        
       }
       cnt++;
     });
   });
+
   return arr;
 };
 

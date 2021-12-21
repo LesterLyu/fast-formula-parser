@@ -3,6 +3,7 @@ const Collection = require("../grammar/type/collection");
 const wcmatch = require("wildcard-match");
 
 const { Types } = require("./types");
+const { CstParser } = require("chevrotain");
 
 const Factorials = [
   1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800, 39916800, 479001600,
@@ -179,6 +180,66 @@ class FormulaHelpers {
     return number;
   }
 
+  equalOP(input1, input2, comparison = "=") {
+    let comparator = null;
+    if(!Array.isArray(input1) && !Array.isArray(input2)){
+      comparator = H.getComparator(comparison)
+      return comparator(input1, input2)
+    }
+    const rv = []
+
+    if(Array.isArray(input1) && Array.isArray(input2)){
+      comparator = H.getComparator(comparison)
+      let maxRow = Math.max(input1.length, input2.length);
+      for(let row = 0; row < maxRow; row++){
+        const row1 = (input1.length > row) ? input1[row] : [],
+              row2 = (input2.length > row) ? input2[row] : [],
+              curr = [],
+              maxCol = Math.max(row1.length, row2.length);
+        for(let col = 0; col < maxCol; col++){
+          const item1 = (row1.length > col) ? row1[col] : null,
+                item2 = (row2.length > col) ? row2[col] : null;
+          curr.push(comparator(item1, item2));
+        }
+        rv.push(curr);
+      }
+      return rv
+    }
+    let array = null
+    let constant = null
+    if(Array.isArray(input1)){
+      array = input1
+      constant = input2
+      comparator = H.getComparator(comparison)
+    }else if(Array.isArray(input2)){
+      array = input2
+      constant = input1
+      comparator = H.getComparator(comparison, true)
+    }else {
+      throw "Impossible to reach error. INPUT1: " + input1.toString() + " INPUT2: " + input2.toString()
+    }
+    return array.map(row => row.map(val => comparator(constant, val)))
+  }
+  getComparator(comparison, reverse = false){
+    const map = {
+        "=": (a, b) => a === b,
+        ">": (a, b) => a > b,
+        "<": (a, b) => a < b,
+        ">=": (a, b) => a >= b,
+        "<=": (a, b) => a <= b,
+        "<>": (a,b) => a !== b,
+    }
+    //order of the comparisons matter 1>2 != 2>1, 
+    //This allows us to swap orderings of our parameters
+    if(reverse){
+      return map[comparison]
+    }else if(!reverse){
+      return (a,b) => map[comparison](b, a)
+    }else {
+      throw "Unreachable Code Error"
+    }
+    
+  }
   /**
    * Flatten parameters to 1D array.
    * @see {@link FormulaHelpers.accept}
