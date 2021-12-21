@@ -134,6 +134,44 @@ module.exports = {
         'ROWS("A1")': FormulaError.VALUE
     },
 
+    SORT: {
+        'INDEX(SORT(A1:A10),1, 1)': 'Almonds',
+        'INDEX(SORT(A1:A10),2, 1)': 'Apples',
+        'INDEX(SORT(A1:A10),3, 1)': 'Bananas',
+        'INDEX(SORT(A1:A10),4, 1)': 'Cashews',
+        'INDEX(SORT(A1:A10),5, 1)': 'fruit',
+        'INDEX(SORT(A1:A10),6, 1)': 'Lemons',
+
+        'INDEX(SORT(A1:C10),1, 1)': 'Almonds',
+        'INDEX(SORT(A1:C10),2, 1)': 'Apples',
+        'INDEX(SORT(A1:C10),3, 1)': 'Bananas',
+        'INDEX(SORT(A1:C10),4, 1)': 'Cashews',
+        'INDEX(SORT(A1:C10),5, 1)': 'fruit',
+        'INDEX(SORT(A1:C10),6, 1)': 'Lemons',
+
+        'INDEX(SORT(A1:C10),1, 2)': 2.8,
+        'INDEX(SORT(A1:C10),2, 2)': .69,
+        'INDEX(SORT(A1:C10),3, 2)': .34,
+        'INDEX(SORT(A1:C10),4, 2)': 3.55,
+        'INDEX(SORT(A1:C10),5, 2)': 'price',
+        'INDEX(SORT(A1:C10),6, 2)': .55,
+        
+        'INDEX(SORT(A1:C10, 1),1, 1)': 'Almonds',
+        'INDEX(SORT(A1:C10, 2),2, 1)': 'Bananas',
+        'INDEX(SORT(A1:C10, 3),3, 1)': 'Lemons',
+        'INDEX(SORT(A1:C10, 1, -1),1, 1)': 'Walnuts',
+        'INDEX(SORT(A1:C10, 2, -1),2, 1)': 'Cashews',
+        'INDEX(SORT(A1:C10, 3, -1),3, 1)': 'Pears',
+        'INDEX(SORT(A1:C10, 1, 1, TRUE),1, 1)': 'count',
+        'INDEX(SORT(A1:C10, 2, 1, TRUE),2, 1)': .69,
+        'INDEX(SORT(A1:C10, 3, 1, TRUE),3, 1)': .34,
+        'INDEX(SORT(A1:C10, 1, -1, TRUE),1, 1)': 'price',
+        'INDEX(SORT(A1:C10, 2, -1, TRUE),2, 1)': 'Apples',
+        'INDEX(SORT(A1:C10, 3, -1, TRUE),3, 1)': 'Bananas',
+
+
+    },
+
     TRANSPOSE: {
         // this should be good, lol
         'SUM(TRANSPOSE({1,2,3;4,5,6}))': 21,

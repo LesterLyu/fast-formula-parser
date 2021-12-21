@@ -402,6 +402,74 @@ const ReferenceFunctions = {
     }
   },
 
+/**
+ * 
+ * @param {*} array : REQUIRED The range, or array to sort
+ * @param {*} sort_index : OPTIONAL A number indicating the row or column to sort by
+ * @param {*} sort_order : OPTIONAL A number indicating the desired sort order; 1 for 
+ *                         ascending order (default), -1 for descending order
+ * @param {*} by_col : OPTIONAL A logical value indicating the desired sort direction; 
+ *                     FALSE to sort by row (default), TRUE to sort by column
+ */
+  SORT: (array, sort_index = 1, sort_order = 1, by_col = false) => {
+    array = H.accept(array, Types.ARRAY,null,false);
+    sort_index = H.accept(sort_index);
+    sort_order = H.accept(sort_order);
+    by_col = H.accept(by_col);
+
+    if(sort_index < 1 || sort_index > array.length)
+      throw FormulaError.VALUE;
+    if(![1, -1].includes(sort_order))
+      throw FormulaError.VALUE;
+    if(typeof(by_col) !== "boolean")
+      throw FormulaError.VALUE;
+    
+    //Excel is 1-indexed
+    sort_index -= 1;
+
+    if(by_col)
+      array = ReferenceFunctions.TRANSPOSE(array);
+
+    let sortedArr = array.sort(function(a, b) {
+      a = H.accept(a, Types.ARRAY);
+      b = H.accept(b, Types.ARRAY);
+      const aVal = H.accept(a[sort_index]);
+      const bVal = H.accept(b[sort_index]);
+      
+      let map = new Map();
+      map.set("number", 1);
+      map.set("string", 2);
+      map.set("boolean", 3);
+
+      let aPriority = map.get(typeof(aVal));
+      let bPriority = map.get(typeof(bVal));
+      if(aPriority != bPriority)
+        return (aPriority - bPriority) * sort_order;
+      
+      if(typeof(aVal) === "boolean"){
+        if(aVal === bVal)
+          return 0;
+        if(aVal)
+          return 1 * sort_order;
+        if(bVal)
+          return -1 * sort_order;
+        throw "Unreachable Code ERROR";
+      }
+      if(typeof(aVal) === "number"){
+        return (aVal - bVal) * sort_order;
+      }
+      if(typeof(aVal) === "string"){
+        return aVal.localeCompare(bVal) * sort_order;
+      }
+      throw "Unreachable Code ERROR";
+    });
+    
+    if(by_col)
+      sortedArr = ReferenceFunctions.TRANSPOSE(array);
+    return sortedArr;
+   
+  },
+
   TRANSPOSE: (array) => {
     array = H.accept(array, Types.ARRAY, undefined, false);
     // https://github.com/numbers/numbers.js/blob/master/lib/numbers/matrix.js#L171
