@@ -211,21 +211,23 @@ const StatisticalFunctions = {
 
   MEDIAN: (number1, ...numbers) => {
     let arr = []
-    arr.push(number1)
+    arr.push(number1.value)
     numbers.map(function(a){
       arr.push(a.value)
     })
     let flatArr = arr.flat(3)
+    flatArr = flatArr.sort(function(a,b){return a - b})
     if(flatArr.length % 2 === 1){
-      return flatArr[flatArr.length / 2]
+      
+      return flatArr[(flatArr.length - 1) / 2]
     }
     else if(flatArr.length % 2 === 0){
       let i = Math.floor(flatArr.length / 2)
-      return (flatArr[i] + flatArr[i+1]) / 2
+      return (flatArr[i] + flatArr[i-1]) / 2
     }else{
       throw "Unreachable Code Error"
     }
-    console.log("HIHIHIHI")
+    
   },
 
   MIN: () => {},
