@@ -18,10 +18,6 @@ const { DistributionFunctions } = require("./distribution");
  * @returns Bool array of passed checks
  */
 const countIf = (range, criteria) => {
-  console.log("______________")
-  console.log(range)
-  console.log(".................")
-  console.log(criteria)
   // do not flatten the array
   range = H.accept(range, Types.ARRAY, undefined, false, true);
   const isCriteriaArray = criteria.isArray;
@@ -37,20 +33,30 @@ const countIf = (range, criteria) => {
       // wildcard
       if (criteria.op === "wc") {
         if (criteria.match === criteria.value.test(value)) arr[cnt] = true;
-      } else if (
-        Infix.compareOp(
-          value,
-          criteria.op,
-          criteria.value,
-          Array.isArray(value),
-          isCriteriaArray
-        )
-      ) {
-        arr[cnt] = true;
+      } else{
+        let x = Infix.compareOp(value, criteria.op, criteria.value, Array.isArray(value), isCriteriaArray)
+        if(typeof x === "boolean"){
+          bool = x
+        }else{
+          let localBool = false
+          
+          //not modifying bool for some reason
+          x.map(function(row) {
+            row.map(function(val){
+              localBool = localBool || val;
+            })
+          })
+          bool = localBool
+        }
+        
+        if(bool)
+          arr[cnt] = true
+        
       }
       cnt++;
     });
   });
+
   return arr;
 };
 

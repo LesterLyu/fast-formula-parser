@@ -54,6 +54,7 @@ const type2Number = { boolean: 3, string: 2, number: 1 };
 
 const Infix = {
   compareOp: (value1, infix, value2, isArray1, isArray2) => {
+
     if (value1 == null) value1 = 0;
     if (value2 == null) value2 = 0;
     if(infix === "="){

@@ -56,6 +56,14 @@ describe('Basic parse', () => {
         let actual = parser.parse('1={1,0,1,1,0,0}', position, true);
         expect(actual).to.deep.eq([[true, false, true, true, false, false]])
     })
+    it('should parse a boolean for comparing any 2 values', function () {
+        let actual = parser.parse('A2=A2', position, true);
+        expect(actual).to.deep.eq(true)
+    })
+    it('should parse a boolean array when comparing 2 arrays', function () {
+        let actual = parser.parse('{1,2,3}={1,2,3}', position, true);
+        expect(actual).to.deep.eq([[true, true, true]])
+    })
   });
 
 })
