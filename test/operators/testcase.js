@@ -40,7 +40,7 @@ module.exports = {
         '"2">3': true,
         '#N/A>1': FormulaError.NA,
         'A13>0': false,
-        '0>A13': false,
+        '0>A13': false, 
         '{1;2;3} > 5': false,
     },
     concatOp: {

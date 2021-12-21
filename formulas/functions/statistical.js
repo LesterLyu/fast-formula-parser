@@ -18,11 +18,6 @@ const { DistributionFunctions } = require("./distribution");
  * @returns Bool array of passed checks
  */
 const countIf = (range, criteria) => {
-  console.log("___________")
-  console.log(range)  
-  console.log("..........")
-
-  console.log(criteria)
   // do not flatten the array
   range = H.accept(range, Types.ARRAY, undefined, false, true);
   const isCriteriaArray = criteria.isArray;
@@ -214,7 +209,24 @@ const StatisticalFunctions = {
 
   MAXIFS: () => {},
 
-  MEDIAN: () => {},
+  MEDIAN: (number1, ...numbers) => {
+    let arr = []
+    arr.push(number1)
+    numbers.map(function(a){
+      arr.push(a.value)
+    })
+    let flatArr = arr.flat(3)
+    if(flatArr.length % 2 === 1){
+      return flatArr[flatArr.length / 2]
+    }
+    else if(flatArr.length % 2 === 0){
+      let i = Math.floor(flatArr.length / 2)
+      return (flatArr[i] + flatArr[i+1]) / 2
+    }else{
+      throw "Unreachable Code Error"
+    }
+    console.log("HIHIHIHI")
+  },
 
   MIN: () => {},
 

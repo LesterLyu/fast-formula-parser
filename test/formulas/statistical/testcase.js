@@ -373,7 +373,11 @@ const distributions = {
         'LOGNORM.INV( 1.039084, 3.5, 1.2)': FormulaError.NUM,
         'LOGNORM.INV(0.039084, 3.5, -1.2)': FormulaError.NUM,
     },
-
+    MEDIAN: {
+        'MEDIAN(E2:E10)': 6,
+        'MEDIAN(E2:E10, D2:D10)': 6,
+        
+    },
     'MODE.MULT': {},
 
     'MODE.SNGL': {},
