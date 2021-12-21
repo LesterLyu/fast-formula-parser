@@ -6,12 +6,14 @@ const MAX_ROW = 1048576, MAX_COLUMN = 16384;
 const {NotAllInputParsedException} = require('chevrotain');
 const lexer = require('./lexing');
 
+const DatetimeValueFunctions = new Set([
+  "NOW"
+]);
 const DateValueFunctions = new Set([
   "DATE",
+  "TODAY",
   "DATEDIF",
   "DATEVALUE",
-  "NOW",
-  "TODAY",
 ]);
 
 const NumberValueFunctions = new Set([
@@ -420,26 +422,40 @@ class Utils {
         error.errorLocation = {line, column};
         return FormulaError.ERROR(msg, error);
     }
+  static cleanFunctionToken(text) {
+      return text.replace(new RegExp(/\(|\)/, 'gi'), '');
+  };
 
-  static isDate(result, text, dependencies) {
-    const cleanFunctionToken = (text) => {
-        return text.replace(new RegExp(/\(|\)/, 'gi'), '');
-    };
+  static isTokenInList(tokens, set) {
+    return tokens.length > 0 && tokens.some(token => set.has(token));
+  };
 
+  static isDatetime(result, text, dependencies) {
     if (text === null || typeof result === 'string') {
       return false;
     }
     const { tokens } = lexer.lex(text);
     const normalizedTokens = tokens
         .filter(token => token.tokenType.name === 'Function')
-        .map(token => cleanFunctionToken(token.image).toUpperCase());
+        .map(token => Utils.cleanFunctionToken(token.image).toUpperCase());
 
-    const isTokenInList = (tokens, set) => {
-      return tokens.length > 0 && tokens.some(token => set.has(token));
-    };
+    const isADependencyADatetime = dependencies.some(d => d.resultType === 'datetime' || d.datatype === 'datetime');
+    const numberFunction = Utils.isTokenInList(normalizedTokens, NumberValueFunctions);
+    const dtFunction = Utils.isTokenInList(normalizedTokens, DatetimeValueFunctions);
+    return !numberFunction && (dtFunction || isADependencyADatetime);
+  };
+
+  static isDate(result, text, dependencies) {
+    if (text === null || typeof result === 'string') {
+      return false;
+    }
+    const { tokens } = lexer.lex(text);
+    const normalizedTokens = tokens
+        .filter(token => token.tokenType.name === 'Function')
+        .map(token => Utils.cleanFunctionToken(token.image).toUpperCase());
 
     const isADependencyADate = dependencies.some(d => d.resultType === 'date' || d.datatype === 'date');
-    return !isTokenInList(normalizedTokens, NumberValueFunctions) && (isTokenInList(normalizedTokens, DateValueFunctions) || isADependencyADate);
+    return !Utils.isTokenInList(normalizedTokens, NumberValueFunctions) && (Utils.isTokenInList(normalizedTokens, DateValueFunctions) || isADependencyADate);
   };
 
   static resultType(result, inputText, dependencies) {
@@ -454,6 +470,9 @@ class Utils {
     }
     if (typeof result === 'boolean') {
       return 'boolean';
+    }
+    if (result instanceof Date || (!isNaN(Number(result)) && Utils.isDatetime(result, inputText, dependencies))) {
+      return 'datetime';
     }
     if (result instanceof Date || (!isNaN(Number(result)) && Utils.isDate(result, inputText, dependencies))) {
       return 'date';
