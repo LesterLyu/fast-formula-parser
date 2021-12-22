@@ -219,7 +219,25 @@ const StatisticalFunctions = {
 
   MAXIFS: () => {},
 
-  MEDIAN: () => {},
+  MEDIAN: (...numbers) => {
+    let arr = []
+    arr.push(...numbers.map(a => a.value))
+    const flatArr = FormulaHelpers.flattenDeep(arr);
+          sortedArr = flatArr.sort((a,b) =>  a - b)
+          filteredArr = sortedArr.filter(a => typeof(a) === "number")
+    if(filteredArr.length <= 0)
+      throw FormulaError.NUM
+    if(filteredArr.length % 2 === 1){
+      return filteredArr[(filteredArr.length - 1) / 2]
+    }
+    else if(filteredArr.length % 2 === 0){
+      let i = Math.floor(filteredArr.length / 2)
+      return (filteredArr[i] + filteredArr[i-1]) / 2
+    }else{
+      throw "Unreachable Code Error"
+    }
+
+  },
 
   MIN: () => {},
 
