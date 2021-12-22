@@ -4,6 +4,7 @@ const { Types } = require("../types");
 const { Infix } = require("../operators");
 const H = FormulaHelpers;
 const { DistributionFunctions } = require("./distribution");
+const { map } = require("jstat");
 
 /**
  * Moved the logic from COUNTIF to here so that it could be used in both COUNTIF and
@@ -244,6 +245,39 @@ const StatisticalFunctions = {
   MINA: () => {},
 
   MINIFS: () => {},
+
+  MODE: (...arr) =>{
+    arr.push(...arr.map(a => a.value))
+    const flatArr = FormulaHelpers.flattenDeep(arr),
+          filteredArr = flatArr.filter(a => typeof a === "number");
+
+    if(filteredArr.length <= 0)
+      throw FormulaError.NA;
+
+    let map = new Map();
+    for(let i = 0; i < filteredArr.length; i++){
+      const curr = filteredArr[i];
+      if(!map.has(curr))
+        map.set(curr, 0);
+      map.set(curr, map.get(curr) + 1);
+    }
+
+    const keys = map.keys();
+    let currBig = 0,
+        rv = null,
+        all1 = true;
+    for(const key of keys){
+      if(map.get(key) > 1)
+        all1 = false;
+      if(map.get(key) > currBig){
+        currBig = map.get(key);
+        rv = key;
+      }
+    }
+    if(all1)
+      throw FormulaError.NA;
+    return rv;
+  },
 
   PERMUT: () => {},
 

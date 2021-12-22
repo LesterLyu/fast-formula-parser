@@ -404,6 +404,18 @@ const distributions = {
         'LOGNORM.INV(0.039084, 3.5, -1.2)': FormulaError.NUM,
     },
 
+    MODE: {
+        'MODE(D3:D7)': 5,
+        'MODE(C3:E7)': 4,
+        'MODE(C6:C7)': FormulaError.NA,
+        'MODE(D2:E5)' : 5,
+        'MODE(A2:A6)': FormulaError.NA,
+        'MODE(A5:C6)': 4,
+        'MODE(B5:G7)': 4,
+        'MODE(E4:E6,C4:D6,123,1,2)': 6,
+        'MODE(A12:A14,B8:B12,C4:C6,A3:B5)': 4,
+        'MODE(A1:G16)': 5
+    },
     MEDIAN: {
         'MEDIAN(E2:E6)': 6,
         'MEDIAN(E2:E6, D2:D6)': 5.5,
@@ -414,7 +426,6 @@ const distributions = {
         'MEDIAN(B8:B16)': 14000,
         'MEDIAN(A9:A12)': 300000,
         'MEDIAN(A12:A15)': FormulaError.NUM
-
     },
 
     'MODE.MULT': {},
