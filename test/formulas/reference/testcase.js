@@ -18,6 +18,19 @@ module.exports = {
         'AREAS(B2:D4 B2)': 1,
     },
 
+    ARRAYFORMULA: {
+        'INDEX(ARRAYFORMULA(C2:C9 = 40), 1)': true,
+        'INDEX(ARRAYFORMULA(C2:C9 = 40), 2)': false,
+        'INDEX(ARRAYFORMULA(C2:C9 = 40), 3)': false,
+        'INDEX(ARRAYFORMULA(C2:C9 = 40), 4)': false,
+        'INDEX(ARRAYFORMULA(C2:C9 = 40), 5)': true,
+        'INDEX(ARRAYFORMULA(C2:C9 = 40), 6)': false,
+        'INDEX(ARRAYFORMULA(C2:C9 = 40), 7)': false,
+        'INDEX(ARRAYFORMULA(C2:C9 = 40), 8)': false,
+        'ARRAYFORMULA(SUM(IF(E9:E12>5, D9:D12, 0)))': 10,
+        'ARRAYFORMULA(B2:D2+B3:D3)': 1.03
+    },
+
     COLUMN: {
         'COLUMN()': 1,
         'COLUMN(C3)': 3,

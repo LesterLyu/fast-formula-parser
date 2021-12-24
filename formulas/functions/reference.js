@@ -47,6 +47,11 @@ const ReferenceFunctions = {
     }
     return 1;
   },
+  //The parser should automatically handle all of the calculations. 
+  //Thus, this is just a formality for the Google sheets users
+  ARRAYFORMULA: (value) => {
+    return value.value
+  },
 
   CHOOSE: (indexNum, ...values) => {},
 

@@ -347,7 +347,7 @@ class Utils {
      */
     extractRefValue(obj) {
         let res = obj, isArray = false;
-        if (Array.isArray(res))
+        if (Array.isArray(res) || res.ref != null && res.ref.from != null && res.ref.to != null)
             isArray = true;
         if (obj.ref) {
             // can be number or array

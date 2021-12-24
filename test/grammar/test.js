@@ -104,6 +104,47 @@ describe('Basic parse', () => {
         let actual = parser.parse('{0,1,3}>=1', position, true);
         expect(actual).to.deep.eq([[false, true, true]])
     })
+    it('should parse boolean arrays from cell ranges', function () {
+        let actual = parser.parse('A1:C1=1', position, true)
+        expect(actual).to.deep.eq([[true, false, false], [false, false, false]])
+    })
+    it('should parse boolean arrays from cell ranges with the equation flipped', function () {
+        let actual = parser.parse('1=A1:C1', position, true)
+        expect(actual).to.deep.eq([[true, false, false], [false, false, false]])
+    })
+    it('should parse boolean arrays from cell ranges with <', function () {
+        let actual = parser.parse('1<A1:C1', position, true)
+        expect(actual).to.deep.eq([[false, true, true], [false, false, false]])
+    })
+    it('should parse boolean arrays from cell ranges with <=', function () {
+        let actual = parser.parse('1<=A1:C1', position, true)
+        expect(actual).to.deep.eq([[true, true, true], [false, false, false]])
+    })
+    it('should parse boolean arrays from cell ranges with >', function () {
+        let actual = parser.parse('1>A1:C1', position, true)
+        expect(actual).to.deep.eq([[false, false, false], [true, true, true]])
+    })
+    it('should parse boolean arrays from cell ranges with >=', function () {
+        let actual = parser.parse('1>=A1:C1', position, true)
+        expect(actual).to.deep.eq([[true, false, false], [true, true, true]])
+    })
+    
+    it('should parse boolean arrays from cell ranges with > and the equation flipped', function () {
+        let actual = parser.parse('A1:C1>1', position, true)
+        expect(actual).to.deep.eq([[false, true, true], [false, false, false]])
+    })
+    it('should parse boolean arrays from cell ranges with >= and the equation flipped', function () {
+        let actual = parser.parse('A1:C1>=1', position, true)
+        expect(actual).to.deep.eq([[true, true, true], [false, false, false]])
+    })
+    it('should parse boolean arrays from cell ranges with < and the equation flipped', function () {
+        let actual = parser.parse('A1:C1<1', position, true)
+        expect(actual).to.deep.eq([[false, false, false], [true, true, true]])
+    })
+    it('should parse boolean arrays from cell ranges with <= and the equation flipped', function () {
+        let actual = parser.parse('A1:C1<=1', position, true)
+        expect(actual).to.deep.eq([[true, false, false], [true, true, true]])
+    })
   });
 
 })
