@@ -4,7 +4,6 @@ const { Types } = require("../types");
 const { Infix } = require("../operators");
 const H = FormulaHelpers;
 const { DistributionFunctions } = require("./distribution");
-const { map } = require("jstat");
 
 /**
  * Moved the logic from COUNTIF to here so that it could be used in both COUNTIF and
@@ -243,6 +242,7 @@ const StatisticalFunctions = {
   MIN: () => {},
 
   MINA: () => {},
+
 
   MINIFS: () => {},
 
