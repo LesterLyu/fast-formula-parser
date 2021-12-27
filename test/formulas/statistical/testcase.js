@@ -517,6 +517,17 @@ const distributions = {
 
     SLOPE: {},
 
+    SMALL: {
+        'SMALL(E2:E7, 2)': 6,
+        'SMALL(A2:E6, 2)': 4,
+        'SMALL(A8:B12, 2)': 14000,
+        'SMALL(A10:B16, 4)': 21000,
+        'SMALL(A10:B16, 12)': FormulaError.NUM,
+        'SMALL(A2:F9, 12)': 5,
+        'SMALL(A2:F9, -1)': FormulaError.NUM,
+        'SMALL(, -1)': FormulaError.NUM
+    },
+
     STANDARDIZE: {
         'STANDARDIZE(42, 40,1.5)': 1.333333333333,
         'STANDARDIZE(42, 40, 0.0)': FormulaError.NUM,

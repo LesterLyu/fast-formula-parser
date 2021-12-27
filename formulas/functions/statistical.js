@@ -283,7 +283,18 @@ const StatisticalFunctions = {
 
   PERMUTATIONA: () => {},
 
-  SMALL: () => {},
+  SMALL: (range, k) => {
+    if(range == null || k == null)
+      throw FormulaError.NUM
+    const index = H.accept(k, Types.NUMBER) - 1
+    const arr = H.accept(range, Types.ARRAY)
+    const flatArr = FormulaHelpers.flattenDeep(arr)
+    const filteredArr = flatArr.filter(a => typeof a === "number");
+    if(filteredArr.length <= index || index < 0)
+      throw FormulaError.NUM;
+    const sortedArr = filteredArr.sort((a, b) => a - b)
+    return sortedArr[index]
+  },
 };
 
 module.exports = Object.assign(StatisticalFunctions, DistributionFunctions);
