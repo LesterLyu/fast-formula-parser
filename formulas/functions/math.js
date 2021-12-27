@@ -209,6 +209,14 @@ const MathFunctions = {
     return MathFunctions.COMBIN(number + numberChosen - 1, number - 1);
   },
 
+  COUNTUNIQUE:(...values) =>{
+    const arr = [],
+          set = new Set;
+    arr.push(...values.map(a =>H.accept(a)))
+    const flat = H.flattenDeep(arr);
+    return new Set(flat).size
+  },
+
   DECIMAL: (text, radix) => {
     text = H.accept(text, Types.STRING);
     radix = H.accept(radix, Types.NUMBER);
