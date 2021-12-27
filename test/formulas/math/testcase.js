@@ -73,18 +73,6 @@ module.exports = {
         'COMBINA(1,-2)': FormulaError.NUM,
     },
 
-    COUNTUNIQUE: {
-        'COUNTUNIQUE(A1:A5)': 5,
-        'COUNTUNIQUE(E2:E4)':1,
-        'COUNTUNIQUE(A7:E12)': 17,
-        'COUNTUNIQUE(A16:A26)': 11,
-        'COUNTUNIQUE(B16:B26)': 2,
-        'COUNTUNIQUE(C16:C26)': 5,
-        'COUNTUNIQUE(C16:C26, B16:B26)': 7,
-        'COUNTUNIQUE(C16:C26, B16:B26, A16:A26)': 18,
-        'COUNTUNIQUE(C16:C26, B16:B26, A16:A26, 90000, "hi")': 20,   
-    },
-
     DECIMAL: {
         'DECIMAL("FF",16)': 255,
         'DECIMAL("8000000000",16)': 549755813888,
