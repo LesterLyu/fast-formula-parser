@@ -386,6 +386,20 @@ const distributions = {
         'KURT(3,{4,5},"2",3,4,5,6,4,7)': -0.151799637208,
     },
 
+    LARGE: {
+        'LARGE(B2:D6, 1)': 86,
+        'LARGE(A10:A13, 1)': 400000,
+        'LARGE(A12:A16, 1)': FormulaError.NUM,
+        'LARGE(A2:E6, 7)': 6,
+        'LARGE(A7:G7, 4)': 4,
+        'LARGE(A1:F16, 12)': 86,
+        'LARGE(C5:D7, 12)': FormulaError.NUM,
+        'LARGE(C5:D7, -1)': FormulaError.NUM,
+        'LARGE(C5:D7, 0)': FormulaError.NUM,
+        'LARGE(E2:E7, 2)': 6,
+        'LARGE(,3)': FormulaError.NUM
+    },
+
     LINEST: {},
 
     LOGEST: {},

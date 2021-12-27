@@ -211,7 +211,17 @@ const StatisticalFunctions = {
     return cnt;
   },
 
-  LARGE: () => {},
+  LARGE: (range, k) => {
+    if(range == null || k == null)
+      throw FormulaError.NUM
+    const index = H.accept(k, Types.NUMBER) - 1
+    const flatArr = FormulaHelpers.flattenDeep(range.value)
+    const filteredArr = flatArr.filter(a => typeof a === "number");
+    if(filteredArr.length <= index || index < 0)
+      throw FormulaError.NUM;
+    const sortedArr = filteredArr.sort((a, b) => b - a)
+    return sortedArr[index]
+  },
 
   MAX: () => {},
 
