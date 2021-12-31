@@ -68,6 +68,7 @@ class FormulaParser {
         this.funsPreserveRef = Object.keys(InformationFunctions);
 
         this.parser = new Parser(this, this.utils);
+        this.depParser = new DepParser(this.onStructuredReference)
     }
 
     /**
@@ -304,7 +305,7 @@ class FormulaParser {
      */
     parseWithType(inputText, position, allowReturnArray = false) {
       const result = this.parse(inputText, position, allowReturnArray);
-      const rawDeps = new DepParser(this.onStructuredReference).parse(inputText, position);
+      const rawDeps = this.depParser.parse(inputText, position);
       const dependencies = rawDeps.map(e => {
         if("from" in e && "to" in e) {
           return this.onFullRange(e);
