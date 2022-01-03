@@ -420,6 +420,19 @@ class FormulaHelpers {
     const res = context.utils.extractRefValue(arg);
     return { value: res.val, isArray: res.isArray, ref: arg.ref };
   }
+
+  //EXCEL uses " as its escape character, this replaces it with \
+  changeEscapeCharacters(text) {
+    const regexReplaceSingleQuote = new RegExp('(^")"(^")', 'g')
+    const regexReplaceDoubleQuote = new RegExp('""', 'g')
+    text.replace(regexReplaceSingleQuote, "\\")
+    text.replace(regexReplaceDoubleQuote, "\\\"")
+    //escapes out of special characters
+    text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+    return text;
+  }
+
+  
   /***
    * @function XLOOKUP_HELPER: compares two strings, returns 0 if same,-X if compare_value is smaller and X if its larger.
    *                           X is proportional to the difference of the two strings, e.g. abs(XLOOKUP_HELPER('a','b')) < abs(XLOOKUP_HELPER('a','z'))
