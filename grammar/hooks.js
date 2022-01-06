@@ -330,7 +330,7 @@ class FormulaParser {
         }
 
         if (Utils.isActionMacro(tokens) && !this.isRunningAction) {
-          return Utils.expandActionMacro(tokens);
+          return inputText;
         }
 
         if (Utils.isComputedColumnMacro(tokens)) {

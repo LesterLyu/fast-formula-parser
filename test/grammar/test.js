@@ -38,7 +38,7 @@ describe('Basic parse', () => {
     });
     it('should not parse ACTION', function () {
       let actual = parser.parse('ACTION(INVALID_FORMULA)', position);
-      expect(actual).to.deep.eq("INVALID_FORMULA");
+      expect(actual).to.deep.eq("ACTION(INVALID_FORMULA)");
     });
   describe('When parser is running action', () => {
     beforeEach(() => {
