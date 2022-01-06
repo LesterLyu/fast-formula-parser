@@ -32,7 +32,9 @@ module.exports = {
         'CONCAT(TRUE, 0, {1,2,3;5,6,7})': 'TRUE0123567',
         'CONCAT(0, {1,2,3;5,6,7},)': '0123567',
         'CONCAT("The"," ","sun"," ","will"," ","come"," ","up"," ","tomorrow.")': 'The sun will come up tomorrow.',
-        'CONCAT({1,2,3}, "aaa", TRUE, 0, FALSE)': '123aaaTRUE0FALSE'
+        'CONCAT({1,2,3}, "aaa", TRUE, 0, FALSE)': '123aaaTRUE0FALSE',
+        'CONCAT({1,2,3}, "aaa", TRUE, 0, FALSE)': '123aaaTRUE0FALSE',
+        'CONCAT("[","]")': "[]"
     },
 
     CONCATENATE: {
@@ -40,6 +42,18 @@ module.exports = {
         'CONCATENATE({9,8,7},{8,7,6})': '98',
         'CONCATENATE({9,8,7},"hello")': '9hello',
         'CONCATENATE({0,2,3}, 1, "A", TRUE, -12)': '01ATRUE-12',
+    },
+
+    SUBSTITUTE: {
+        'SUBSTITUTE("JOHN", "J", "H")': "HOHN",
+        //'SUBSTITUTE("quotes","","\]")': "HI"
+        'SUBSTITUTE("JOHN", "J", "H", 1)': "HOHN",
+        'SUBSTITUTE("bbbbb", "b", "i", 3)': "bbibb",
+        'SUBSTITUTE("]]]", "]", "l", 1)': "l]]",
+        'SUBSTITUTE("]]]", "]", "l", 12)': "]]]",
+        'SUBSTITUTE("Sales Data", "Sales", "Cost")': "Cost Data",
+        'SUBSTITUTE("Quarter 1, 2008", "1", "2", 1)': 'Quarter 2, 2008',
+        'SUBSTITUTE("Quarter 1, 2011", "1", "2", 3)': 'Quarter 1, 2012'
     },
 
     DBCS: {

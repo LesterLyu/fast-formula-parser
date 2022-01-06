@@ -337,7 +337,37 @@ const TextFunctions = {
     return filteredRV;
   },
 
-  SUBSTITUTE: (...params) => {},
+  SUBSTITUTE: (text, old_text, new_text, instance = null) => {
+    let accepted_text = H.accept(text),
+      accepted_old = H.accept(old_text),
+      accepted_new = H.accept(new_text),
+      rv = null; 
+      original_text = null; 
+      changed_text = null;
+
+    if(["boolean", "number", "string"].includes(typeof accepted_text) && 
+      ["boolean", "number", "string"].includes(typeof accepted_old) && 
+      ["boolean", "number", "string"].includes(typeof accepted_new)) {
+        rv = H.changeEscapeCharacters(accepted_text.toString())
+        original_text = H.changeEscapeCharacters(accepted_old.toString())
+        changed_text = H.changeEscapeCharacters(accepted_new.toString())
+      } 
+    else
+      throw FormulaError.VALUE
+    const regexReplaceAll = WildCard.toRegex(original_text, 'g')
+
+    if(instance === null)
+      return rv.replace(regexReplaceAll, changed_text)
+    else{
+      let counter = H.accept(instance, Types.NUMBER)
+      return rv.replace(regexReplaceAll, (t) => {
+        counter -= 1;
+        if(counter === 0)
+          return changed_text
+        return t
+      })
+    }
+  },
 
   T: (value) => {
     // extract the real parameter
