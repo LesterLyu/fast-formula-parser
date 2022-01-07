@@ -101,13 +101,11 @@ const ReferenceFunctions = {
     const bools = H.accept(boolArray, Types.ARRAY);
           acceptedMatrix = H.accept(returnArray, Types.ARRAY, undefined, false);
           acceptedArray = acceptedMatrix.map((row) => H.accept(row, Types.ARRAY))
-    if (defaultValue !== null) 
-      defaultValue = H.accept(defaultValue);
     if (bools.length !== acceptedArray.length || acceptedMatrix === undefined) 
       throw FormulaError.VALUE;
     const rv = acceptedArray.filter((row, index) => bools[index])
     if (rv.length === 0 && defaultValue !== null) 
-      return defaultValue;
+      return H.accept(defaultValue);
     if (rv.length === 0 && defaultValue === null) 
       throw FormulaError.VALUE;
     return rv;
