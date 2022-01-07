@@ -98,34 +98,16 @@ const ReferenceFunctions = {
    * @param defaultValue : OPTIONAL: returned if lookupValue is not found
    */
   FILTER: (returnArray, boolArray, defaultValue = null) => {
-    boolArray = H.accept(boolArray, Types.ARRAY);
-    returnArray = H.accept(returnArray, Types.ARRAY);
-    if (defaultValue !== null) {
-      defaultValue = H.accept(defaultValue);
-    }
-    if (!Array.isArray(boolArray)) {
-      throw FormulaError.NA;
-    }
-    if (!Array.isArray(returnArray)) {
-      throw FormulaError.NA;
-    }
-    if (boolArray.length !== returnArray.length) {
+    const bools = H.accept(boolArray, Types.ARRAY);
+          acceptedMatrix = H.accept(returnArray, Types.ARRAY, undefined, false);
+          acceptedArray = acceptedMatrix.map((row) => H.accept(row, Types.ARRAY))
+    if (bools.length !== acceptedArray.length || acceptedMatrix === undefined) 
       throw FormulaError.VALUE;
-    }
-    var rv = [];
-    for (let index = 0; index < boolArray.length; index++) {
-      let currBOOL = H.accept(boolArray[index], Types.BOOLEAN);
-      let currRV = H.accept(returnArray[index]);
-      if (currBOOL) {
-        rv.push([currRV]);
-      }
-    }
-    if (rv.length === 0 && defaultValue !== null) {
-      return defaultValue;
-    }
-    if (rv.length === 0 && defaultValue === null) {
+    const rv = acceptedArray.filter((row, index) => bools[index])
+    if (rv.length === 0 && defaultValue !== null) 
+      return H.accept(defaultValue);
+    if (rv.length === 0 && defaultValue === null) 
       throw FormulaError.VALUE;
-    }
     return rv;
   },
 
