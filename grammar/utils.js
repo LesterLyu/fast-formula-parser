@@ -538,7 +538,7 @@ class Utils {
   }
 
   static expandActionMacro(tokens) {
-    return tokens.slice(1,tokens.length-1).map(t => t.image).join("");
+    return `SUM(${tokens.slice(1,tokens.length-1).map(t => t.image).join("")})`;
   }
 
   static isComputedColumnMacro(tokens) {
