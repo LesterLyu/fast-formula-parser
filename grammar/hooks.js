@@ -319,8 +319,13 @@ class FormulaParser {
       return Utils.addType(result, inputText, dependencies);
     }
 
-    parse(inputText, position, allowReturnArray = false) {
-        if (inputText.length === 0) throw Error('Input must not be empty.');
+    parse(rawInputText, position, allowReturnArray = false) {
+        if (rawInputText.length === 0) throw Error('Input must not be empty.');
+
+        if (rawInputText[0] !== '=') {
+          return rawInputText;
+        }
+        const inputText = rawInputText.slice(1);
 
         this.position = position;
         this.async = false;
@@ -382,8 +387,12 @@ class FormulaParser {
       return Utils.addType(result, inputText, dependencies);
     }
 
-    async parseAsync(inputText, position, allowReturnArray = false) {
-        if (inputText.length === 0) throw Error('Input must not be empty.');
+    async parseAsync(rawInputText, position, allowReturnArray = false) {
+        if (rawInputText.length === 0) throw Error('Input must not be empty.');
+        if (rawInputText[0] !== '=') {
+          return rawInputText;
+        }
+        const inputText = rawInputText.slice(1);
 
         this.position = position;
         this.async = true;

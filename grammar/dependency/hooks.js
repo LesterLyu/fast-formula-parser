@@ -154,9 +154,13 @@ class DepParser {
      *                                      if false, the parser will return partial dependencies.
      * @returns {Array.<{}>}
      */
-    parse(inputText, position, ignoreError = false) {
-        if (inputText.length === 0) throw Error('Input must not be empty.');
+    parse(rawInputText, position, ignoreError = false) {
+        if (rawInputText.length === 0) throw Error('Input must not be empty.');
 
+        if (rawInputText[0] !== '=') {
+          return [];
+        }
+        const inputText = rawInputText.slice(1);
 
         this.data = [];
         this.position = position;
