@@ -369,7 +369,7 @@ class FormulaParser {
      */
     async parseAsyncWithType(inputText, position, allowReturnArray = false) {
       const result = await this.parseAsync(inputText, position, allowReturnArray);
-      const rawDeps = new DepParser(this.onStructuredReference).parse(inputText, position);
+      const rawDeps = this.depParser.parse(inputText, position);
       const dependencies = rawDeps.map(e => {
         if("from" in e && "to" in e) {
           return this.onFullRange(e);
