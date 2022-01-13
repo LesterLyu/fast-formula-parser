@@ -96,11 +96,6 @@ const ReferenceFunctions = {
           acceptedMatrix = H.accept(returnArray, Types.ARRAY, undefined, false);
           acceptedArray = acceptedMatrix.map((row) => H.accept(row, Types.ARRAY))
 
-      console.log({S: "FILTER",
-        returnArray,
-        boolArrays,
-        bools
-      });
     if (bools.some(bool => bool.length !== acceptedArray.length) || acceptedMatrix === undefined) 
       throw FormulaError.VALUE;
     const rv = acceptedArray.filter((row, index) => bools.every(bool => bool[index]))
