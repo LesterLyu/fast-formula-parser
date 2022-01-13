@@ -176,16 +176,19 @@ class DepParser {
                 throw FormulaError.ERROR(e.message, e);
             }
         }
+
         // FFP bugs out when we call parse from within formulaWithBinaryOp, so
         // instead we have to hack it up here.
         // In theory this will also break if people do multiple repeats but that's unlikely.
         if (tokens.some(t => t.image === "repeat(")) {
+          // this.parse wipes this.data, so we need to store and reuse.
           const d = this.data.slice();
           const token = tokens[tokens.findIndex(t => t.image === "repeat(") + 1];
           if (token.image[1] === "=") {
             const subData = this.parse(token.image.slice(2, token.image.length-1), position, ignoreError)
             this.data.push(...subData);
           }
+          this.data.push(...d);
         }
         if (this.parser.errors.length > 0 && !ignoreError) {
             const error = this.parser.errors[0];
