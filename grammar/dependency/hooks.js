@@ -134,7 +134,20 @@ class DepParser {
         ).forEach(arg => {
             this.retrieveRef(arg);
         });
-        return {value: 0, ref: {}};
+        if (name === "extendTable") {
+          const title = args[1];
+          const lTable = window.lTablesRef.current.find(t => t.title === title);
+          if(lTable) {
+            this.data.push(lTable.masterCell);
+            const leftExtensions = lTable.extensions.filter(e => e.col < this.position.col).sort(e => {
+              return this.position.col - e.col;
+            })
+            if (leftExtensions.length > 0) {
+              this.data.push(leftExtensions[0]);
+            }
+          }
+        }
+        return 0;
     }
 
     /**
