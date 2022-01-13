@@ -13,7 +13,6 @@ const DateValueFunctions = new Set([
   "DATE",
   "TODAY",
   "DATEDIF",
-  "DATEVALUE",
 ]);
 
 const NumberValueFunctions = new Set([
