@@ -22,6 +22,7 @@ const NumberValueFunctions = new Set([
   "HOUR",
   "MINUTE",
   "SECOND",
+  "DATEVALUE",
 ]);
 class Utils {
 
