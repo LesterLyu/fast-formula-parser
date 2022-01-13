@@ -90,20 +90,20 @@ const ReferenceFunctions = {
       throw Error("ReferenceFunctions.COLUMNS should not reach here.");
     }
   },
-  /**
-   *
-   * @param lookupValue: the value we are filtering for in our lookupArray
-   * @param lookupArray: the array which we match values to lookupValue
-   * @param returnArray: the return values/array
-   * @param defaultValue : OPTIONAL: returned if lookupValue is not found
-   */
-  FILTER: (returnArray, boolArray, defaultValue = null) => {
-    const bools = H.accept(boolArray, Types.ARRAY);
+
+  FILTER: (returnArray, ...boolArrays) => {
+    const bools = boolArrays.map(boolArray => H.accept(boolArray, Types.ARRAY));
           acceptedMatrix = H.accept(returnArray, Types.ARRAY, undefined, false);
           acceptedArray = acceptedMatrix.map((row) => H.accept(row, Types.ARRAY))
-    if (bools.length !== acceptedArray.length || acceptedMatrix === undefined) 
+
+      console.log({S: "FILTER",
+        returnArray,
+        boolArrays,
+        bools
+      });
+    if (bools.some(bool => bool.length !== acceptedArray.length) || acceptedMatrix === undefined) 
       throw FormulaError.VALUE;
-    const rv = acceptedArray.filter((row, index) => bools[index])
+    const rv = acceptedArray.filter((row, index) => bools.every(bool => bool[index]))
     if (rv.length === 0 && defaultValue !== null) 
       return H.accept(defaultValue);
     if (rv.length === 0 && defaultValue === null) 
