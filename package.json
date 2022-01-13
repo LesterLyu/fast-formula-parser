@@ -1,6 +1,6 @@
 {
   "name": "@lido-app/fast-formula-parser",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "fast excel formula parser",
   "repository": "https://github.com/lido-app/fast-formula-parser",
   "main": "index.js",
