@@ -559,8 +559,8 @@ class Utils {
     const tableComma = commaLocations[commaLocations.length - 2];
     const columnComma = commaLocations[commaLocations.length - 1];
 
-    const tableName = tokens.slice(tableComma+1, tableComma+2)[0].image
-    const columnName = tokens.slice(columnComma+1, columnComma+2)[0].image
+    const tableName = tokens.slice(tableComma+1, columnComma).map(t => t.image).join(" ")
+    const columnName = tokens.slice(columnComma+1, tokens.length-1).map(t => t.image).join(" ")
     const rArgs = [
       `"=${tokens.slice(1, tableComma).map(t => t.image).join("")}"`,
       `ROWS(${tableName}[])`
