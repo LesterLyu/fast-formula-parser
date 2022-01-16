@@ -98,12 +98,7 @@ const ReferenceFunctions = {
 
     if (bools.some(bool => bool.length !== acceptedArray.length) || acceptedMatrix === undefined) 
       throw FormulaError.VALUE;
-    const rv = acceptedArray.filter((row, index) => bools.every(bool => bool[index]))
-    if (rv.length === 0 && defaultValue !== null) 
-      return H.accept(defaultValue);
-    if (rv.length === 0 && defaultValue === null) 
-      throw FormulaError.VALUE;
-    return rv;
+    return acceptedArray.filter((row, index) => bools.every(bool => bool[index]));
   },
 
   HLOOKUP: (lookupValue, tableArray, rowIndexNum, rangeLookup) => {
