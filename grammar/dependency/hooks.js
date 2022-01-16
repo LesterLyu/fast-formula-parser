@@ -175,7 +175,7 @@ class DepParser {
         this.position = position;
         const { tokens } = lexer.lex(inputText);
 
-        if (GrammarUtils.isComputedColumnMacro(tokens)) {
+        if (GrammarUtils.isMacro(tokens, "COMPUTEDCOLUMN")) {
           return this.parse(GrammarUtils.expandComputedColumnMacro(tokens), position, ignoreError);
         }
 

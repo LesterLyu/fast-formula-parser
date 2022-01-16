@@ -533,16 +533,8 @@ class Utils {
     }
   }
 
-  static isActionMacro(tokens) {
-    return tokens.length > 0 && tokens[0].image.toUpperCase() === "ACTION(" && tokens[tokens.length-1].tokenType.name === "CloseParen";
-  }
-
   static expandActionMacro(tokens) {
     return `SUM(${tokens.slice(1,tokens.length-1).map(t => t.image).join("")})`;
-  }
-
-  static isComputedColumnMacro(tokens) {
-    return tokens.length > 0 && tokens[0].image.toUpperCase() === "COMPUTEDCOLUMN(" && tokens[tokens.length-1].tokenType.name === "CloseParen";
   }
 
   static findAllIndicies(a, f) {
@@ -569,6 +561,9 @@ class Utils {
     return `extendTable(repeat(${rArgs[0]},${rArgs[1]},1), "${tableName}", {"${columnName}"})`;
   }
 
+  static isMacro(tokens, macroName) {
+    return tokens.length > 0 && tokens[0].image.toUpperCase() === `${macroName}(` && tokens[tokens.length-1].tokenType.name === "CloseParen";
+  }
 }
 
 module.exports = Utils;

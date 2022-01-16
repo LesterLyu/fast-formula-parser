@@ -326,15 +326,15 @@ class FormulaParser {
         this.async = false;
         const { tokens } = lexer.lex(inputText);
 
-        if (Utils.isActionMacro(tokens) && this.isRunningAction) {
+        if (Utils.isMacro(tokens, 'ACTION') && this.isRunningAction) {
           return this.parse(Utils.expandActionMacro(tokens), position, allowReturnArray);
         }
 
-        if (Utils.isActionMacro(tokens) && !this.isRunningAction) {
+        if (Utils.isMacro(tokens, 'ACTION') && !this.isRunningAction) {
           return inputText;
         }
 
-        if (Utils.isComputedColumnMacro(tokens)) {
+        if (Utils.isMacro(tokens, 'COMPUTEDCOLUMN')) {
           return this.parse(Utils.expandComputedColumnMacro(tokens), position, allowReturnArray);
         }
 
@@ -389,17 +389,30 @@ class FormulaParser {
         this.async = true;
         const { tokens } = lexer.lex(inputText);
 
-        if (Utils.isActionMacro(tokens) && this.isRunningAction) {
+        if (Utils.isMacro(tokens, 'ACTION') && this.isRunningAction) {
           return this.parseAsync(Utils.expandActionMacro(tokens), position, allowReturnArray);
         }
 
-        if (Utils.isActionMacro(tokens) && !this.isRunningAction) {
+        if (Utils.isMacro(tokens, 'ACTION') && !this.isRunningAction) {
           return "=".concat(inputText);
         }
 
-        if (Utils.isComputedColumnMacro(tokens)) {
+        if (Utils.isMacro(tokens, 'COMPUTEDCOLUMN')) {
           return this.parseAsync(Utils.expandComputedColumnMacro(tokens), position, allowReturnArray);
         }
+
+        if (Utils.isMacro(tokens, 'IFDO')) {
+          const commaLocations = Utils.findAllIndicies(tokens, t => t.tokenType.name === "Comma")
+          const refComma = commaLocations[0];
+          const predicate = tokens.slice(refComma-1,refComma).map(t => t.image).join("");
+          const refVal = await this.parseAsync(predicate, position, allowReturnArray);
+          if(refVal) {
+            const consequent = tokens.slice(refComma+1,tokens.length - 1).map(t => t.image).join("");
+            return await this.parseAsync(consequent, position, allowReturnArray);
+          }
+          return false;
+        }
+
         this.parser.input = tokens;
         let res;
         try {
