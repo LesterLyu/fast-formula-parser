@@ -43,6 +43,18 @@ const toFullWidth = (str0) =>
 const toHalfWidth = (str0) =>
   sets.reduce((str, set) => str.replace(re(set, "full"), toHalf(set)), str0);
 
+const searchOnce = (findText, withinText, startNum) => {
+  if(typeof withinText !== "string")
+    throw FormulaError.NAME
+  if (startNum < 1 || startNum > withinText.length) throw FormulaError.VALUE;
+  // transform to js regex expression
+  let findTextRegex = WildCard.isWildCard(findText)
+    ? WildCard.toRegex(findText, "i")
+    : findText;
+  const res = withinText.slice(startNum - 1).search(findTextRegex);
+  if (res === -1) throw FormulaError.VALUE;
+  return res + startNum;
+}
 const TextFunctions = {
   ASC: (text) => {
     text = H.accept(text, Types.STRING);
@@ -284,19 +296,17 @@ const TextFunctions = {
     return TextFunctions.RIGHT(...params);
   },
 
-  SEARCH: (findText, withinText, startNum) => {
-    findText = H.accept(findText, Types.STRING);
-    withinText = H.accept(withinText, Types.STRING);
-    startNum = H.accept(startNum, Types.NUMBER, 1);
-    if (startNum < 1 || startNum > withinText.length) throw FormulaError.VALUE;
-
-    // transform to js regex expression
-    let findTextRegex = WildCard.isWildCard(findText)
-      ? WildCard.toRegex(findText, "i")
-      : findText;
-    const res = withinText.slice(startNum - 1).search(findTextRegex);
-    if (res === -1) throw FormulaError.VALUE;
-    return res + startNum;
+  SEARCH: (searchText, searchedInText, startingNum) => {
+    const findText = H.accept(searchText, Types.STRING);
+    const withinText = H.accept(searchedInText, null, undefined, false);
+    const startNum = H.accept(startingNum, Types.NUMBER, 1);
+    let withinTextArr = null;
+    if(Array.isArray(withinText)){
+      withinTextArr = withinText
+    }else {
+      withinTextArr = [[withinText]]
+    }
+    return withinTextArr.map((row) => row.map(val => searchOnce(findText, H.accept(val, Types.STRING), startNum)))
   },
 
   SEARCHB: (...params) => {

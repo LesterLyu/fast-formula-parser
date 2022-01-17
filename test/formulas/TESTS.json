@@ -174581,6 +174581,81 @@
         "expectedValue": "#ERROR!",
         "formula": "WEBSERVICE(\"www.google.ca\")"
     },
+    "Search should return arrays 1": {
+        "sheet": [["123bob","12345bob", "123456bob"]],
+        "expectedValue": 4,
+        "formula": "INDEX(Search( \"bob\", A1:C1), 1, 1)"
+    },
+    "Search should return arrays 2": {
+        "sheet": [["123bob","12345bob", "123456bob"]],
+        "expectedValue": 6,
+        "formula": "INDEX(Search( \"bob\", A1:C1), 1, 2)"
+    },
+    "Search should return arrays 3": {
+        "sheet": [["123bob","12345bob", "123456bob"]],
+        "expectedValue": 7,
+        "formula": "INDEX(Search(\"bob\", A1:C1), 1, 3)"
+    },
+    "Search should return arrays 4": {
+        "sheet": [["123bob","bob"], ["12345bob", "1234567bob"], ["123456bob", "123456bob"]],
+        "expectedValue": 4,
+        "formula": "INDEX(Search(\"bob\", A1:B3), 1, 1)"
+    },
+    "Search should return arrays 5": {
+        "sheet": [["123bob","bob"], ["12345bob", "1234567bob"], ["123456bob", "123456bob"]],
+        "expectedValue": 1,
+        "formula": "INDEX(Search(\"bob\", A1:B3), 1, 2)"
+    },
+    "Search should return arrays 6": {
+        "sheet": [["123bob","bob"], ["12345bob", "1234567bob"], ["123456bob", "123456bob"]],
+        "expectedValue": 6,
+        "formula": "INDEX(Search(\"bob\", A1:B3), 2, 1)"
+    },
+    "Search should return arrays 7": {
+        "sheet": [["123bob","bob"], ["12345bob", "1234567bob"], ["123456bob", "123456bob"]],
+        "expectedValue": 8,
+        "formula": "INDEX(Search(\"bob\", A1:B3), 2, 2)"
+    },
+    "Search should return arrays 9": {
+        "sheet": [["123bob","bob"], ["12345bob", "1234567bob"], ["123456bob", "123456bob"]],
+        "expectedValue": 7,
+        "formula": "INDEX(Search(\"bob\", A1:B3), 3, 1)"
+    },
+    "Search should return arrays 10": {
+        "sheet": [["123bob","bob"], ["12345bob", "1234567bob"], ["123456bob", "123456bob"]],
+        "expectedValue": 7,
+        "formula": "INDEX(Search(\"bob\", A1:B3), 3,2)"
+    },
+    "Search should return arrays 11": {
+        "sheet": [["1234567bob","12345bob"], ["12345bob", "1234567bob"], ["123456bob", "123456bob"]],
+        "expectedValue": 8,
+        "formula": "Index(Search(\"bob\",A1:B3, 2), 1, 1)"
+    },
+    "Search should return arrays 12": {
+        "sheet": [["1234567bob","12345bob"], ["bob45bob", "1234567bob"], ["123456bob", "123456bob"]],
+        "expectedValue": 6,
+        "formula": "Index(Search(\"bob\",A1:B3, 2), 2, 1)"
+    },
+    "Search should return arrays 13": {
+        "sheet": [["1234567bob","12345bob"], ["12345bob", "1234567bob"], ["bob456bob", "123456bob"]],
+        "expectedValue": 7,
+        "formula": "Index(Search(\"bob\",A1:B3, 2), 3, 1)"
+    },
+    "Search should return arrays 14": {
+        "sheet": [["1234567bob","bob45bob"], ["12345bob", "1234567bob"], ["123456bob", "123456bob"]],
+        "expectedValue": 6,
+        "formula": "Index(Search(\"bob\",A1:B3, 2), 1, 2)"
+    },
+    "Search should return arrays 15": {
+        "sheet": [["1234567bob","12345bob"], ["12345bob", "bob4567bob"], ["123456bob", "123456bob"]],
+        "expectedValue": 8,
+        "formula": "Index(Search(\"bob\",A1:B3, 2), 2, 2)"
+    },
+    "Search should return arrays 16": {
+        "sheet": [["1234567bob","12345bob"], ["12345bob", "bob4567bob"], ["123456bob", "bob456bob"]],
+        "expectedValue": 7,
+        "formula": "Index(Search(\"bob\",A1:B3, 2), 3, 2)"
+    },
     "isNumber returns Arrays": {
         "sheet": [[1,2,"HI"]],
         "expectedValue": true,
