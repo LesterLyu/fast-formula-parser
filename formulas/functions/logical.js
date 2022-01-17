@@ -82,9 +82,15 @@ const LogicalFunctions = {
   },
 
   NOT: (logical) => {
-    logical = H.accept(logical, Types.BOOLEAN);
-    return !logical;
-  },
+    const value = H.accept(logical, undefined, false);
+    if(typeof value === "boolean")
+      return !value;
+    else if(Array.isArray(value))
+      return value.map((row) => row.map((value) => !H.accept(value, Types.BOOLEAN)))
+    else if(typeof value === "number")
+      return value === 0
+    throw FormulaError.VALUE;
+    },
 
   OR: (...params) => {
     const [numTrue, numFalse] = getNumLogicalValue(params);

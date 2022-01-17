@@ -145,6 +145,10 @@ describe('Basic parse', () => {
         let actual = parser.parse('A1:C1<=1', position, true)
         expect(actual).to.deep.eq([[true, false, false], [true, true, true]])
     })
+    it('should parse multiple rows and feed them into a function', function() {
+        let actual = parser.parse('NOT({TRUE, TRUE, FALSE})', position, true)
+        expect(actual).to.deep.eq([[false, false, true]])
+    })
   });
 
 })

@@ -174580,5 +174580,58 @@
         ],
         "expectedValue": "#ERROR!",
         "formula": "WEBSERVICE(\"www.google.ca\")"
+    },
+    "NOT(TRUE)": {
+        "sheet": [[]],
+        "expectedValue": false,
+        "formula": "NOT(TRUE)"
+    },
+    "NOT(FALSE)": {
+        "sheet": [[]],
+        "expectedValue": true,
+        "formula": "NOT(FALSE)"
+    },
+    "NOT(0)": {
+        "sheet": [[]],
+        "expectedValue": true,
+        "formula": "NOT(0)"
+    },
+    "NOT(1)": {
+        "sheet": [[]],
+        "expectedValue": false,
+        "formula": "NOT(1)"
+    },
+    "NOT(\"Hello\")": {
+        "sheet": [[]],
+        "expectedValue": "#VALUE!",
+        "formula": "NOT(\"Hello\")"
+    },
+    "NOT(A1:F1=3)": {
+        "sheet": [
+            [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5
+            ]
+        ],
+        "expectedValue": [[true, true, true, false, true, true]],
+        "formula": "NOT(A1:F1=3)",
+        "deep": true
+    },
+    "NOT(A1:A5=3)": {
+        "sheet": [
+            [0],
+            [1],
+            [2],
+            [3],
+            [4],
+            [5]
+        ],
+        "expectedValue": [[true], [true], [true], [false], [true], [true]],
+        "formula": "NOT(A1:A6=3)",
+        "deep": true
     }
 }
