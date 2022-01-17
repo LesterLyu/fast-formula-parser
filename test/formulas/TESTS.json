@@ -174581,6 +174581,66 @@
         "expectedValue": "#ERROR!",
         "formula": "WEBSERVICE(\"www.google.ca\")"
     },
+    "isNumber returns Arrays": {
+        "sheet": [[1,2,"HI"]],
+        "expectedValue": true,
+        "formula": "INDEX(isNumber(A1:C1),1,1)"
+    },
+    "isNumber returns Arrays 2": {
+        "sheet": [[1,2,"HI"]],
+        "expectedValue": true,
+        "formula": "INDEX(isNumber(A1:C1),1,2)"
+    },
+    "isNumber returns Arrays 3": {
+        "sheet": [[1,2,"HI"]],
+        "expectedValue": false,
+        "formula": "INDEX(isNumber(A1:C1),1,3)"
+    },
+    "isNumber returns Arrays 4": {
+        "sheet": [[1],[2],["HI"]],
+        "expectedValue": true,
+        "formula": "INDEX(isNumber(A1:A3),1,1)"
+    },
+    "isNumber returns Arrays 5": {
+        "sheet": [[1],[2],["HI"]],
+        "expectedValue": true,
+        "formula": "INDEX(isNumber(A1:A3),2,1)"
+    },
+    "isNumber returns Arrays 6": {
+        "sheet": [[1],[2],["HI"]],
+        "expectedValue": false,
+        "formula": "INDEX(isNumber(A1:A3),3,1)"
+    },
+    "isNumber returns Arrays 7": {
+        "sheet": [[1, "HI"],[2, 1],["HI", 11]],
+        "expectedValue": true,
+        "formula": "INDEX(isNumber(A1:C3),1,1)"
+    },
+    "isNumber returns Arrays 8": {
+        "sheet": [[1, "HI"],[2, 1],["HI", 11]],
+        "expectedValue": false,
+        "formula": "INDEX(isNumber(A1:C3),1,2)"
+    },
+    "isNumber returns Arrays 9": {
+        "sheet": [[1, "HI"],[2, 1],["HI", 11]],
+        "expectedValue": true,
+        "formula": "INDEX(isNumber(A1:C3),2,1)"
+    },
+    "isNumber returns Arrays 10": {
+        "sheet": [[1, "HI"],[2, 1],["HI", 11]],
+        "expectedValue": true,
+        "formula": "INDEX(isNumber(A1:C3),2,2)"
+    },
+    "isNumber returns Arrays 11": {
+        "sheet": [[1, "HI"],[2, 1],["HI", 11]],
+        "expectedValue": false,
+        "formula": "INDEX(isNumber(A1:C3),3,1)"
+    },
+    "isNumber returns Arrays 12": {
+        "sheet": [[1, "HI"],[2, 1],["HI", 11]],
+        "expectedValue": true,
+        "formula": "INDEX(isNumber(A1:C3),3,2)"
+    },
     "NOT(TRUE)": {
         "sheet": [[]],
         "expectedValue": false,

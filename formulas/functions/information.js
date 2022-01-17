@@ -63,9 +63,15 @@ const InfoFunctions = {
     return typeof value !== "string";
   },
 
-  ISNUMBER: (value) => {
-    value = H.accept(value);
-    return typeof value === "number";
+  ISNUMBER: (inputValue) => {
+    const value = H.accept(inputValue, null, undefined, false);
+    let valueArr = null;
+    if(Array.isArray(value)){
+      valueArr = value
+    }else {
+      valueArr = [[value]]
+    }
+    return valueArr.map((row) => row.map((val) => typeof val === "number"));
   },
 
   ISREF: (value) => {
