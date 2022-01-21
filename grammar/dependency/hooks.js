@@ -134,7 +134,7 @@ class DepParser {
         ).forEach(arg => {
             this.retrieveRef(arg);
         });
-        if (name === "extendTable") {
+        if (name.toUpperCase() === "EXTENDTABLE") {
           const title = args[1];
           const lTable = window.lTablesRef.current.find(t => t.title === title);
           if(lTable) {
