@@ -147,6 +147,26 @@ class DepParser {
             }
           }
         }
+        // FFP dependency doesn't handle formulas returning refs,
+        // so we need to duplicate the logic here.
+        if(name.toUpperCase() === "SHEETRANGE") {
+          const sheet = args[0];
+          const worksheet = window.engineWrapper.sheets.find( w => w.name === sheet);
+          const col = worksheet.columnCount
+          const row = worksheet.rowCount
+          const ref = {
+            from: {
+              row: 1,
+              col: 1,
+            },
+            sheet,
+            to: {
+              row,
+              col,
+            },
+          }
+          this.getRange(ref)
+        }
         return 0;
     }
 
