@@ -378,7 +378,7 @@ class FormulaParser {
           return this.onFullCell(e);
         }
         throw new Error(`Invalid dependency: ${JSON.stringify(e)}`);
-      });
+      }).flat(Infinity);
       return Utils.addType(result, inputText, dependencies);
     }
 

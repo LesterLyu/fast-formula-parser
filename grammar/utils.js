@@ -509,9 +509,7 @@ class Utils {
           if(typeof result[i][j] !== "object") {
             result[i][j] = {
               result: result[i][j],
-              // Last two are only for dates and punting on doing dates right here cause
-              // its probably rare something will generate a list of dates that's not REPEAT and dealing with that is hard.
-              resultType: Utils.resultType(result[i][j], "", []),
+              resultType: Utils.resultType(result[i][j], "", dependencies),
             }
           }
         }
