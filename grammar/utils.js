@@ -439,10 +439,11 @@ class Utils {
         .filter(token => token.tokenType.name === 'Function')
         .map(token => Utils.cleanFunctionToken(token.image).toUpperCase());
 
-    const isADependencyADatetime = dependencies.some(d => d.resultType === 'datetime' || d.datatype === 'datetime');
+    const areAllDependenciesADatetime = dependencies.length > 0 && dependencies.every(d => d.resultType === 'datetime' || d.datatype === 'datetime');
+
     const numberFunction = Utils.isTokenInList(normalizedTokens, NumberValueFunctions);
     const dtFunction = Utils.isTokenInList(normalizedTokens, DatetimeValueFunctions);
-    return !numberFunction && (dtFunction || isADependencyADatetime);
+    return !numberFunction && (dtFunction || areAllDependenciesADatetime);
   };
 
   static isDate(result, text, dependencies) {
@@ -454,8 +455,8 @@ class Utils {
         .filter(token => token.tokenType.name === 'Function')
         .map(token => Utils.cleanFunctionToken(token.image).toUpperCase());
 
-    const isADependencyADate = dependencies.some(d => d.resultType === 'date' || d.datatype === 'date');
-    return !Utils.isTokenInList(normalizedTokens, NumberValueFunctions) && (Utils.isTokenInList(normalizedTokens, DateValueFunctions) || isADependencyADate);
+    const areAllDependenciesADate = dependencies.length > 0 && dependencies.every(d => d.resultType === 'date' || d.datatype === 'date');
+    return !Utils.isTokenInList(normalizedTokens, NumberValueFunctions) && (Utils.isTokenInList(normalizedTokens, DateValueFunctions) || areAllDependenciesADate);
   };
 
   static resultType(result, inputText, dependencies) {
@@ -504,12 +505,23 @@ class Utils {
       if(!Array.isArray(result[0])) {
         result = [result];
       }
+      let baseData = dependencies.find(d => {
+        return Array.isArray(d) && Array.isArray(d[0]) && d[0].length === result[0].length;
+      });
       for(let i = 0; i < result.length; i++){
         for(let j = 0; j < result[i].length; j++) {
           if(typeof result[i][j] !== "object") {
+            let resultType;
+            // Hack to get dates to work when making filter tables
+            if(baseData && typeof result[i][j] === "number" && baseData[0][j].resultType === "date") {
+              resultType = "date";
+            } else {
+              resultType = Utils.resultType(result[i][j], inputText, dependencies)
+            }
+
             result[i][j] = {
               result: result[i][j],
-              resultType: Utils.resultType(result[i][j], "", dependencies),
+              resultType,
             }
           }
         }

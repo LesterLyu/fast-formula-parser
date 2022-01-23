@@ -69,7 +69,7 @@ class FormulaParser {
         this.funsPreserveRef = Object.keys(InformationFunctions);
 
         this.parser = new Parser(this, this.utils);
-        this.depParser = new DepParser(this.onStructuredReference)
+        this.depParser = new DepParser({onStructuredReference: this.onStructuredReference})
     }
 
     /**
@@ -378,7 +378,7 @@ class FormulaParser {
           return this.onFullCell(e);
         }
         throw new Error(`Invalid dependency: ${JSON.stringify(e)}`);
-      }).flat(Infinity);
+      });
       return Utils.addType(result, inputText, dependencies);
     }
 
