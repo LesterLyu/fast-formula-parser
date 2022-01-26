@@ -440,11 +440,11 @@ class Utils {
         .filter(token => token.tokenType.name === 'Function')
         .map(token => Utils.cleanFunctionToken(token.image).toUpperCase());
 
-    const areAllDependenciesADatetime = dependencies.length > 0 && dependencies.every(d => d.resultType === type || d.datatype === type);
+    const allDependenciesAreOfType = dependencies.length > 0 && dependencies.every(d => d.resultType === type || d.datatype === type);
 
     const numberFunction = Utils.isTokenInList(normalizedTokens, ValueFunctions.number);
-    const valueFunction = Utils.isTokenInList(normalizedTokens, ValueFunctions[type]);
-    return !numberFunction && (valueFunction || areAllDependenciesADatetime);
+    const typeFunction = Utils.isTokenInList(normalizedTokens, ValueFunctions[type]);
+    return !numberFunction && (typeFunction || allDependenciesAreOfType);
   };
 
   static resultType(result, inputText, dependencies) {
