@@ -545,19 +545,58 @@ class Utils {
     return b.slice(0, b.length - 1);
   }
 
+  static computeColumnComma(tokens) {
+    let i = tokens.length - 1;
+    while(i >= 0 && tokens[i].tokenType.name !== "Comma" && tokens[i].tokenType.name !== "CloseCurlyParen") {
+      i--;
+    }
+    if (i === -1) {
+      throw new Error("Can't find column comma in computed column macro");
+    }
+
+    if(tokens[i].tokenType.name === "Comma") {
+      return i;
+    }
+
+    if(tokens[i].tokenType.name === "CloseCurlyParen") {
+      while(i >= 0 && tokens[i].tokenType.name !== "OpenCurlyParen") {
+        i--;
+      }
+
+      if (i === -1) {
+        throw new Error("Can't find column comma in computed column macro");
+      }
+      return i - 1;
+    }
+    throw new Error(`Unreachable code exception: ${i}`);
+  }
+
+  static computeTableComma(tokens, columnComma) {
+    let i = columnComma - 1;
+    while(i >= 0 && tokens[i].tokenType.name !== "Comma") {
+      i--;
+    }
+
+    if (i === -1) {
+      throw new Error("Can't find table comma in computed column macro");
+    }
+
+    return i;
+  }
+
   static expandComputedColumnMacro(tokens) {
     const commaLocations = Utils.findAllIndicies(tokens, t => t.tokenType.name === "Comma")
-    const tableComma = commaLocations[commaLocations.length - 2];
-    const columnComma = commaLocations[commaLocations.length - 1];
+    const columnComma = Utils.computeColumnComma(tokens);
+    const tableComma = Utils.computeTableComma(tokens, columnComma);
 
-    const tableName = tokens.slice(tableComma+1, columnComma).map(t => t.image).join(" ")
-    const columnName = tokens.slice(columnComma+1, tokens.length-1).map(t => t.image).join(" ")
+    const tableName = tokens.slice(tableComma+1, columnComma).map(t => t.image).join(" ").replaceAll('"', '');
+    const columnNames = tokens.slice(columnComma+1, tokens.length-1).map(t => t.image).join(" ")
     const rArgs = [
       `"=${tokens.slice(1, tableComma).map(t => t.image).join("")}"`,
       `ROWS(${tableName}[])`
     ];
 
-    return `extendTable(repeat(${rArgs[0]},${rArgs[1]},1), "${tableName}", {"${columnName}"})`;
+    return `extendTable(repeat(${rArgs[0]},${rArgs[1]},1), "${tableName}", ${columnNames})`;
   }
 
   static isMacro(tokens, macroName) {
