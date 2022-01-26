@@ -138,12 +138,13 @@ class DepParser {
           const title = args[1];
           const lTable = window.lTablesRef.current.find(t => t.title === title);
           if(lTable) {
-            this.data.push(lTable.masterCell);
             const leftExtensions = lTable.extensions.filter(e => e.col < this.position.col).sort(e => {
-              return this.position.col - e.col;
+              return e.col - this.position.col;
             })
             if (leftExtensions.length > 0) {
               this.data.push(leftExtensions[0]);
+            } else {
+              this.data.push(lTable.masterCell);
             }
           }
         }
