@@ -477,7 +477,12 @@ class Utils {
     let result;
     if (typeof rawResult === "string") {
       try {
-        result = JSON.parse(rawResult);
+        const parsedResult = JSON.parse(rawResult);
+        if (!Array.isArray(parsedResult) && typeof parsedResult === "object") {
+          result = JSON.parse(rawResult);
+        } else {
+          result = rawResult;
+        }
       // if not json, it's fine, just treat like normal string
       } catch (e) {
         result = rawResult;
