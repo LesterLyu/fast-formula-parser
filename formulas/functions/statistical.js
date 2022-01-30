@@ -251,8 +251,44 @@ const StatisticalFunctions = {
 
   MIN: () => {},
 
-  MINA: () => {},
-
+  MINA: (...values) => {
+    //Deals with all of the values within the function parameters
+    const parsedFromFunction = values.map(a => {
+      const currValue = a.value
+      if(a.ref !== undefined)
+        return currValue
+      if(typeof currValue === "number")
+        return currValue
+      if(typeof currValue === "boolean")
+        return +currValue
+      if(currValue === null)
+        return null
+      if(!isNaN(parseFloat(currValue)))
+        return parseFloat(currValue)
+      if(typeof currValue === "string")
+        throw FormulaError.VALUE
+      throw FormulaError.VALUE
+    })
+    const flatArr = H.flattenDeep(parsedFromFunction)
+    //deals with any values passed in as an array
+    const parseNumFromArray = (a) => {
+      if(typeof a === "boolean")
+        return +a
+      if(typeof a === "string")
+        return 0
+      if(typeof a === "number")
+        return a
+      return 0
+    }
+    const finalArr = flatArr.filter((value) => value != null)
+    if(finalArr.length === 0)
+      return 0;
+    //used instead of Math.max(...finalArr) to avoid JS maximum input length
+    return finalArr.reduce((prev, val) => {
+      const num = parseNumFromArray(val)
+      return Math.min(prev, num)
+    }, Infinity)
+  },
 
   MINIFS: () => {},
 

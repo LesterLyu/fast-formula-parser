@@ -174768,5 +174768,107 @@
         "expectedValue": [[true], [true], [true], [false], [true], [true]],
         "formula": "NOT(A1:A6=3)",
         "deep": true
+    },
+    "MINA(A1:D1)": {
+        "sheet": [
+            [1, "HI", "3", true]
+        ],
+        "formula": "MINA(A1:D1)",
+        "expectedValue": 0,
+        "deep": false
+    },
+    "MINA(A1:B1)": {
+        "sheet": [
+            [1, "HI", "3", true]
+        ],
+        "formula": "MINA(A1:B1)",
+        "expectedValue": 0,
+        "deep": false
+    },
+    "MINA(A1)": {
+        "sheet": [
+            [1, "HI", "3", true]
+        ],
+        "formula": "MINA(A1)",
+        "expectedValue": 1,
+        "deep": false
+    },"MINA(B1)": {
+        "sheet": [
+            [1, "HI", "3", true]
+        ],
+        "formula": "MINA(B1)",
+        "expectedValue":0,
+        "deep": false
+    },"MINA(C1)": {
+        "sheet": [
+            [1, "HI", "3", true]
+        ],
+        "formula": "MINA(C1)",
+        "expectedValue":0,
+        "deep": false
+    },"MINA(D1)": {
+        "sheet": [
+            [1, "HI", "3", true]
+        ],
+        "formula": "MINA(D1)",
+        "expectedValue": 1,
+        "deep": false
+    },"MINA(5)": {
+        "sheet": [
+            [1, "HI", "3", true]
+        ],
+        "formula": "MINA(5)",
+        "expectedValue": 5,
+        "deep": false
+    },"MINA(\"HI\")": {
+        "sheet": [
+            [1, "HI", "3", true]
+        ],
+        "formula": "MINA(\"HI\")",
+        "expectedValue": "#VALUE!",
+        "deep": false
+    },"MINA(\"4\")": {
+        "sheet": [
+            [1, "HI", "3", true]
+        ],
+        "formula": "MINA(\"4\")",
+        "expectedValue": 4,
+        "deep": false
+    },"MINA(TRUE)": {
+        "sheet": [
+            [1, "HI", "3", true]
+        ],
+        "formula": "MINA(TRUE)",
+        "expectedValue": 1,
+        "deep": false
+    },"MINA(B1:C1)": {
+        "sheet": [
+            [1, "HI", "3", true]
+        ],
+        "formula": "MINA(B1:C1)",
+        "expectedValue": 0,
+        "deep": false
+    },"MINA(B1:B5)": {
+        "sheet": [
+            [null, "1234walnuts", "-1234.52Pogs"],
+            [null, "0xABC"],
+            [null, "Infinity", "-Infinity"],
+            [null, true, false],
+            [null, "15", "-0xABC"]
+        ],
+        "formula": "MINA(B1:B5)",
+        "expectedValue": 0,
+        "deep": false
+    },"MINA(A1:A5)": {
+        "sheet": [
+            [null, "1234walnutys", "-1234.52Pogs"],
+            [null, "0xABC"],
+            [null, "Infinity", "-Infinity"],
+            [null, true, false],
+            [null, "15", "-0xABC"]
+        ],
+        "formula": "MINA(A1:A5)",
+        "expectedValue": 0,
+        "deep": false
     }
 }
