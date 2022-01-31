@@ -45,14 +45,14 @@ const toHalfWidth = (str0) =>
 
 const searchOnce = (findText, withinText, startNum) => {
   if(typeof withinText !== "string")
-    throw FormulaError.NAME
+    return FormulaError.VALUE
   if (startNum < 1 || startNum > withinText.length) throw FormulaError.VALUE;
   // transform to js regex expression
   let findTextRegex = WildCard.isWildCard(findText)
     ? WildCard.toRegex(findText, "i")
     : findText;
   const res = withinText.slice(startNum - 1).search(findTextRegex);
-  if (res === -1) throw FormulaError.VALUE;
+  if (res === -1) return FormulaError.VALUE;
   return res + startNum;
 }
 const TextFunctions = {
@@ -306,7 +306,7 @@ const TextFunctions = {
     }else {
       withinTextArr = [[withinText]]
     }
-    return withinTextArr.map((row) => row.map(val => searchOnce(findText, H.accept(val, Types.STRING), startNum)))
+    return withinTextArr.map((row) => row.map(val => searchOnce(findText, H.accept(val), startNum)))
   },
 
   SEARCHB: (...params) => {

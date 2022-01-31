@@ -4,6 +4,17 @@ const json = require('./TESTS.json')
 const expect = require('chai').expect;
 const sinon = require('sinon')
 
+
+const convertJSONArray = (array) => {
+    if(Array.isArray(array)){
+        array.forEach((row, rowIndex) => row.forEach((value, colIndex) => {
+            if(value === "undefined")
+                array[rowIndex][colIndex] = undefined
+            if(FormulaError.errorMap.has(value))
+                array[rowIndex][colIndex] = FormulaError.errorMap.get(value)
+        }));
+    }
+}
 const test = function(testName){
     const date = new Date(2000, 1, 1)
     let data = json[testName]["sheet"],
@@ -11,14 +22,9 @@ const test = function(testName){
         expected = json[testName]["expectedValue"]
         clock =  sinon.useFakeTimers(date.getTime());
     
-    if(data){
-        data.forEach((row, rowIndex) => row.forEach((value, colIndex) => {
-            if(value === "undefined")
-                data[rowIndex][colIndex] = undefined
-            if(FormulaError.errorMap.has(value))
-                data[rowIndex][colIndex] = FormulaError.errorMap.get(value)
-        }));
-    }
+    if(data)
+        convertJSONArray(data)
+    convertJSONArray(expected)
     
     const parser = new FormulaParser({
         onCell: ref => {

@@ -174768,6 +174768,27 @@
         "expectedValue": [[true], [true], [true], [false], [true], [true]],
         "formula": "NOT(A1:A6=3)",
         "deep": true
+    }, "SEARCH() default check for in array errors": {
+        "sheet": [
+            ["#VALUE!", "Hello", 9]
+        ],
+        "expectedValue": [["#VALUE!", 3, "#VALUE!"]],
+        "formula": "SEARCH(\"l\",A1:C1)",
+        "deep": true
+    },"SEARCH() should return values": {
+        "sheet": [
+            ["raymond", "desmond"]
+        ],
+        "expectedValue": [[6,6]],
+        "formula": "SEARCH(\"nd\",A1:B1)",
+        "deep": true
+    },"SEARCH() should allow for in-line errors": {
+        "sheet": [
+            ["raymond", "Warren", "Hasley", "Cassandra", "Pamela", "Xavior", "Decian","Holmer", "desmond"]
+        ],
+        "expectedValue": [[6, "#VALUE!", "#VALUE!", 6, "#VALUE!", "#VALUE!", "#VALUE!", "#VALUE!", 6]],
+        "formula": "SEARCH(\"nd\",A1:I1)",
+        "deep": true
     },
     "MINA(A1:D1)": {
         "sheet": [
