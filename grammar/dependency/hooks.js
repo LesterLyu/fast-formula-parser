@@ -219,7 +219,8 @@ class DepParser {
           const d = this.data.slice();
           const token = tokens[tokens.findIndex(t => t.image === "repeat(") + 1];
           if (token.image[1] === "=") {
-            const subData = this.parse(token.image.slice(2, token.image.length-1), position, ignoreError)
+            const formula = token.image.slice(2, token.image.length-1).replaceAll('""','"');
+            const subData = this.parse(formula, position, ignoreError)
             this.data.push(...subData);
           }
           this.data.push(...d);

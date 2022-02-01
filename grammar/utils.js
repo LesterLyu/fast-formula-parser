@@ -597,11 +597,13 @@ class Utils {
     const tableName = tokens.slice(tableComma+1, columnComma).map(t => t.image).join(" ").replaceAll('"', '');
     const columnNames = tokens.slice(columnComma+1, tokens.length-1).map(t => t.image).join(" ")
     const rArgs = [
-      `"=${tokens.slice(1, tableComma).map(t => t.image).join("")}"`,
+      `"=${tokens.slice(1, tableComma).map(t => t.image).join("").replaceAll('"','""')}"`,
       `ROWS(${tableName}[])`
     ];
+    const repeat = `repeat(${rArgs[0]},${rArgs[1]},1)`;
+    const formula = `extendTable(${repeat}, "${tableName}", ${columnNames})`;
 
-    return `extendTable(repeat(${rArgs[0]},${rArgs[1]},1), "${tableName}", ${columnNames})`;
+    return formula;
   }
 
   static isMacro(tokens, macroName) {
