@@ -175,7 +175,12 @@ class FormulaHelpers {
         number = this.acceptNumber(obj[0][0]);
       }
     } else {
-      throw Error("Unknown type in FormulaHelpers.acceptNumber");
+      const msg = `Unknown type in FormulaHelpers.acceptNumber: ${typeof obj}`
+      console.error(msg);
+      console.error(`Object is ${obj}`);
+      console.error(`Object keys are ${Object.keys(obj)}`);
+      console.error(`Object value: ${obj.value}`);
+      throw FormulaError.VALUE;
     }
     return number;
   }
