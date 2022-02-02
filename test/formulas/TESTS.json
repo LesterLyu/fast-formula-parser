@@ -174768,27 +174768,110 @@
         "expectedValue": [[true], [true], [true], [false], [true], [true]],
         "formula": "NOT(A1:A6=3)",
         "deep": true
+    },
+    "MAXA(A1:D1)": {
+        "sheet": [
+            [1, "HI", "3", true]
+        ],
+        "formula": "MAXA(A1:D1)",
+        "expectedValue": 1,
+        "deep": false
+    },
+    "MAXA(A1:B1)": {
+        "sheet": [
+            [1, "HI", "3", true]
+        ],
+        "formula": "MAXA(A1:B1)",
+        "expectedValue": 1,
+        "deep": false
+    },
+    "MAXA(A1)": {
+        "sheet": [
+            [1, "HI", "3", true]
+        ],
+        "formula": "MAXA(A1)",
+        "expectedValue": 1,
+        "deep": false
+    },"MAXA(B1)": {
+        "sheet": [
+            [1, "HI", "3", true]
+        ],
+        "formula": "MAXA(B1)",
+        "expectedValue":0,
+        "deep": false
+    },"MAXA(C1)": {
+        "sheet": [
+            [1, "HI", "3", true]
+        ],
+        "formula": "MAXA(C1)",
+        "expectedValue":0,
+        "deep": false
+    },"MAXA(D1)": {
+        "sheet": [
+            [1, "HI", "3", true]
+        ],
+        "formula": "MAXA(D1)",
+        "expectedValue": 1,
+        "deep": false
+    },"MAXA(5)": {
+        "sheet": [
+            [1, "HI", "3", true]
+        ],
+        "formula": "MAXA(5)",
+        "expectedValue": 5,
+        "deep": false
+    },"MAXA(\"HI\")": {
+        "sheet": [
+            [1, "HI", "3", true]
+        ],
+        "formula": "MAXA(\"HI\")",
+        "expectedValue": "#VALUE!",
+        "deep": false
+    },"MAXA(\"4\")": {
+        "sheet": [
+            [1, "HI", "3", true]
+        ],
+        "formula": "MAXA(\"4\")",
+        "expectedValue": 4,
+        "deep": false
+    },"MAXA(TRUE)": {
+        "sheet": [
+            [1, "HI", "3", true]
+        ],
+        "formula": "MAXA(TRUE)",
+        "expectedValue": 1,
+        "deep": false
+    },"MAXA(B1:C1)": {
+        "sheet": [
+            [1, "HI", "3", true]
+        ],
+        "formula": "MAXA(B1:C1)",
+        "expectedValue": 0,
+        "deep": false
     }, "SEARCH() default check for in array errors": {
         "sheet": [
             ["#VALUE!", "Hello", 9]
         ],
         "expectedValue": [["#VALUE!", 3, "#VALUE!"]],
         "formula": "SEARCH(\"l\",A1:C1)",
-        "deep": true
+        "deep": true,
+        "convertExpected": true
     },"SEARCH() should return values": {
         "sheet": [
             ["raymond", "desmond"]
         ],
         "expectedValue": [[6,6]],
         "formula": "SEARCH(\"nd\",A1:B1)",
-        "deep": true
+        "deep": true,
+        "convertExpected": true
     },"SEARCH() should allow for in-line errors": {
         "sheet": [
             ["raymond", "Warren", "Hasley", "Cassandra", "Pamela", "Xavior", "Decian","Holmer", "desmond"]
         ],
         "expectedValue": [[6, "#VALUE!", "#VALUE!", 6, "#VALUE!", "#VALUE!", "#VALUE!", "#VALUE!", 6]],
         "formula": "SEARCH(\"nd\",A1:I1)",
-        "deep": true
+        "deep": true,
+        "convertExpected": true
     },
     "MINA(A1:D1)": {
         "sheet": [
@@ -174892,4 +174975,5 @@
         "expectedValue": 0,
         "deep": false
     }
+
 }

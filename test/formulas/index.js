@@ -24,7 +24,8 @@ const test = function(testName){
     
     if(data)
         convertJSONArray(data)
-    convertJSONArray(expected)
+    if(json[testName]["convertExpected"])
+        convertJSONArray(expected)
     
     const parser = new FormulaParser({
         onCell: ref => {
