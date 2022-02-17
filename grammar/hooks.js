@@ -418,12 +418,12 @@ class FormulaParser {
         try {
             res = await this.parser.formulaWithBinaryOp();
             res = this.checkFormulaResult(res, allowReturnArray);
-            if (res instanceof FormulaError) {
-                return res;
-            }
         } catch (e) {
             console.error(e);
             throw FormulaError.ERROR(e.message, e);
+        }
+        if (res instanceof Error) {
+          throw res;
         }
         if (this.parser.errors.length > 0) {
             const error = this.parser.errors[0];
