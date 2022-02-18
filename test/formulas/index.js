@@ -53,7 +53,7 @@ const test = function(testName){
             if (typeof result === "number" && typeof expected === "number") {
                 expect(result, `${formula} should equal ${expected}\n`).to.closeTo(expected, 0.00000001);
             }else if (result.error)
-                 expect(expected === result.error, `${formula} should equal ${expected.error}\n`).to.equal(true);
+                 expect(expected === result.error, `${formula} should equal ${expected}, but really equals ${result.error}\n`).to.equal(true);
             else if('deep' in json[testName] && json[testName]["deep"] === true)
                 expect(result, `${formula} should equal ${expected}\n`).to.deep.eq(expected)
             else
