@@ -43,13 +43,12 @@ const LogicalFunctions = {
     return false;
   },
 
-  // Special
-  IF: (context, logicalTest, valueIfTrue, valueIfFalse) => {
-    logicalTest = H.accept(logicalTest, Types.BOOLEAN);
-    valueIfTrue = H.accept(valueIfTrue); // do not parse type
-    valueIfFalse = H.accept(valueIfFalse, null, false); // do not parse type
+  IF: (logicalTest, valueIfTrue, valueIfFalse) => {
+    const logicalTestValue = H.accept(logicalTest, Types.BOOLEAN);
+    const valueIfTrueValue = H.accept(valueIfTrue); // do not parse type
+    const valueIfFalseValue = H.accept(valueIfFalse, null, false); // do not parse type
 
-    return logicalTest ? valueIfTrue : valueIfFalse;
+    return logicalTestValue ? valueIfTrueValue : valueIfFalseValue;
   },
 
   IFERROR: (value, valueIfError) => {

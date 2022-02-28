@@ -59,11 +59,11 @@ class FormulaParser {
             .concat(Object.keys(DateFunctions));
 
         // functions need context and don't need to retrieve references
-        this.funsNeedContextAndNoDataRetrieve = ['ROW', 'ROWS', 'COLUMN', 'COLUMNS', 'SUMIF', 'SUMIFS', 'INDEX', 'AVERAGEIF', 'IF'];
+        this.funsNeedContextAndNoDataRetrieve = ['ROW', 'ROWS', 'COLUMN', 'COLUMNS', 'SUMIF', 'SUMIFS', 'INDEX', 'AVERAGEIF'];
 
         // functions need parser context
         this.funsNeedContext = [...Object.keys(config.functionsNeedContext), ...this.funsNeedContextAndNoDataRetrieve,
-            'INDEX', 'OFFSET', 'INDIRECT', 'IF', 'CHOOSE', 'WEBSERVICE'];
+            'INDEX', 'OFFSET', 'INDIRECT', 'CHOOSE', 'WEBSERVICE'];
 
         // functions preserve reference in arguments
         this.funsPreserveRef = Object.keys(InformationFunctions);
@@ -418,12 +418,12 @@ class FormulaParser {
         try {
             res = await this.parser.formulaWithBinaryOp();
             res = this.checkFormulaResult(res, allowReturnArray);
-            if (res instanceof FormulaError) {
-                return res;
-            }
         } catch (e) {
             console.error(e);
             throw FormulaError.ERROR(e.message, e);
+        }
+        if (res instanceof Error) {
+          throw res;
         }
         if (this.parser.errors.length > 0) {
             const error = this.parser.errors[0];
