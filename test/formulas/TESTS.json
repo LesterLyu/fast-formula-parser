@@ -136541,6 +136541,12 @@
       ]
     ]
   },
+  "Smartquotes should parse as quotes": {
+      "sheet": [],
+      "formula": "“test”",
+      "expectedValue": "test",
+      "deep": false
+  },
   "SQRT(-16)": {
     "expectedValue": "#NUM!",
     "formula": "SQRT(-16)",

@@ -12,7 +12,7 @@ const WhiteSpace = createToken({
 
 const String = createToken({
     name: 'String',
-    pattern: /"(""|[^"])*"/
+    pattern: /("|\u201c)(("|\u201c)("|\u201d)|[^"\u201c\u201d])*("|\u201d)/
 });
 
 const SingleQuotedString = createToken({
