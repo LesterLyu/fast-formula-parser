@@ -174976,11 +174976,9 @@
         "deep": false
     },
     "Smartquotes should parse as quotes": {
-        "sheet": [
-            ["=ARRAY(“test”)"]
-        ],
-        "formula": "TYPE($A1)",
-        "expectedValue": 2,
+        "sheet": [],
+        "formula": "“test”",
+        "expectedValue": "test",
         "deep": false
     }
 
