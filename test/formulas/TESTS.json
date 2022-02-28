@@ -174974,6 +174974,14 @@
         "formula": "MINA(A1:A5)",
         "expectedValue": 0,
         "deep": false
+    },
+    "Smartquotes should parse as quotes": {
+        "sheet": [
+            ["=ARRAY(“test”)"]
+        ],
+        "formula": "TYPE($A1)",
+        "expectedValue": 2,
+        "deep": false
     }
 
 }
