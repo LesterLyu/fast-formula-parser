@@ -165,12 +165,22 @@ const TextFunctions = {
   },
 
   LEFT: (text, numChars) => {
-    text = H.accept(text, Types.STRING);
+//    text = H.accept(text, Types.STRING);
+//    numChars = H.accept(numChars, Types.NUMBER, 1);
+//
+//    if (numChars < 0) throw FormulaError.VALUE;
+//    if (numChars > text.length) return text;
+//    return text.slice(0, numChars);
+    text = H.accept(text, null, undefined, false);
     numChars = H.accept(numChars, Types.NUMBER, 1);
 
-    if (numChars < 0) throw FormulaError.VALUE;
-    if (numChars > text.length) return text;
-    return text.slice(0, numChars);
+    const textArr = Array.isArray(text) ? text : [[text]];
+    return textArr.map(row => row.map(textVal => {
+        const cellText = H.accept(textVal, Types.STRING);
+        if (numChars < 0) throw FormulaError.VALUE;
+        if (numChars > cellText.length) return cellText;
+        return cellText.slice(0, numChars)
+    }))
   },
 
   LEFTB: (...params) => {
