@@ -410,8 +410,12 @@ const ReferenceFunctions = {
     let sortedArr = array.sort(function(a, b) {
       a = H.accept(a, Types.ARRAY);
       b = H.accept(b, Types.ARRAY);
-      const aVal = H.accept(a[sort_index]);
-      const bVal = H.accept(b[sort_index]);
+      const getValue = (x) => {
+        val = H.accept(x[sort_index]);
+        return typeof(val) === "object" ? val.result : val;
+      }
+      const aVal = getValue(a);
+      const bVal = getValue(b);
       
       let map = new Map();
       map.set("number", 1);
@@ -430,7 +434,7 @@ const ReferenceFunctions = {
           return 1 * sort_order;
         if(bVal)
           return -1 * sort_order;
-        throw "Unreachable Code ERROR";
+        throw `Unreachable Code ERROR: aVal type: ${typeof(aVal)}; bVal type: ${typeof(bVal)}; aPriority: ${aPriority}; bPriority: ${bPriority}`;
       }
       if(typeof(aVal) === "number"){
         return (aVal - bVal) * sort_order;
@@ -438,7 +442,7 @@ const ReferenceFunctions = {
       if(typeof(aVal) === "string"){
         return aVal.localeCompare(bVal) * sort_order;
       }
-      throw "Unreachable Code ERROR";
+      throw `2 Unreachable Code ERROR: aVal type: ${typeof(aVal)}; bVal type: ${typeof(bVal)}; aPriority: ${aPriority}; bPriority: ${bPriority}`;
     });
     
     if(by_col)
