@@ -217,7 +217,15 @@ class FormulaParser {
     async callFunctionAsync(name, args) {
         const awaitedArgs = [];
         for (const arg of args) {
+          try {
             awaitedArgs.push(await arg);
+          } catch (e) {
+            if (e instanceof FormulaError) {
+              awaitedArgs.push(e);
+            } else {
+                throw e;
+            }
+          }
         }
         const res = await this._callFunction(name, awaitedArgs);
         return FormulaHelpers.checkFunctionResult(res)
