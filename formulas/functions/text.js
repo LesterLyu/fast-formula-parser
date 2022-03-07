@@ -55,6 +55,20 @@ const searchOnce = (findText, withinText, startNum) => {
   if (res === -1) return FormulaError.VALUE;
   return res + startNum;
 }
+
+const prepostFix = (text, numChars, prefix = true) => {
+  text = H.accept(text, null, undefined, false);
+  numChars = H.accept(numChars, Types.NUMBER, 1);
+  
+  const textArr = Array.isArray(text) ? text : [[text]];
+  return textArr.map(row => row.map(textVal => {
+      const cellText = String(textVal);
+      if (numChars < 0) throw FormulaError.VALUE;
+      if (numChars > cellText.length) return cellText;
+      return prefix ? cellText.slice(0, numChars) : cellText.slice(cellText.length-numChars);
+  }))
+}
+
 const TextFunctions = {
   ASC: (text) => {
     text = H.accept(text, Types.STRING);
@@ -165,22 +179,7 @@ const TextFunctions = {
   },
 
   LEFT: (text, numChars) => {
-//    text = H.accept(text, Types.STRING);
-//    numChars = H.accept(numChars, Types.NUMBER, 1);
-//
-//    if (numChars < 0) throw FormulaError.VALUE;
-//    if (numChars > text.length) return text;
-//    return text.slice(0, numChars);
-    text = H.accept(text, null, undefined, false);
-    numChars = H.accept(numChars, Types.NUMBER, 1);
-
-    const textArr = Array.isArray(text) ? text : [[text]];
-    return textArr.map(row => row.map(textVal => {
-        const cellText = H.accept(textVal, Types.STRING);
-        if (numChars < 0) throw FormulaError.VALUE;
-        if (numChars > cellText.length) return cellText;
-        return cellText.slice(0, numChars)
-    }))
+    return prepostFix(text, numChars, true);
   },
 
   LEFTB: (...params) => {
@@ -293,13 +292,7 @@ const TextFunctions = {
   },
 
   RIGHT: (text, numChars) => {
-    text = H.accept(text, Types.STRING);
-    numChars = H.accept(numChars, Types.NUMBER, 1);
-
-    if (numChars < 0) throw FormulaError.VALUE;
-    const len = text.length;
-    if (numChars > len) return text;
-    return text.slice(len - numChars);
+    return prepostFix(text, numChars, false);
   },
 
   RIGHTB: (...params) => {
