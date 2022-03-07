@@ -28,8 +28,11 @@ const InfoFunctions = {
 
   ISBLANK: (value) => {
     if (!value.ref) return false;
-    // null and undefined are also blank
-    return value.value == null || value.value === "";
+    const valueArr = Array.isArray(value.value) ? value.value : [[value.value]];
+    return valueArr.map(row => row.map(cellVal => {
+        // null and undefined are also blank
+        return cellVal == null || cellVal === "";
+    }));
   },
 
   ISERR: (value) => {
