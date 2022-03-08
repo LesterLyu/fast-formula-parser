@@ -56,16 +56,16 @@ const searchOnce = (findText, withinText, startNum) => {
   return res + startNum;
 }
 
-const prepostFix = (text, numChars, prefix = true) => {
+const prepostFix = (text, numChars, sliceFunc) => {
   text = H.accept(text, null, undefined, false);
   numChars = H.accept(numChars, Types.NUMBER, 1);
+  if (numChars < 0) throw FormulaError.VALUE;
   
   const textArr = Array.isArray(text) ? text : [[text]];
   return textArr.map(row => row.map(textVal => {
       const cellText = String(textVal);
-      if (numChars < 0) throw FormulaError.VALUE;
       if (numChars > cellText.length) return cellText;
-      return prefix ? cellText.slice(0, numChars) : cellText.slice(cellText.length-numChars);
+      return sliceFunc(cellText, numChars);
   }))
 }
 
@@ -179,7 +179,7 @@ const TextFunctions = {
   },
 
   LEFT: (text, numChars) => {
-    return prepostFix(text, numChars, true);
+    return prepostFix(text, numChars, (s, n) => s.slice(0, n));
   },
 
   LEFTB: (...params) => {
@@ -292,7 +292,7 @@ const TextFunctions = {
   },
 
   RIGHT: (text, numChars) => {
-    return prepostFix(text, numChars, false);
+    return prepostFix(text, numChars, (s, n) => s.slice(s.length-n));
   },
 
   RIGHTB: (...params) => {
