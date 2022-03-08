@@ -1,6 +1,12 @@
 const FormulaError = require("../formulas/error");
 const { FormulaHelpers } = require("../formulas/helpers");
 
+const opMap = {
+  '+': (a,b) => a+b,
+  '-': (a,b) => a-b,
+  '*': (a,b) => a*b,
+  '/': (a,b) => a/b,
+}
 const Prefix = {
   unaryOp: (prefixes, value, isArray) => {
     let sign = 1;
@@ -99,6 +105,16 @@ const Infix = {
     if (value1 == null) value1 = 0;
     if (value2 == null) value2 = 0;
 
+    if(isArray1 && isArray2 && value1.length === value2.length && value1[0].length === value2[0].length) {
+      const out = [];
+      for(let i = 0; i < value1.length; i++) {
+        out.push([]);
+        for(let j = 0; j < value1[0].length; j++) {
+          out[out.length-1].push(opMap[infix](value1[i][j],value2[i][j]));
+        }
+      }
+      return out;
+    }
     try {
       value1 = FormulaHelpers.acceptNumber(value1, isArray1);
       value2 = FormulaHelpers.acceptNumber(value2, isArray2);
