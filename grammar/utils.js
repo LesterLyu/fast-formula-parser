@@ -550,8 +550,8 @@ class Utils {
     return b.slice(0, b.length - 1);
   }
 
-  static computeColumnComma(tokens) {
-    let i = tokens.length - 1;
+  static computeColumnComma(tokens, delayComma) {
+    let i = delayComma;
     while(i >= 0 && tokens[i].tokenType.name !== "Comma" && tokens[i].tokenType.name !== "CloseCurlyParen") {
       i--;
     }
@@ -591,7 +591,7 @@ class Utils {
 
   static expandComputedColumnMacro(tokens) {
     const commaLocations = Utils.findAllIndicies(tokens, t => t.tokenType.name === "Comma")
-    const columnComma = Utils.computeColumnComma(tokens);
+    const columnComma = Utils.computeColumnComma(tokens, tokens.length-1);
     const tableComma = Utils.computeTableComma(tokens, columnComma);
 
     const tableName = tokens.slice(tableComma+1, columnComma).map(t => t.image).join(" ").replaceAll('"', '');
@@ -601,6 +601,23 @@ class Utils {
       `ROWS(${tableName}[])`
     ];
     const repeat = `repeat(${rArgs[0]},${rArgs[1]},1)`;
+    const formula = `extendTable(${repeat}, "${tableName}", ${columnNames})`;
+
+    return formula;
+  }
+
+  static expandDelayedComputedColumnMacro(tokens) {
+    const commaLocations = Utils.findAllIndicies(tokens, t => t.tokenType.name === "Comma")
+    const columnComma = Utils.computeColumnComma(tokens, tokens.length-1);
+    const tableComma = Utils.computeTableComma(tokens, columnComma);
+
+    const tableName = tokens.slice(tableComma+1, columnComma).map(t => t.image).join(" ").replaceAll('"', '');
+    const columnNames = tokens.slice(columnComma+1, tokens.length-1).map(t => t.image).join(" ")
+    const rArgs = [
+      `"=${tokens.slice(1, tableComma).map(t => t.image).join("").replaceAll('"','""')}"`,
+      `ROWS(${tableName}[])`
+    ];
+    const repeat = `repeat(${rArgs[0]},${rArgs[1]},1, 1000)`;
     const formula = `extendTable(${repeat}, "${tableName}", ${columnNames})`;
 
     return formula;

@@ -342,7 +342,11 @@ class FormulaParser {
           return inputText;
         }
 
-        if (Utils.isMacro(tokens, 'COMPUTEDCOLUMN')) {
+        if (Utils.isMacro(tokens, "DELAYEDCOMPUTEDCOLUMN")) {
+          return this.parse(Utils.expandDelayedComputedColumnMacro(tokens), position, allowReturnArray);
+        }
+
+        if (Utils.isMacro(tokens, "COMPUTEDCOLUMN")) {
           return this.parse(Utils.expandComputedColumnMacro(tokens), position, allowReturnArray);
         }
 
@@ -405,7 +409,11 @@ class FormulaParser {
           return "=".concat(inputText);
         }
 
-        if (Utils.isMacro(tokens, 'COMPUTEDCOLUMN')) {
+        if (Utils.isMacro(tokens, "DELAYEDCOMPUTEDCOLUMN")) {
+          return this.parseAsync(Utils.expandDelayedComputedColumnMacro(tokens), position, allowReturnArray);
+        }
+
+        if (Utils.isMacro(tokens, "COMPUTEDCOLUMN")) {
           return this.parseAsync(Utils.expandComputedColumnMacro(tokens), position, allowReturnArray);
         }
 
