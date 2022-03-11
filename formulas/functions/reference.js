@@ -274,7 +274,28 @@ const ReferenceFunctions = {
     return lookupArray.map(e => H.accept(e) === val).map(e => [e]);
   },
 
-  MATCH: () => {},
+  MATCH: (lookupValue, lookupArray, matchType) => {
+    lookupValue = H.accept(lookupValue);
+    lookupArray = H.accept(lookupArray, Types.COLLECTIONS);
+    matchType = H.accept(matchType, Types.Number, 1);
+
+    if (lookupArray[0].length > 1) throw FormulaError.NA;
+
+    let result;
+    if (matchType > 0) {
+      if (lookupArray[0] > lookupValue) throw FormulaError.NA;
+      result = lookupArray.findIndex((element) => lookupValue >= element);
+    }
+    else if (matchType === 0) {
+      result = lookupArray.findIndex((element) => lookupValue === element);
+      if (result === -1) throw FormulaError.NA;
+    }
+    else if (matchType < 0) {
+      if (lookupArray[0] < lookupValue) throw FormulaError.NA;
+      result = lookupArray.findIndex((element) => lookupValue <= element);
+    }
+    return result + 1;
+  },
 
   /**
    * 

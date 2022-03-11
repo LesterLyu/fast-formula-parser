@@ -29127,7 +29127,7 @@
 "IF(ISTEXT(I12),"""",IF(K12>renege_time,""renege"",""""))"
 "IF(L12=""renege"",F12+renege_time,"""")"
 "IF(OR(L12=""renege"",ISTEXT(I12)),"""",J12)"
-"IF(ISTEXT(N12),"""",MATCH(N12,I12:I12,0))"
+"IF(ISTEXT(N12),"""",MATCH(N12,I12:J12,0))"
 "IF(ISTEXT(F13),""closed"",A12+1)"
 "D18/D20"
 "(D13*1000)+(D15*1200)+(D17*1600)+(D19*2000)+(D23*2000)+(D27*2000)+(D31*2000)"
