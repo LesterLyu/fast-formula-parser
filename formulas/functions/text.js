@@ -309,7 +309,8 @@ const TextFunctions = {
     }else {
       withinTextArr = [[withinText]]
     }
-    return withinTextArr.map((row) => row.map(val => searchOnce(findText, H.accept(val), startNum)))
+    const result = withinTextArr.map((row) => row.map(val => searchOnce(findText, H.accept(val, null, null), startNum)))
+    return result;
   },
 
   SEARCHB: (...params) => {
