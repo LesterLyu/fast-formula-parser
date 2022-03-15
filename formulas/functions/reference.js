@@ -409,60 +409,79 @@ const ReferenceFunctions = {
  * @param {*} by_col : OPTIONAL A logical value indicating the desired sort direction; 
  *                     FALSE to sort by row (default), TRUE to sort by column
  */
-  SORT: (array, sort_index = 1, sort_order = 1, by_col = false) => {
+  SORT: (
+      array,
+      sort_index = 1,
+      sort_order = 1,
+      by_col = false,
+      ...sortArgs
+  ) => {
     array = H.accept(array, Types.ARRAY,null,false);
     sort_index = H.accept(sort_index);
     sort_order = H.accept(sort_order);
+    let sortValues = [{sort_index: sort_index-1, sort_order}];
+    for (let i = 0; i < sortArgs.length-1; i += 2) {
+      const sort_index = H.accept(sortArgs[i], null, null);
+      const sort_order = H.accept(sortArgs[i+1], null, null);
+      if (!sort_index || !sort_order) throw FormulaError.VALUE;
+      sortValues.push({sort_index: sort_index-1, sort_order});
+    }
     by_col = H.accept(by_col);
 
-    if(sort_index < 1 || sort_index > array.length)
-      throw FormulaError.VALUE;
-    if(![1, -1].includes(sort_order))
-      throw FormulaError.VALUE;
+    const checkValidValues = ({sort_index, sort_order}) => {
+      if(sort_index < 0 || sort_index > array.length-1)
+        throw FormulaError.VALUE;
+      if(![1, -1].includes(sort_order))
+        throw FormulaError.VALUE;
+    }
+    sortValues.map(val => checkValidValues(val));
     if(typeof(by_col) !== "boolean")
       throw FormulaError.VALUE;
     
-    //Excel is 1-indexed
-    sort_index -= 1;
-
     if(by_col)
       array = ReferenceFunctions.TRANSPOSE(array);
 
-    let sortedArr = array.sort(function(a, b) {
-      a = H.accept(a, Types.ARRAY);
-      b = H.accept(b, Types.ARRAY);
-      const getValue = (x) => {
-        val = H.accept(x[sort_index]);
-        return typeof(val) === "object" ? val.result : val;
-      }
-      const aVal = getValue(a);
-      const bVal = getValue(b);
-      
-      let map = new Map();
-      map.set("number", 1);
-      map.set("string", 2);
-      map.set("boolean", 3);
+    let map = new Map();
+    map.set("number", 1);
+    map.set("string", 2);
+    map.set("boolean", 3);
 
+    const getOrderValue = (aVal, bVal) => {
       let aPriority = map.get(typeof(aVal));
       let bPriority = map.get(typeof(bVal));
       if(aPriority != bPriority)
-        return (aPriority - bPriority) * sort_order;
+        return (aPriority - bPriority);
       
       if(typeof(aVal) === "boolean"){
         if(aVal === bVal)
           return 0;
         if(aVal)
-          return 1 * sort_order;
+          return 1;
         if(bVal)
-          return -1 * sort_order;
+          return -1;
         throw `Unreachable Code ERROR: aVal type: ${typeof(aVal)}; bVal type: ${typeof(bVal)}; aPriority: ${aPriority}; bPriority: ${bPriority}`;
       }
       if(typeof(aVal) === "number"){
-        return (aVal - bVal) * sort_order;
+        return (aVal - bVal);
       }
       if(typeof(aVal) === "string"){
-        return aVal.localeCompare(bVal) * sort_order;
+        return aVal.localeCompare(bVal);
       }
+    }
+
+    const getValue = (x, sort_index = 0) => {
+      val = H.accept(x[sort_index]);
+      return typeof(val) === "object" ? val.result : val;
+    }
+
+    let sortedArr = array.sort(function(a, b) {
+      a = H.accept(a, Types.ARRAY);
+      b = H.accept(b, Types.ARRAY);
+
+      return sortValues.reduce((prevOrderValue, {sort_index, sort_order}) => {
+        return prevOrderValue === 0 ? getOrderValue(getValue(a, sort_index), getValue(b, sort_index)) * sort_order : prevOrderValue;
+      }, 0);
+
       throw `2 Unreachable Code ERROR: aVal type: ${typeof(aVal)}; bVal type: ${typeof(bVal)}; aPriority: ${aPriority}; bPriority: ${bPriority}`;
     });
     
