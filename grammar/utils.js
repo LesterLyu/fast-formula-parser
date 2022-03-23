@@ -451,6 +451,9 @@ class Utils {
     if (Array.isArray(result)) {
       return 'array';
     }
+    if (typeof result === 'string' && result.length > 0 && result[0] === '$') {
+      return 'currency';
+    }
     if (typeof result === 'string') {
       return 'string';
     }
