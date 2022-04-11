@@ -175514,5 +175514,54 @@
         2
       ]
     ]
+  },
+  "CHOOSE(1, 1, 2, 3)": {
+    "expectedValue": 1,
+    "formula": "CHOOSE(1, 1, 2, 3)",
+    "sheet": [
+      []
+    ]
+  },
+  "CHOOSE idx too low": {
+    "expectedValue": "#VALUE!",
+    "formula": "CHOOSE(-1, 1, 2, 3)",
+    "sheet": [
+      []
+    ]
+  },
+  "CHOOSE idx too high": {
+    "expectedValue": "#VALUE!",
+    "formula": "CHOOSE(10, 1, 2, 3)",
+    "sheet": [
+      []
+    ]
+  },
+  "CHOOSE sheet range": {
+    "expectedValue": "#VALUE!",
+    "formula": "CHOOSE(3, A1:D1)",
+    "sheet": [
+      [1, 2, 3, 4]
+    ]
+  },
+  "CHOOSE sheet range and value": {
+    "expectedValue": "HELLO",
+    "formula": "CHOOSE(1, \"HELLO\", A1:D1)",
+    "sheet": [
+      [1, 2, 3, 4]
+    ]
+  },
+  "CHOOSE sheet range and value 2": {
+    "expectedValue": "#VALUE!",
+    "formula": "CHOOSE(4, \"HELLO\", A1:D1)",
+    "sheet": [
+      [1, 2, 3, 4]
+    ]
+  },
+  "Choose multiple":{
+    "expectedValue": "Can not test for multiple rows yet, need to get JSON testing PR merged",
+    "formula" : "CHOOSE(A1:B1, 1, 2, 3)",
+    "sheet": [
+      [1, 2, 3, 4, 5]
+    ]
   }
 }

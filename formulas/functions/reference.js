@@ -53,7 +53,20 @@ const ReferenceFunctions = {
     return value.value
   },
 
-  CHOOSE: (indexNum, ...values) => {},
+  CHOOSE: (context, indexNum, ...values) => {
+    const idx = H.accept(indexNum);
+    const idxArr = H.flattenDeep([idx]).map((index) => H.accept(index, Types.NUMBER) - 1)
+    const arr = H.accept(values, Types.ARRAY);
+    idxArr.forEach((index) => {
+      if(index < 0 || index > arr.length - 1)
+        throw FormulaError.VALUE
+    })
+    const rv = [];
+    idxArr.forEach((index) => rv.push(H.accept(arr[index])))
+    if(rv.length > 1)
+      throw FormulaError.CUSTOM("Can not test for multiple rows yet, need to get JSON testing PR merged")
+    return [rv]
+  },
 
   // Special
   COLUMN: (context, obj) => {
