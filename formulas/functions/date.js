@@ -528,10 +528,10 @@ const DateFunctions = {
     return DateFunctions["WORKDAY.INTL"](startDate, days, 1, holidays);
   },
 
-  "WORKDAY.INTL": (startDate, days, weekend, holidays) => {
+  "WORKDAY.INTL": (startDate, unProcessedDays, weekend, holidays) => {
     startDate = parseDate(startDate);
-    days = H.accept(days, Types.NUMBER);
-
+    const days = Math.abs(H.accept(unProcessedDays, Types.NUMBER));
+    const direction = Math.sign(H.accept(unProcessedDays))
     weekend = H.accept(weekend, null, 1);
     // Using 1111111 will always return value error.
     if (weekend === "1111111") throw FormulaError.VALUE;
@@ -558,7 +558,7 @@ const DateFunctions = {
         holidaysArr.push(parseDate(item));
       });
     }
-    startDate.setUTCDate(startDate.getUTCDate() + 1);
+    startDate.setUTCDate(startDate.getUTCDate() + direction);
     let cnt = 0;
     while (cnt < days) {
       let skip = false;
@@ -579,9 +579,11 @@ const DateFunctions = {
         }
         if (!found) cnt++;
       }
-      startDate.setUTCDate(startDate.getUTCDate() + 1);
+      startDate.setUTCDate(startDate.getUTCDate() + direction);
     }
-    return toSerial(startDate) - 1;
+
+    return toSerial(startDate) - direction
+
   },
 
   YEAR: (serialOrString) => {

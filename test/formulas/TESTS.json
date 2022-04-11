@@ -175515,6 +175515,26 @@
       ]
     ]
   },
+  "WORKDAY can do negitive days": {
+    "formula": "WORKDAY(A1, -1)",
+    "expectedValue": 44589,
+    "sheet": [
+      ["1/29/2022"]
+    ]
+  },"WORKDAY(DATE(2008,10,1), -1)": {
+    "expectedValue": 39721,
+    "formula": "WORKDAY(DATE(2008,10,1),-1)",
+    "sheet": [
+        []
+    ]
+  },
+  "WORKDAY(DATE(2008,10,1), -151)": {
+    "expectedValue": 39511,
+    "formula": "WORKDAY(DATE(2008,10,1), -151)",
+    "sheet": [
+      []
+    ]
+  },
   "CHOOSE(1, 1, 2, 3)": {
     "expectedValue": 1,
     "formula": "CHOOSE(1, 1, 2, 3)",
@@ -175532,6 +175552,20 @@
   "CHOOSE idx too high": {
     "expectedValue": "#VALUE!",
     "formula": "CHOOSE(10, 1, 2, 3)",
+    "sheet": [
+      []
+    ]
+  },
+  "WORKDAY negitive with holidays" :{
+    "expectedValue": 39512,
+    "formula": "WORKDAY(DATE(2008,10,1), -150, {\"2008/11/26\",\"2008/12/4\",\"2008/1/21\"})",
+    "sheet": [
+      []
+    ]
+  },
+  "WORKDAY(DATE(2008,10,1), -399)": {
+    "expectedValue": 39163,
+    "formula": "WORKDAY(DATE(2008,10,1), -399)",
     "sheet": [
       []
     ]
