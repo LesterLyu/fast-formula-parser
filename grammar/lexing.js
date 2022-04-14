@@ -42,13 +42,13 @@ const RefError = createToken({
 
 const Name = createToken({
     name: 'Name',
-    pattern: /[a-zA-Z_][a-zA-Z0-9_.?]*/,
+    pattern: /[a-zA-Z_][a-zA-Z0-9_~.?]*/,
     // longer_alt: RangeColumn // e.g. A:AA
 });
 
 const Sheet = createToken({
     name: 'Sheet',
-    pattern: /[A-Za-z_.\d\u007F-\uFFFF]+!/
+    pattern: /[A-Za-z_~.\d\u007F-\uFFFF]+!/
 });
 
 const Cell = createToken({
@@ -75,7 +75,7 @@ const Column = createToken({
 
 const TableName = createToken({
     name: 'TableName',
-    pattern: /[%A-Za-z_.\d\s\u007F-\uFFFF]+\[/
+    pattern: /[%A-Za-z_~.\d\s\u007F-\uFFFF]+\[/
 })
 
 const ColumnName = createToken({
