@@ -164,6 +164,10 @@ module.exports = {
         'UNICODE(" ")': 32,
         'UNICODE("B")': 66,
         'UNICODE("")': FormulaError.VALUE,
-    }
+    },
+
+    UPPER: {
+        'UPPER("E. E. Cummings")': "E. E. CUMMINGS"
+    },
 
 };

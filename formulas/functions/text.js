@@ -335,6 +335,11 @@ const TextFunctions = {
     UNICODE: (text) => {
         return TextFunctions.CODE(text);
     },
+
+    UPPER: (text) => {
+        text = H.accept(text, Types.STRING);
+        return text.toUpperCase();
+    },
 };
 
 module.exports = TextFunctions;
