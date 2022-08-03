@@ -59,7 +59,7 @@ const Cell = createToken({
 
 const Number = createToken({
     name: 'Number',
-    pattern: /[0-9]+[.]?[0-9]*([eE][+\-][0-9]+)?/
+    pattern: /[$]?[0-9]+[.]?[0-9]*([eE][+\-][0-9]+)?/
 });
 
 const Boolean = createToken({
@@ -72,7 +72,6 @@ const Column = createToken({
     pattern: /[$]?[A-Za-z]{1,3}/,
     longer_alt: Name
 });
-
 
 /**
  * Symbols and operators

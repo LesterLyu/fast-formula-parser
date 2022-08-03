@@ -354,7 +354,7 @@ class Utils {
      * @return {number}
      */
     toNumber(number) {
-        return Number(number);
+        return Number(number.replace("$",""));
     }
 
     /**
