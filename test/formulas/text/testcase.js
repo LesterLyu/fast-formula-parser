@@ -140,6 +140,13 @@ module.exports = {
         'SEARCH("c\\b", "abcabcac\\bacb", 6)': 8,
     },
 
+    SUBSTITUTE: {
+        'SUBSTITUTE("Welcome xxx","xxx","FFP")': "Welcome FFP",
+        'SUBSTITUTE("Welcome FFP"," ","")': "WelcomeFFP",
+        'SUBSTITUTE("#%#$%","%#","Hi")': "#Hi$%",
+        'SUBSTITUTE("r r r","r","a")': "a r r",
+    },
+
     T: {
         'T("*_")': "*_",
         'T(19)': "",
