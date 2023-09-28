@@ -1,3 +1,6 @@
+# Looking for maintainer 
+Please email me lvds2000 [at] gmail.com
+---
 ![GitHub](https://img.shields.io/github/license/lesterlyu/fast-formula-parser)
 [![npm (tag)](https://img.shields.io/npm/v/fast-formula-parser/latest)](https://www.npmjs.com/package/fast-formula-parser)
 [![npm](https://img.shields.io/npm/dt/fast-formula-parser)](https://www.npmjs.com/package/fast-formula-parser)
