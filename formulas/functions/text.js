@@ -292,8 +292,12 @@ const TextFunctions = {
         return TextFunctions.SEARCH(...params)
     },
 
-    SUBSTITUTE: (...params) => {
+    SUBSTITUTE: (text, search_for, replace_with) => {
+        text = H.accept(text, [Types.STRING]);
+        search_for = H.accept(search_for, [Types.STRING]);
+        replace_with = H.accept(replace_with, [Types.STRING]);
 
+        return text.replace(search_for, replace_with);
     },
 
     T: (value) => {
