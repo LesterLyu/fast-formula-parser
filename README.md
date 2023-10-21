@@ -2,8 +2,7 @@
 
 This very excellent project is under now being managed as part of
 
-![Logo](https://www.sheetxl.com/img/logo-color-text-135.png).
-
+[![Logo](https://www.sheetxl.com/img/logo-color-text-135.png)](https://www.sheetxl.com)
 
 
 ---
@@ -19,7 +18,7 @@ A fast and reliable excel formula parser in javascript. Using **LL(1)** parser.
 ### [Documentation](https://lesterlyu.github.io/fast-formula-parser/index.html)
 ### [Grammar Diagram](https://lesterlyu.github.io/fast-formula-parser/generated_diagrams.html)
 
-### [SheetXL](https://www.sheetxl.com)
+### [SheetXL Home Page](https://www.sheetxl.com)
 ### Supports 280 Formulas
 ```
 ABS, ACOS, ACOSH, ACOT, ACOTH, ADDRESS, AND, ARABIC, AREAS, ASC, ASIN, ASINH, ATAN, ATAN2, ATANH, AVEDEV, AVERAGE, AVERAGEA, AVERAGEIF, BAHTTEXT, BASE, BESSELI, BESSELJ, BESSELK, BESSELY, BETA.DIST, BETA.INV, BIN2DEC, BIN2HEX, BIN2OCT, BINOM.DIST, BINOM.DIST.RANGE, BINOM.INV, BITAND, BITLSHIFT, BITOR,
