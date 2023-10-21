@@ -1,6 +1,6 @@
 ### Announcement
 
-This very excellent project is under now being managed as part of
+This very excellent project is now being managed as part of
 
 [![Logo](https://www.sheetxl.com/img/logo-color-text-135.png)](https://www.sheetxl.com)
 
