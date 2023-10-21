@@ -1,11 +1,16 @@
-# Looking for maintainer 
-Please email me lvds2000 [at] gmail.com
+### Announcement
+
+This very excellent project is under now being managed as part of
+
+![Logo](https://www.sheetxl.com/img/logo-color-text-135.png).
+
+
+
 ---
 ![GitHub](https://img.shields.io/github/license/lesterlyu/fast-formula-parser)
 [![npm (tag)](https://img.shields.io/npm/v/fast-formula-parser/latest)](https://www.npmjs.com/package/fast-formula-parser)
 [![npm](https://img.shields.io/npm/dt/fast-formula-parser)](https://www.npmjs.com/package/fast-formula-parser)
 [![Coverage Status](https://coveralls.io/repos/github/LesterLyu/fast-formula-parser/badge.svg?branch=master)](https://coveralls.io/github/LesterLyu/fast-formula-parser?branch=master)
-[![Build Status](https://travis-ci.com/LesterLyu/fast-formula-parser.svg?branch=master)](https://travis-ci.com/LesterLyu/fast-formula-parser)
 ## [A Fast Excel Formula Parser & Evaluator](https://github.com/LesterLyu/fast-formula-parser)
 
 A fast and reliable excel formula parser in javascript. Using **LL(1)** parser.
@@ -13,6 +18,8 @@ A fast and reliable excel formula parser in javascript. Using **LL(1)** parser.
 ### [Demo](https://lesterlyu.github.io/#/demo/fast-formula-parser)
 ### [Documentation](https://lesterlyu.github.io/fast-formula-parser/index.html)
 ### [Grammar Diagram](https://lesterlyu.github.io/fast-formula-parser/generated_diagrams.html)
+
+### [SheetXL](https://www.sheetxl.com)
 ### Supports 280 Formulas
 ```
 ABS, ACOS, ACOSH, ACOT, ACOTH, ADDRESS, AND, ARABIC, AREAS, ASC, ASIN, ASINH, ATAN, ATAN2, ATANH, AVEDEV, AVERAGE, AVERAGEA, AVERAGEIF, BAHTTEXT, BASE, BESSELI, BESSELJ, BESSELK, BESSELY, BETA.DIST, BETA.INV, BIN2DEC, BIN2HEX, BIN2OCT, BINOM.DIST, BINOM.DIST.RANGE, BINOM.INV, BITAND, BITLSHIFT, BITOR,
@@ -21,7 +28,7 @@ COVARIANCE.S, CSC, CSCH, DATE, DATEDIF, DATEVALUE, DAY, DAYS, DAYS360, DBCS, DEC
 FISHER, FISHERINV, FIXED, FLOOR, FLOOR.MATH, FLOOR.PRECISE, FORECAST, FORECAST.LINEAR, FREQUENCY, GAMMA, GAMMA.DIST, GAMMA.INV, GAMMALN, GAMMALN.PRECISE, GAUSS, GCD, GEOMEAN, GESTEP, GROWTH, HARMEAN, HEX2BIN, HEX2DEC, HEX2OCT, HLOOKUP, HOUR, HYPGEOM.DIST, IF, IFERROR, IFNA, IFS, IMABS, IMAGINARY, IMARGUMENT,
 IMCONJUGATE, IMCOS, IMCOSH, IMCOT, IMCSC, IMCSCH, IMDIV, IMEXP, IMLN, IMLOG10, IMLOG2, IMPOWER, IMPRODUCT, IMREAL, IMSEC, IMSECH, IMSIN, IMSINH, IMSQRT, IMSUB, IMSUM, IMTAN, INDEX, INT, INTERCEPT, ISBLANK, ISERR, ISERROR, ISEVEN, ISLOGICAL, ISNA, ISNONTEXT, ISNUMBER, ISO.CEILING, ISOWEEKNUM, ISREF, ISTEXT,
 KURT, LCM, LEFT, LEFTB, LN, LOG, LOG10, LOGNORM.DIST, LOGNORM.INV, LOWER, MDETERM, MID, MIDB, MINUTE, MMULT, MOD, MONTH, MROUND, MULTINOMIAL, MUNIT, N, NA, NEGBINOM.DIST, NETWORKDAYS, NETWORKDAYS.INTL, NORM.DIST, NORM.INV, NORM.S.DIST, NORM.S.INV, NOT, NOW, NUMBERVALUE, OCT2BIN, OCT2DEC, OCT2HEX, ODD, OR,
-PHI, PI, POISSON.DIST, POWER, PRODUCT, PROPER, QUOTIENT, RADIANS, RAND, RANDBETWEEN, REPLACE, REPLACEB, REPT, RIGHT, RIGHTB, ROMAN, ROUND, ROUNDDOWN, ROUNDUP, ROW, ROWS, SEARCH, SEARCHB, SEC, SECH, SECOND, SERIESSUM, SIGN, SIN, SINH, SQRT, SQRTPI, STANDARDIZE, SUM, SUMIF, SUMPRODUCT, SUMSQ, SUMX2MY2, 
+PHI, PI, POISSON.DIST, POWER, PRODUCT, PROPER, QUOTIENT, RADIANS, RAND, RANDBETWEEN, REPLACE, REPLACEB, REPT, RIGHT, RIGHTB, ROMAN, ROUND, ROUNDDOWN, ROUNDUP, ROW, ROWS, SEARCH, SEARCHB, SEC, SECH, SECOND, SERIESSUM, SIGN, SIN, SINH, SQRT, SQRTPI, STANDARDIZE, SUM, SUMIF, SUMPRODUCT, SUMSQ, SUMX2MY2,
 SUMX2PY2, SUMXMY2, T, T.DIST, T.DIST.2T, T.DIST.RT, T.INV, T.INV.2T, TAN, TANH, TEXT, TIME, TIMEVALUE, TODAY, TRANSPOSE, TRIM, TRUE, TRUNC, TYPE, UNICHAR, UNICODE, UPPER, VLOOKUP, WEBSERVICE, WEEKDAY, WEEKNUM, WEIBULL.DIST, WORKDAY, WORKDAY.INTL, XOR, YEAR, YEARFRAC
 ```
 ### Size: 291KB Minified, 81KB Gzipped+Minified
@@ -41,13 +48,13 @@ Note: The grammar in my implementation is different from theirs. My implementati
     - Sheet name with space that is not quoted, e.g. `I am a sheet!A1`
  - `SUM(Sheet2:Sheet3!A1:C3)`
  - You tell me
-    
+
 ### Performance
   - The expected performance is at least 3x faster than the optimized [formula-parser](https://github.com/LesterLyu/formula-parser).
-  
+
 ### Dependency
   - [Chevrotain](https://github.com/SAP/chevrotain) , thanks to this great parser building toolkit.
-  
+
 ### [Examples](https://github.com/LesterLyu/fast-formula-parser/blob/master/examples/example.js)
  - Install
     ```sh
@@ -64,7 +71,7 @@ Note: The grammar in my implementation is different from theirs. My implementati
     ```
     UMD minified build is also provides:
     ```html
-    <script src="/node_modules/fast-formula-parser/build/parser.min.js"> </script> 
+    <script src="/node_modules/fast-formula-parser/build/parser.min.js"> </script>
     ```
   - Basic Usage
     ```js
@@ -73,9 +80,9 @@ Note: The grammar in my implementation is different from theirs. My implementati
         [1, 2, 3], // row 1
         [4, 5, 6]  // row 2
     ];
-    
+
     const parser = new FormulaParser({
-    
+
         // External functions, this will override internal functions with same name
         functions: {
             CHAR: (number) => {
@@ -85,7 +92,7 @@ Note: The grammar in my implementation is different from theirs. My implementati
                 return String.fromCharCode(number);
             }
         },
-    
+
         // Variable used in formulas (defined name)
         // Should only return range reference or cell reference
         onVariable: (name, sheetName) => {
@@ -108,14 +115,14 @@ Note: The grammar in my implementation is different from theirs. My implementati
                 col: 1
             }
         },
-    
+
         // retrieve cell value
         onCell: ({sheet, row, col}) => {
             // using 1-based index
             // return the cell value, see possible types in next section.
             return data[row - 1][col - 1];
         },
-    
+
         // retrieve range values
         onRange: (ref) => {
             // using 1-based index
@@ -134,21 +141,21 @@ Note: The grammar in my implementation is different from theirs. My implementati
             return arr;
         }
     });
-    
+
     // position is required for evaluating certain formulas, e.g. ROW()
     const position = {row: 1, col: 1, sheet: 'Sheet1'};
-    
+
     // parse the formula, the position of where the formula is located is required
     // for some functions.
     console.log(parser.parse('SUM(A:C)', position));
     // print 21
-    
+
     // you can specify if the return value can be an array, this is helpful when dealing
     // with an array formula
     console.log(parser.parse('MMULT({1,5;2,3},{1,2;2,3})', position, true));
     // print [ [ 11, 17 ], [ 8, 13 ] ]
     ```
-    
+
   - Custom Async functions
     > Remember to use `await parser.parseAsync(...)` instead of `parser.parse(...)`
     ```js
@@ -183,7 +190,7 @@ Note: The grammar in my implementation is different from theirs. My implementati
     console.log(await parser.parseAsync('SUM(ROW_PLUS_COL(), 1)', position));
     // print 3
     ```
-    
+
   - Parse Formula Dependency
     > This is helpful for building `dependency graph/tree`.
     ```js
@@ -194,20 +201,20 @@ Note: The grammar in my implementation is different from theirs. My implementati
             return 'VAR1' === variable ? {from: {row: 1, col: 1}, to: {row: 2, col: 2}} : {row: 1, col: 1};
         }
     });
-    
+
     // position of the formula should be provided
     const position = {row: 1, col: 1, sheet: 'Sheet1'};
-    
+
     // Return an array of references (range reference or cell reference)
     // This gives [{row: 1, col: 1, sheet: 'Sheet1'}]
     depParser.parse('A1+1', position);
-    
+
     // This gives [{sheet: 'Sheet1', from: {row: 1, col: 1}, to: {row: 3, col: 3}}]
     depParser.parse('A1:C3', position);
-    
+
     // This gives [{from: {row: 1, col: 1}, to: {row: 2, col: 2}}]
     depParser.parse('VAR1 + 1', position);
-    
+
     // Complex formula
     depParser.parse('IF(MONTH($K$1)<>MONTH($K$1-(WEEKDAY($K$1,1)-(start_day-1))-IF((WEEKDAY($K$1,1)-(start_day-1))<=0,7,0)+(ROW(O5)-ROW($K$3))*7+(COLUMN(O5)-COLUMN($K$3)+1)),"",$K$1-(WEEKDAY($K$1,1)-(start_day-1))-IF((WEEKDAY($K$1,1)-(start_day-1))<=0,7,0)+(ROW(O5)-ROW($K$3))*7+(COLUMN(O5)-COLUMN($K$3)+1))', position);
     // This gives the following result
@@ -234,7 +241,7 @@ Note: The grammar in my implementation is different from theirs. My implementati
         },
     ];
     ```
-    
+
 ### Formula data types in JavaScript
 > The following data types are used in excel formulas and these are the only valid data types a formula or a function can return.
    - Number (date uses number): `1234`
@@ -272,7 +279,7 @@ Note: The grammar in my implementation is different from theirs. My implementati
      - `FormulaError.NUM`: `#NUM!`
      - `FormulaError.REF`: `#REF!`
      - `FormulaError.VALUE`: `#VALUE!`
-      
+
 ### Types Definition
 > Comming soon
 
@@ -290,7 +297,7 @@ Note: The grammar in my implementation is different from theirs. My implementati
         //       ^
         // Error at position 1:7
         // Redundant input, expecting EOF but found: )
-   
+
         expect(e).to.be.instanceof(FormulaError);
         expect(e.details.errorLocation.line).to.eq(1);
         expect(e.details.errorLocation.column).to.eq(7);
@@ -308,7 +315,7 @@ Note: The grammar in my implementation is different from theirs. My implementati
             }
         }
     });
-   
+
     try {
         parser.parse('SUM(1))', position);
     } catch (e) {
