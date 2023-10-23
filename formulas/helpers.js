@@ -397,7 +397,7 @@ const Address = {
     },
 
     columnNameToNumber: (columnName) => {
-        columnName = columnName.toUpperCase();
+        columnName = columnName.replace("$","").toUpperCase();
         const len = columnName.length;
         let number = 0;
         for (let i = 0; i < len; i++) {
