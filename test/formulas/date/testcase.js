@@ -57,21 +57,20 @@ module.exports = {
         'DATEVALUE("12/3/2014")': 41976,
         'DATEVALUE("Wednesday, December 3, 2014")': 41976,
         'DATEVALUE("2014-12-3")': 41976,
-        'DATEVALUE("12/3")': 44533, // *special
         'DATEVALUE("12/3/14")': 41976,
         'DATEVALUE("12/03/14")': 41976,
-        'DATEVALUE("3-Dec")': 44533, // *special
         'DATEVALUE("3-Dec-14")': 41976,
         'DATEVALUE("03-Dec-14")': 41976,
-        'DATEVALUE("Dec-3")': 44533, // *special
-        'DATEVALUE("December-3")': 44533, // *special
+        'DATEVALUE("12/3")': 45629, // *special
+        'DATEVALUE("3-Dec")': 45629, // *special
+        'DATEVALUE("Dec-3")': 45629, // *special
+        'DATEVALUE("December-3")': 45629, // *special
+        'DATEVALUE("Dec-3 11:11")': 45629, // *special
         'DATEVALUE("December 3, 2014")': 41976,
         'DATEVALUE("12/3/14 12:00 AM")': 41976,
         'DATEVALUE("12/3/14 0:00")': 41976,
         'DATEVALUE("12/03/2014")': 41976,
         'DATEVALUE("3-Dec-2014")': 41976,
-        'DATEVALUE("Dec-3 11:11")': 44533, // *special
-
         'DATEVALUE("1900/1/1")': 1,
         'DATEVALUE("4:48:18 PM")': 0,
         'DATEVALUE("10000/12/1")': FormulaError.VALUE,
