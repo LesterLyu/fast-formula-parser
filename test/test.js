@@ -106,3 +106,4 @@ require('./grammar/errors');
 require('./grammar/collection');
 require('./grammar/depParser');
 require('./formulas');
+require('./structuredreferences/structuredreferences')
