@@ -170,7 +170,7 @@ class RefParser {
                     if( command.to == null ) {
                         processOneCommand(
                             (reference) =>
-                                reference.type === 'cell' ? reference.ref.row === command.from ? reference.row : undefined :
+                                reference.type === 'cell' ? reference.ref.col === command.from ? reference.row : undefined :
                                 undefined,
                             '',
                             index
