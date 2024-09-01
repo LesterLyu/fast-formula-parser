@@ -145,7 +145,7 @@ class RefParser {
                             reference.type === 'row' ? reference.ref.row === command.from ? reference : undefined :
                             reference.type === 'cell' ? reference.ref.row === command.from ? reference.row : undefined :
                             undefined,
-                        command.to?.toString(),
+                        command.to == null ? undefined : command.to.toString(),
                         index
                     );
                     if( command.to == null ) {
@@ -212,7 +212,7 @@ class RefParser {
         );
 
         for(const item of changes) {
-            inputText = inputText.substring(0, item.startOffset) + (item.to ?? '#REF!') + inputText.substring(item.endOffset + 1);
+            inputText = inputText.substring(0, item.startOffset) + (item.to == null ? '#REF!' : item.to) + inputText.substring(item.endOffset + 1);
         }
 
         return inputText;
