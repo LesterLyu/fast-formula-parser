@@ -117,7 +117,7 @@ class RefParser {
      * Replace column/row/cell/variable references in formula
      * @param {string} inputText
      * @param {{row: number, col: number, sheet: string}} position
-     * @param {({type: 'row' | 'column', from: number, to: number} | {type: 'variable', from: string, to: string} | {type: 'cell', from: {row: number, col: number}, to: {row: number, col: number}})[] script
+     * @param {({type: 'row' | 'column', from: number, to?: number} | {type: 'variable', from: string, to?: string} | {type: 'cell', from: {row: number, col: number}, to?: {row: number, col: number}})[] script
      * @param {boolean} [ignoreError=false] if true, throw FormulaError when error occurred.
      *                                      if false, the parser will return partial references.
      * @returns {Array.<{}>}
@@ -145,9 +145,18 @@ class RefParser {
                             reference.type === 'row' ? reference.ref.row === command.from ? reference : undefined :
                             reference.type === 'cell' ? reference.ref.row === command.from ? reference.row : undefined :
                             undefined,
-                        command.to.toString(),
+                        command.to?.toString(),
                         index
                     );
+                    if( command.to == null ) {
+                        processOneCommand(
+                            (reference) =>
+                                reference.type === 'cell' ? reference.ref.row === command.from ? reference.col : undefined :
+                                undefined,
+                            '',
+                            index
+                        );
+                    }
                     break;
                 case 'col':
                     processOneCommand(
@@ -155,9 +164,18 @@ class RefParser {
                             reference.type === 'col' ? reference.ref.col === command.from ? reference : undefined :
                             reference.type === 'cell' ? reference.ref.col === command.from ? reference.col : undefined :
                             undefined,
-                        this.utils.columnNumberToName(command.to),
+                        command.to == null ? undefined : this.utils.columnNumberToName(command.to),
                         index
                     );
+                    if( command.to == null ) {
+                        processOneCommand(
+                            (reference) =>
+                                reference.type === 'cell' ? reference.ref.row === command.from ? reference.row : undefined :
+                                undefined,
+                            '',
+                            index
+                        );
+                    }
                     break;
                 case 'cell':
                     processOneCommand(
@@ -165,7 +183,7 @@ class RefParser {
                             reference.type === 'cell' ?
                                 reference.ref.row === command.from.row && reference.ref.col === command.from.col ? reference : undefined :
                                 undefined,
-                        `${this.utils.columnNumberToName(command.to.col)}${command.to.row}`,
+                        command.to == null ? undefined : `${this.utils.columnNumberToName(command.to.col)}${command.to.row}`,
                         index
                     );
                     break;
@@ -194,7 +212,7 @@ class RefParser {
         );
 
         for(const item of changes) {
-            inputText = inputText.substring(0, item.startOffset) + item.to + inputText.substring(item.endOffset + 1);
+            inputText = inputText.substring(0, item.startOffset) + (item.to ?? '#REF!') + inputText.substring(item.endOffset + 1);
         }
 
         return inputText;

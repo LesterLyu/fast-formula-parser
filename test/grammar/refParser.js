@@ -1168,6 +1168,26 @@ describe('References parser', () => {
         expect(actual).to.eq('bbbbb+aaaa');
     });
 
+    it('should invalidate column', function () {
+        let actual = refParser.replace('A1+AB28', position, [ { type: 'col', from: 1 } ]);
+        expect(actual).to.eq('#REF!+AB28');
+    });
+
+    it('should invalidate row', function () {
+        let actual = refParser.replace('A1+AB28', position, [ { type: 'row', from: 1} ]);
+        expect(actual).to.eq('#REF!+AB28');
+    });
+
+    it('should invalidate cell', function () {
+        let actual = refParser.replace('A1+AB28', position, [ { type: 'cell', from: { col: 1, row: 1, } } ]);
+        expect(actual).to.eq('#REF!+AB28');
+    });
+
+    it('should invalidate variable', function () {
+        let actual = refParser.replace('aaaa+bbbbb', position, [ { type: 'variable', from: 'aaaa' } ]);
+        expect(actual).to.eq('#REF!+bbbbb');
+    });
+
     it('should not throw error', function () {
         expect((() => refParser.parse('SUM(1))', position, true)))
             .to.not.throw();
