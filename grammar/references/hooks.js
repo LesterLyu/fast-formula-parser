@@ -125,23 +125,17 @@ class RefParser {
     replace(inputText, position, script, ignoreError = false) {
         if (inputText.length === 0) throw Error('Input must not be empty.');
 
-        for(const command of script) {
-            const references = this.parse(inputText, position, ignoreError);
+        const references = this.parse(inputText, position, ignoreError);
 
-            const processOneCommand = (flattenWith, to) => {
-                const sorted = references.map(flattenWith).filter((reference) => reference !== undefined);
+        const changes = [];
+        for(let index = 0; index < script.length; index++) {
+            const command = script[index];
 
-                sorted.sort((a, b) =>
-                    a.startOffset < b.startOffset ? 1 :
-                    a.startOffset > b.startOffset ? -1 :
-                    a.endOffset < b.endOffset ? 1 :
-                    a.endOffset > b.endOffset ? -1 :
-                    0
-                );
-
-                for(const item of sorted) {
-                    inputText = inputText.substring(0, item.startOffset) + to + inputText.substring(item.endOffset + 1);
-                }
+            const processOneCommand = (flattenWith, to, order) => {
+                changes.push(...references
+                    .map(flattenWith)
+                    .filter((reference) => reference !== undefined)
+                    .map((reference) => ({ ...reference, to, order })));
             };
 
             switch( command.type ) {
@@ -151,7 +145,8 @@ class RefParser {
                             reference.type === 'row' ? reference.ref.row === command.from ? reference : undefined :
                             reference.type === 'cell' ? reference.ref.row === command.from ? reference.row : undefined :
                             undefined,
-                        command.to.toString()
+                        command.to.toString(),
+                        index
                     );
                     break;
                 case 'col':
@@ -160,7 +155,8 @@ class RefParser {
                             reference.type === 'col' ? reference.ref.col === command.from ? reference : undefined :
                             reference.type === 'cell' ? reference.ref.col === command.from ? reference.col : undefined :
                             undefined,
-                        this.utils.columnNumberToName(command.to)
+                        this.utils.columnNumberToName(command.to),
+                        index
                     );
                     break;
                 case 'cell':
@@ -169,7 +165,8 @@ class RefParser {
                             reference.type === 'cell' ?
                                 reference.ref.row === command.from.row && reference.ref.col === command.from.col ? reference : undefined :
                                 undefined,
-                        `${this.utils.columnNumberToName(command.to.col)}${command.to.row}`
+                        `${this.utils.columnNumberToName(command.to.col)}${command.to.row}`,
+                        index
                     );
                     break;
                 case 'variable':
@@ -177,12 +174,27 @@ class RefParser {
                         (reference) =>
                             reference.type === 'variable' ? reference.name === command.from ? reference : undefined :
                             undefined,
-                        command.to
+                        command.to,
+                        index
                     );
                     break;
                 default:
                     throw new Error(`Invalid script command type "${command.type}"`);
             }
+        }
+
+        changes.sort((a, b) =>
+            a.startOffset < b.startOffset ? 1 :
+            a.startOffset > b.startOffset ? -1 :
+            a.endOffset < b.endOffset ? 1 :
+            a.endOffset > b.endOffset ? -1 :
+            a.index < b.index ? -1 :
+            a.index > b.index ? 1 :
+            0
+        );
+
+        for(const item of changes) {
+            inputText = inputText.substring(0, item.startOffset) + item.to + inputText.substring(item.endOffset + 1);
         }
 
         return inputText;

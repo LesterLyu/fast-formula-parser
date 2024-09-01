@@ -292,7 +292,7 @@ class Utils {
 
     /**
      * @param {string} number
-     * @return {number}
+     * @return {{ type: 'number', number: Number(number), startOffset: number, endOffset: number }}
      */
     toNumber(number, startOffset, endOffset) {
         return {

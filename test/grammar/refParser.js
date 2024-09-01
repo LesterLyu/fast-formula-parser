@@ -1148,6 +1148,26 @@ describe('References parser', () => {
         expect(actual).to.eq('IF(MONTH($K$1)<>MONTH($K$1-(WEEKDAY($K$1,1)-(first_day-1))-IF((WEEKDAY($K$1,1)-(first_day-1))<=0,7,0)+(ROW(O5)-ROW($K$3))*7+(COLUMN(O5)-COLUMN($K$3)+1)),"",$K$1-(WEEKDAY($K$1,1)-(first_day-1))-IF((WEEKDAY($K$1,1)-(first_day-1))<=0,7,0)+(ROW(O5)-ROW($K$3))*7+(COLUMN(O5)-COLUMN($K$3)+1))');
     });
     
+    it('should exchange columns', function () {
+        let actual = refParser.replace('A1+AB28', position, [ { type: 'col', from: 1, to: 28, }, { type: 'col', from: 28, to: 1, } ]);
+        expect(actual).to.eq('AB1+A28');
+    });
+
+    it('should exchange rows', function () {
+        let actual = refParser.replace('A1+AB28', position, [ { type: 'row', from: 1, to: 28, }, { type: 'row', from: 28, to: 1, } ]);
+        expect(actual).to.eq('A28+AB1');
+    });
+
+    it('should exchange cells', function () {
+        let actual = refParser.replace('A1+AB28', position, [ { type: 'cell', from: { col: 1, row: 1, }, to: { col: 28, row: 28, } }, { type: 'cell', from: { col: 28, row: 28, }, to: { col: 1, row: 1, } } ]);
+        expect(actual).to.eq('AB28+A1');
+    });
+
+    it('should exchange variables', function () {
+        let actual = refParser.replace('aaaa+bbbbb', position, [ { type: 'variable', from: 'aaaa', to: 'bbbbb' }, { type: 'variable', from: 'bbbbb', to: 'aaaa' } ]);
+        expect(actual).to.eq('bbbbb+aaaa');
+    });
+
     it('should not throw error', function () {
         expect((() => refParser.parse('SUM(1))', position, true)))
             .to.not.throw();
