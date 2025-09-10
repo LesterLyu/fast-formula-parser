@@ -1,9 +1,32 @@
-### Announcement
+## Announcement  
 
-This very excellent project is now being managed as part of
+<p align="center">
+  <a href="https://www.sheetxl.com" target="_blank">
+    <img src="https://www.sheetxl.com/logo-text.svg" alt="SheetXL Logo" width="180" />
+  </a>
+</p>
 
-[![Logo](https://www.sheetxl.com/img/logo-color-text-135.png)](https://www.sheetxl.com)
+As part of the [**SheetXL**](https://github.com/sheetxl/sheetxl) project, we have integrated the excellent `fast-formula-parser` into the larger SheetXL ecosystem.  
 
+The new package, [`@sheetxl/formulas`](https://www.npmjs.com/package/@sheetxl/formulas), powers the [`@sheetxl/sdk`](https://www.npmjs.com/package/@sheetxl/sdk) and brings updated capabilities:
+
+## Highlights  
+
+- ✅ All existing formulas **plus 100 new ones**  
+- ✅ Written in TypeScript for strong typing and modern tooling  
+- ✅ Runs in both Node.js and the browser (via the SheetXL runtime)  
+- ✅ High performance — up to **10× faster than Excel** for most operations  
+- ✅ Integrated with the [`@sheetxl/sdk`](https://www.npmjs.com/package/@sheetxl/sdk) for full spreadsheet capabilities  
+- ✅ Roadmap: Full Excel parity expected in the next **6–12 months**
+- ✅ MIT License: All formulas remain **MIT licensed**
+
+We recommend migrating to `@sheetxl/formulas` to benefit from ongoing improvements.
+
+---
+
+## 🙏 Thanks  
+
+Special thanks to **[@LesterLyu](https://github.com/LesterLyu)** (original creator) and all contributors who helped create this most excellent library. Your work has made it possible for hundreds of projects to build spreadsheet-like functionality in JavaScript.  
 
 ---
 ![GitHub](https://img.shields.io/github/license/lesterlyu/fast-formula-parser)
