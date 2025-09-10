@@ -136,10 +136,9 @@ const TextFunctions = {
         number = H.accept(number, Types.NUMBER);
         decimals = H.accept(decimals, Types.NUMBER, 2);
         noCommas = H.accept(noCommas, Types.BOOLEAN, false);
-
-        const decimalString = Array(decimals).fill('0').join('');
+        const decimalString = decimals > 0 ? '.' + Array(decimals).fill('0').join('') : '';
         const comma = noCommas ? '' : '#,';
-        return ssf.format(`${comma}##0.${decimalString}_);(${comma}##0.${decimalString})`, number).trim();
+        return ssf.format(`${comma}##0${decimalString}_);(${comma}##0${decimalString})`, number).trim();
     },
 
     LEFT: (text, numChars) => {
