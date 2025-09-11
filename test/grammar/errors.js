@@ -2,6 +2,7 @@ const expect = require('chai').expect;
 const FormulaError = require('../../formulas/error');
 const {FormulaParser} = require('../../grammar/hooks');
 const {DepParser} = require('../../grammar/dependency/hooks');
+const {RefParser} = require('../../grammar/references/hooks');
 const {MAX_ROW, MAX_COLUMN} = require('../../index');
 
 const parser = new FormulaParser({
@@ -32,8 +33,14 @@ const depParser = new DepParser({
     }
 });
 
-const parsers = [parser, depParser];
-const names = ['', ' (DepParser)']
+const refParser = new RefParser({
+    onVariable: variable => {
+        return 'aaaa' === variable ? {from: {row: 1, col: 1}, to: {row: 2, col: 2}} : {row: 1, col: 1};
+    }
+});
+
+const parsers = [parser, depParser, refParser];
+const names = ['', ' (DepParser)', ' (RefParser)']
 
 const position = {row: 1, col: 1, sheet: 'Sheet1'};
 
@@ -118,6 +125,14 @@ describe('#ERROR! Error handling', () => {
     it('should not throw error when ignoreError = true (DepParser)', function () {
         try {
             depParser.parse('SUM(*()', position, true);
+        } catch (e) {
+            throw Error('Should not reach here.');
+        }
+    });
+
+    it('should not throw error when ignoreError = true (RefParser)', function () {
+        try {
+            refParser.parse('SUM(*()', position, true);
         } catch (e) {
             throw Error('Should not reach here.');
         }

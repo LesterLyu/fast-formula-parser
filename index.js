@@ -1,5 +1,6 @@
 const {FormulaParser} = require('./grammar/hooks');
 const {DepParser} = require('./grammar/dependency/hooks');
+const {RefParser} = require('./grammar/references/hooks');
 const SSF = require('./ssf/ssf');
 const FormulaError = require('./formulas/error');
 
@@ -13,6 +14,7 @@ Object.assign(FormulaParser, {
     MAX_COLUMN: 16384,
     SSF,
     DepParser,
+    RefParser,
     FormulaError, ...require('./formulas/helpers')
 });
 module.exports = FormulaParser;

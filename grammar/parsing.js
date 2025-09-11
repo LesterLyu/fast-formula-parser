@@ -269,8 +269,8 @@ class Parsing extends EmbeddedActionsParser {
         $.RULE('constant', () => $.OR([
             {
                 ALT: () => {
-                    const number = $.CONSUME(Number).image;
-                    return $.ACTION(() => this.utils.toNumber(number));
+                    const number = $.CONSUME(Number);
+                    return $.ACTION(() => this.utils.toNumber(number.image, number.startOffset, number.endOffset));
                 }
             }, {
                 ALT: () => {
@@ -350,20 +350,21 @@ class Parsing extends EmbeddedActionsParser {
         $.RULE('referenceItem', () => $.OR([
             {
                 ALT: () => {
-                    const address = $.CONSUME(Cell).image;
-                    return $.ACTION(() => this.utils.parseCellAddress(address));
+                    const address = $.CONSUME(Cell);
+                    return $.ACTION(() => this.utils.parseCellAddress(address.image, address.startOffset, address.endOffset));
                 }
             },
             {
                 ALT: () => {
-                    const name = $.CONSUME(Name).image;
-                    return $.ACTION(() => context.getVariable(name))
+                    const name = $.CONSUME(Name);
+                    $.ACTION(() => this.utils.registerVariable && this.utils.registerVariable(name.image, name.startOffset, name.endOffset));
+                    return $.ACTION(() => context.getVariable(name.image))
                 }
             },
             {
                 ALT: () => {
-                    const column = $.CONSUME(Column).image;
-                    return $.ACTION(() => this.utils.parseCol(column))
+                    const column = $.CONSUME(Column);
+                    return $.ACTION(() => this.utils.parseCol(column.image, column.startOffset, column.endOffset));
                 }
             },
             // A row check should be here, but the token is same with Number,

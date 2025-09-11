@@ -264,6 +264,52 @@ Note: The grammar in my implementation is different from theirs. My implementati
     ];
     ```
 
+  - Replace Formula References
+    > This is helpful for renaming/rearranging columns/rows/cell/variables even for cut/paste implementaions.
+    ```js
+    import {RefParser} from 'fast-formula-parser';
+    const refParser = new RefParser();
+
+    // position of the formula should be provided
+    const position = {row: 1, col: 1, sheet: 'Sheet1'};
+
+    // Return formula with replaced column/row/cell coordinates even variable names
+    // This gives 'X100+1'
+    refParser.replace('A1+1', position, [{
+        type: 'col', from: 1, to: 24,
+    }, {
+        type: 'row', from: 1, to: 100,
+    } ]);
+
+    // This gives 'X100:C100'
+    refParser.replace('A1:C1', position, [ {
+        type: 'col', from: 1, to: 24,
+    }, {
+        type: 'row', from: 1, to: 100,
+    } ]);
+
+    // This gives 'X100:C3'
+    refParser.replace('A1:C3', position, [ {
+        type: 'cell',
+        from: { col: 1, row: 1, },
+        to: { col: 24, row: 100, }
+    }]);
+
+    // This gives 'var123 + 1'
+    refParser.replace('VAR1 + 1', position, [ { type: 'variable', from: 'VAR1', to: 'var123' } ]);
+
+    // Complex formula
+    refParser.replace('IF(MONTH($K$1)<>MONTH($K$1-(WEEKDAY($K$1,1)-(start_day-1))-IF((WEEKDAY($K$1,1)-(start_day-1))<=0,7,0)+(ROW(O5)-ROW($K$3))*7+(COLUMN(O5)-COLUMN($K$3)+1)),"",$K$1-(WEEKDAY($K$1,1)-(start_day-1))-IF((WEEKDAY($K$1,1)-(start_day-1))<=0,7,0)+(ROW(O5)-ROW($K$3))*7+(COLUMN(O5)-COLUMN($K$3)+1))', position, [{
+        type: 'col', from: 1, to: 24,
+    }, {
+        type: 'row', from: 1, to: 100,
+    }, {
+        type: 'variable', from: 'start_day', to: 'first_day'
+    }]);
+    // This gives the following result
+    const result = 'IF(MONTH($K$100)<>MONTH($K$100-(WEEKDAY($K$100,1)-(first_day-1))-IF((WEEKDAY($K$100,1)-(first_day-1))<=0,7,0)+(ROW(O5)-ROW($K$3))*7+(COLUMN(O5)-COLUMN($K$3)+1)),"",$K$100-(WEEKDAY($K$100,1)-(first_day-1))-IF((WEEKDAY($K$100,1)-(first_day-1))<=0,7,0)+(ROW(O5)-ROW($K$3))*7+(COLUMN(O5)-COLUMN($K$3)+1))';
+    ```
+
 ### Formula data types in JavaScript
 > The following data types are used in excel formulas and these are the only valid data types a formula or a function can return.
    - Number (date uses number): `1234`
