@@ -48,6 +48,22 @@ describe('Dependency parser', () => {
         expect(actual).to.deep.eq([{sheet: 'Sheet1', from: {row: 1, col: 1}, to: {row: 3, col: 16384}}]);
     });
 
+    it('should parse special ranges', () => {
+        actual = depParser.parse('$A:$C', position);
+        expect(actual).to.deep.eq([{sheet: 'Sheet1', from: {row: 1, col: 1}, to: {row: 1048576, col: 3}}]);
+        actual = depParser.parse('A:$C', position);
+        expect(actual).to.deep.eq([{sheet: 'Sheet1', from: {row: 1, col: 1}, to: {row: 1048576, col: 3}}]);
+        actual = depParser.parse('$A:C', position);
+        expect(actual).to.deep.eq([{sheet: 'Sheet1', from: {row: 1, col: 1}, to: {row: 1048576, col: 3}}]);
+
+        actual = depParser.parse('$1:$3', position);
+        expect(actual).to.deep.eq([{sheet: 'Sheet1', from: {row: 1, col: 1}, to: {row: 3, col: 16384}}]);
+        actual = depParser.parse('1:$3', position);
+        expect(actual).to.deep.eq([{sheet: 'Sheet1', from: {row: 1, col: 1}, to: {row: 3, col: 16384}}]);
+        actual = depParser.parse('$1:3', position);
+        expect(actual).to.deep.eq([{sheet: 'Sheet1', from: {row: 1, col: 1}, to: {row: 3, col: 16384}}]);
+    });
+
     it('should parse variable', function () {
         let actual = depParser.parse('aaaa', position);
         expect(actual).to.deep.eq([{sheet: 'Sheet1', from: {row: 1, col: 1}, to: {row: 2, col: 2}}]);
